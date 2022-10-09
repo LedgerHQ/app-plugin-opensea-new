@@ -1,0 +1,20 @@
+{
+  "chainId": 1,
+  "contracts": [
+    {
+      "address": "0x00000000006c3852cbef3e08e8df289169ede581",
+      "contractName": "SeaPort",
+      "selectors": {
+        "0xfb0f3ee1": {
+          "erc20OfInterest": [
+            "parameters.considerationToken",
+            "parameters.offerToken"
+          ],
+          "method": "fulfillBasicOrder",
+          "plugin": "SeaPort"
+        }
+      }
+    }
+  ],
+  "name": "SeaPort"
+}
