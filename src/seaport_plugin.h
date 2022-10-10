@@ -17,24 +17,29 @@
 
 // Utility addresses checking
 #define NULL_ADDRESS "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-#define ADDRESS_IS_NETWORK_TOKEN(_addr)                                        \
+#define ADDRESS_IS_NETWORK_TOKEN(_addr) \
   (!memcmp(_addr, NETWORK_TOKEN_ADDRESS, ADDRESS_LENGTH))
-#define ADDRESS_IS_NULL_ADDRESS(_addr)                                         \
+#define ADDRESS_IS_NULL_ADDRESS(_addr) \
   (!memcmp(_addr, NULL_ADDRESS, ADDRESS_LENGTH))
 extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
 
 // Enumeration of the different selectors possible.
 // Should follow the exact same order as the array declared in main.c
-typedef enum { FULFILL_BASIC_ORDER } selector_t;
+typedef enum
+{
+  FULFILL_BASIC_ORDER,
+  FULFILL_ORDER
+} selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 1
+#define NUM_SELECTORS 2
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
 // Solidity itemType
-typedef enum {
+typedef enum
+{
   NATIVE,
   ERC20,
   ERC721,
@@ -44,9 +49,15 @@ typedef enum {
 } item_type;
 
 // Solidity basic_order_type abstraction.
-typedef enum { ETH_NFT, ERC20_NFT, NFT_ERC20 } basic_order_type;
+typedef enum
+{
+  ETH_NFT,
+  ERC20_NFT,
+  NFT_ERC20
+} basic_order_type;
 
-typedef enum {
+typedef enum
+{
   ETH_TO_ERC721,
   // ETH_TO_ERC721_PARTIAL_OPEN,
   // ETH_TO_ERC721_FULL_RESTRICTED,
@@ -73,7 +84,8 @@ typedef enum {
   // ERC1155_TO_ERC20_PARTIAL_RESTRICTED
 } old_keep_for_ref;
 
-typedef enum {
+typedef enum
+{
   FBO__OFFSET_BASIC_ORDER_PARAM,
   FBO__CONSIDERATION_TOKEN,
   FBO__CONSIDERATION_IDENTIFIER,
@@ -91,9 +103,36 @@ typedef enum {
   // FBO__TMP
 } fulfill_basic_order_parameter;
 
+typedef enum
+{
+  FO_ORDER_OFFSET,
+  FO_FULFILLER_CONDUIT_KEY,
+  FO_ORDER_PARAM_OFFSET,
+  FO_ORDER_SIGNATURE_OFFSET,
+  FO_ORDER_PARAM_OFFERER,
+  FO_ORDER_PARAM_ZONE,
+  FO_ORDER_PARAM_OFFER_OFFSET,
+  FO_ORDER_PARAM_CONSIDERATION_OFFSET,
+  FO_ORDER_PARAM_ORDER_TYPE,
+  FO_ORDER_PARAM_START_TIME,
+  FO_ORDER_PARAM_END_TIME,
+  FO_ORDER_PARAM_ZONE_HASH,
+  FO_ORDER_PARAM_SALT,
+  FO_ORDER_PARAM_CONDUIT_KEY,
+  FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS,
+  FO_ORDER_PARAM_OFFER_LEN,
+  FO_ORDER_PARAM_OFFER_ITEM_TYPE,
+  FO_ORDER_PARAM_OFFER_TOKEN,
+  FO_ORDER_PARAM_OFFER_IDENTIFIER,
+  FO_ORDER_PARAM_OFFER_START_AMOUNT,
+  FO_ORDER_PARAM_OFFER_END_AMOUNT,
+
+} fullfill_order_parameter;
+
 /* structs */
 
-typedef enum {
+typedef enum
+{
   S_NONE,
   S_BATCHED_INPUT_ORDERS,
   S_BATCHED_OUTPUT_ORDERS,
@@ -102,7 +141,8 @@ typedef enum {
 
 /* 721 Standard TransferFrom Function */
 
-typedef enum {
+typedef enum
+{
   TRANSFER_FROM__FROM,
   TRANSFER_FROM__TO,
   TRANSFER_FROM__TOKEN_ID,
@@ -123,17 +163,20 @@ typedef enum {
 #define UPPER(x) x.elements[0]
 #define LOWER(x) x.elements[1]
 
-typedef struct uint128_t {
+typedef struct uint128_t
+{
   uint64_t elements[2];
 } uint128_t;
 
-typedef struct uint256_t {
+typedef struct uint256_t
+{
   uint128_t elements[2];
 } uint256_t;
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 // 124 / 160
-typedef struct __attribute__((__packed__)) context_t {
+typedef struct __attribute__((__packed__)) context_t
+{
   uint8_t on_struct;
   uint8_t next_param;
   // uint32_t next_offset;    // is the value of the next target offset

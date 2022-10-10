@@ -26,16 +26,20 @@
 
 // List of selectors supported by this plugin.
 static const uint32_t FULFILL_BASIC_ORDER_SELECTOR = 0xfb0f3ee1;
+static const uint32_t FULFILL_ORDER_SELECTOR = 0xb3a34c4c;
 
 // Array of all the different plugin selectors. Make sure this follows the same
 // order as the enum defined in `seaport_plugin.h`
 const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS] = {
     FULFILL_BASIC_ORDER_SELECTOR,
+    FULFILL_ORDER_SELECTOR,
 };
 
 // Function to dispatch calls from the ethereum app.
-void dispatch_plugin_calls(int message, void *parameters) {
-  switch (message) {
+void dispatch_plugin_calls(int message, void *parameters)
+{
+  switch (message)
+  {
   case ETH_PLUGIN_INIT_CONTRACT:
     handle_init_contract(parameters);
     break;
@@ -61,7 +65,8 @@ void dispatch_plugin_calls(int message, void *parameters) {
 }
 
 // Calls the ethereum app.
-void call_app_ethereum() {
+void call_app_ethereum()
+{
   unsigned int libcall_params[3];
   libcall_params[0] = (unsigned int)"Ethereum";
   libcall_params[1] = 0x100;
@@ -70,7 +75,8 @@ void call_app_ethereum() {
 }
 
 // Weird low-level black magic. No need to edit this.
-__attribute__((section(".boot"))) int main(int arg0) {
+__attribute__((section(".boot"))) int main(int arg0)
+{
   // Exit critical section
   __asm volatile("cpsie i");
 
@@ -79,24 +85,30 @@ __attribute__((section(".boot"))) int main(int arg0) {
 
   // Try catch block. Please read the docs for more information on how to use
   // those!
-  BEGIN_TRY {
-    TRY {
+  BEGIN_TRY
+  {
+    TRY
+    {
       // Low-level black magic.
       check_api_level(CX_COMPAT_APILEVEL);
 
       // Check if we are called from the dashboard.
-      if (!arg0) {
+      if (!arg0)
+      {
         // Called from dashboard, launch Ethereum app
         call_app_ethereum();
         return 0;
-      } else {
+      }
+      else
+      {
         // Not called from dashboard: called from the ethereum app!
         const unsigned int *args = (const unsigned int *)arg0;
 
         // If `ETH_PLUGIN_CHECK_PRESENCE` is set, this means the caller is just
         // trying to know whether this app exists or not. We can skip
         // `dispatch_plugin_calls`.
-        if (args[0] != ETH_PLUGIN_CHECK_PRESENCE) {
+        if (args[0] != ETH_PLUGIN_CHECK_PRESENCE)
+        {
           dispatch_plugin_calls(args[0], (void *)args[1]);
         }
         // Call `os_lib_end`, go back to the ethereum app.
