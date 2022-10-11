@@ -47,6 +47,7 @@ void dispatch_plugin_calls(int message, void *parameters)
     handle_provide_parameter(parameters);
     break;
   case ETH_PLUGIN_FINALIZE:
+    PRINTF("FINALIZE\n");
     handle_finalize(parameters);
     break;
   case ETH_PLUGIN_PROVIDE_INFO:

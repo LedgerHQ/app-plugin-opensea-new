@@ -12,6 +12,14 @@
           ],
           "method": "fulfillBasicOrder",
           "plugin": "SeaPort"
+        },
+        "0xb3a34c4c": {
+          "erc20OfInterest": [
+            "order.parameters.consideration.0.token",
+            "order.parameters.offer.0.token"
+          ],
+          "method": "fulfillOrder",
+          "plugin": "SeaPort"
         }
       }
     }

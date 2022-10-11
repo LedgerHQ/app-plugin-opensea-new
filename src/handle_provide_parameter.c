@@ -144,14 +144,17 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
 {
   switch ((fulfill_order_offer)context->enum_param)
   {
-  case FO_ORDER_PARAM_OFFER_LEN:
+  case FO_ORDER_PARAM_OFFER_LEN_ENUM:
     PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
     context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
     context->number_of_nfts = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
     if (context->current_length == 0)
       context->enum_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
     else
       context->enum_param = FO_ORDER_PARAM_OFFER_ITEM_TYPE;
+    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
     break;
   case FO_ORDER_PARAM_OFFER_ITEM_TYPE:
     PRINTF("FO_ORDER_PARAM_OFFER_ITEM_TYPE\n");
@@ -279,12 +282,12 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     context->next_param = FO_ORDER_PARAM_OFFER_OFFSET;
     break;
   case FO_ORDER_PARAM_OFFER_OFFSET:
-    PRINTF("FO_ORDER_PARAM_ZONE\n");
-    context->next_param = FO_ORDER_PARAM_OFFER_OFFSET;
+    PRINTF("FO_ORDER_PARAM_OFFSET\n");
+    context->next_param = FO_ORDER_PARAM_CONSIDERATION_OFFSET;
     break;
   case FO_ORDER_PARAM_CONSIDERATION_OFFSET:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_OFFSET\n");
-    context->next_param = FO_ORDER_PARAM_CONSIDERATION_OFFSET;
+    context->next_param = FO_ORDER_PARAM_ORDER_TYPE;
     break;
   case FO_ORDER_PARAM_ORDER_TYPE:
     PRINTF("FO_ORDER_PARAM_ORDER_TYPE\n");
@@ -340,7 +343,7 @@ void handle_provide_parameter(void *parameters)
   // We use `%.*H`: it's a utility function to print bytes. You first give
   // the number of bytes you wish to print (in this case, `PARAMETER_LENGTH`)
   // and then the address (here `msg->parameter`).
-  PRINTF("___\nplugin provide parameter: offset %d\nBytes: \033[0;31m %.*H "
+  PRINTF("___\nplugin provide parameter: offset %d\nBytes: \033[0;31m %.*H \n"
          "\033[0m \n",
          msg->parameterOffset, PARAMETER_LENGTH, msg->parameter);
 
