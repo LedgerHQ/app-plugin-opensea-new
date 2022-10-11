@@ -178,7 +178,7 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
     if (context->current_length > 0)
     {
       context->current_length--;
-      PRINTF("CURRENT_LENGTH:%d\n"), context->current_length);
+      PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
       context->enum_param = FO_ORDER_PARAM_OFFER_ITEM_TYPE;
     }
     else
@@ -235,7 +235,7 @@ static void parse_consideration(ethPluginProvideParameter_t *msg, context_t *con
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_RECIPIENT\n");
     if (context->current_length > 0)
     {
-      PRINTF("CURRENT_LENGTH:%d\n"), context->current_length);
+      PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
       context->current_length--;
       context->enum_param = FO_ORDER_PARAM_CONSIDERATION_TOKEN;
     }
