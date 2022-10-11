@@ -144,27 +144,41 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
 {
   switch ((fulfill_order_offer)context->enum_param)
   {
+  case FO_ORDER_PARAM_OFFER_LEN:
+    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
+    context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    context->number_of_nfts = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    if (context->current_length == 0)
+      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
+    else
+      context->enum_param = FO_ORDER_PARAM_OFFER_ITEM_TYPE;
+    break;
   case FO_ORDER_PARAM_OFFER_ITEM_TYPE:
-    PRINTF("FO_ORDER_PARAM_OFFER_ITEM_TYPE\n")
+    PRINTF("FO_ORDER_PARAM_OFFER_ITEM_TYPE\n");
     context->enum_param = FO_ORDER_PARAM_OFFER_TOKEN;
     break;
   case FO_ORDER_PARAM_OFFER_TOKEN:
-    PRINTF("FO_ORDER_PARAM_OFFER_ITEM_TOKEN\n")
+    PRINTF("FO_ORDER_PARAM_OFFER_ITEM_TOKEN\n");
+    if (context->current_length == context->number_of_nfts)
+      copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
+    if (memcmp(context->token1_address, msg->parameter, ADDRESS_LENGTH))
+      context->several_collections++;
     context->enum_param = FO_ORDER_PARAM_OFFER_IDENTIFIER;
     break;
   case FO_ORDER_PARAM_OFFER_IDENTIFIER:
-    PRINTF("FO_ORDER_PARAM_OFFER_IDENTIFIER\n")
+    PRINTF("FO_ORDER_PARAM_OFFER_IDENTIFIER\n");
     context->enum_param = FO_ORDER_PARAM_OFFER_START_AMOUNT;
     break;
   case FO_ORDER_PARAM_OFFER_START_AMOUNT:
-    PRINTF("FO_ORDER_PARAM_OFFER_START_AMOUNT\n")
+    PRINTF("FO_ORDER_PARAM_OFFER_START_AMOUNT\n");
     context->enum_param = FO_ORDER_PARAM_OFFER_END_AMOUNT;
     break;
   case FO_ORDER_PARAM_OFFER_END_AMOUNT:
-    PRINTF("FO_ORDER_PARAM_OFFER_END_AMOUNT\n")
+    PRINTF("FO_ORDER_PARAM_OFFER_END_AMOUNT\n");
     if (context->current_length > 0)
     {
       context->current_length--;
+      PRINTF("CURRENT_LENGTH:%d\n"), context->current_length);
       context->enum_param = FO_ORDER_PARAM_OFFER_ITEM_TYPE;
     }
     else
@@ -184,24 +198,49 @@ static void parse_consideration(ethPluginProvideParameter_t *msg, context_t *con
 {
   switch ((fulfill_order_consideration)context->enum_param)
   {
+  case FO_ORDER_PARAM_CONSIDERATION_LEN_ENUM:
+    PRINTF("FO_ORDER_PARAM_CONSIDERATION_LEN\n");
+    context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    context->number_of_tokens = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    if (context->current_length == 0)
+      context->enum_param = FO_ORDER_SIGNATURE;
+    else
+      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_TOKEN;
+    break;
   case FO_ORDER_PARAM_CONSIDERATION_TOKEN:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_TOKEN\n")
+    PRINTF("FO_ORDER_PARAM_CONSIDERATION_TOKEN\n");
+    if (memcmp(context->token2_address, msg->parameter, PARAMETER_LENGTH))
+    {
+      copy_address(context->token2_address, msg->parameter, PARAMETER_LENGTH);
+      context->several_collections++;
+    }
     context->enum_param = FO_ORDER_PARAM_CONSIDERATION_IDENTIFIER;
     break;
   case FO_ORDER_PARAM_CONSIDERATION_IDENTIFIER:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_IDENTIFIER\n")
+    PRINTF("FO_ORDER_PARAM_CONSIDERATION_IDENTIFIER\n");
     context->enum_param = FO_ORDER_PARAM_CONSIDERATION_START_AMOUNT;
     break;
   case FO_ORDER_PARAM_CONSIDERATION_START_AMOUNT:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_START_AMOUNT\n")
+    PRINTF("FO_ORDER_PARAM_CONSIDERATION_START_AMOUNT\n");
     context->enum_param = FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT;
     break;
   case FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT\n")
+    PRINTF("FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT\n");
+    uint8_t buf_amount[INT256_LENGTH] = {0};
+    copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+    add_uint256(context->token1_amount, buf_amount);
     context->enum_param = FO_ORDER_PARAM_CONSIDERATION_RECIPIENT;
     break;
   case FO_ORDER_PARAM_CONSIDERATION_RECIPIENT:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_RECIPIENT\n")
+    PRINTF("FO_ORDER_PARAM_CONSIDERATION_RECIPIENT\n");
+    if (context->current_length > 0)
+    {
+      PRINTF("CURRENT_LENGTH:%d\n"), context->current_length);
+      context->current_length--;
+      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_TOKEN;
+    }
+    else
+      context->next_param = FO_ORDER_SIGNATURE;
     break;
   default:
     PRINTF("Param not supported: %d\n", context->next_param);
@@ -265,7 +304,7 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     break;
   case FO_ORDER_PARAM_SALT:
     PRINTF("FO_ORDER_PARAM_SALT\n");
-    context->next_param = FO_ORDER_CONDUIT_KEY;
+    context->next_param = FO_ORDER_PARAM_CONDUIT_KEY;
     break;
   case FO_ORDER_PARAM_CONDUIT_KEY:
     PRINTF("FO_ORDER_PARAM_CONDUIT_KEU\n");
@@ -274,23 +313,15 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
   case FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:
     PRINTF("FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS\n");
     context->next_param = FO_ORDER_PARAM_OFFER_LEN;
+    context->enum_param = 0;
     break;
   case FO_ORDER_PARAM_OFFER_LEN:
     PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
-    if (context->current_length == 0)
-    {
-      PRINTF("ORDER_PARAM CURRENT LENGTH");
-      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    }
     parse_offer(msg, context);
     break;
   case FO_ORDER_PARAM_CONSIDERATION_LEN:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_LEN\n");
-    if (context->current_length == 0)
-    {
-      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-      parse_consideration(msg, context);
-    }
+    parse_consideration(msg, context);
     break;
   case FO_ORDER_SIGNATURE:
     PRINTF("FO_ORDER_SIGNATURE\n");
@@ -300,26 +331,6 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     msg->result = ETH_PLUGIN_RESULT_ERROR;
     break;
   }
-}
-
-static void handle_transfer_from(ethPluginProvideParameter_t *msg,
-                                 context_t *context)
-{
-  switch ((transfer_from_parameter)context->next_param)
-  {
-  case TRANSFER_FROM__FROM:
-    break;
-  case TRANSFER_FROM__TO:
-    copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
-    break;
-  case TRANSFER_FROM__TOKEN_ID:
-    break;
-  default:
-    PRINTF("Param not supported: %d\n", context->next_param);
-    msg->result = ETH_PLUGIN_RESULT_ERROR;
-    break;
-  }
-  context->next_param++;
 }
 
 void handle_provide_parameter(void *parameters)

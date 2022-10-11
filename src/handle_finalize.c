@@ -1,6 +1,7 @@
 #include "seaport_plugin.h"
 
-static void print_context(context_t *context) {
+static void print_context(context_t *context)
+{
   PRINTF("__Print context:\n");
   PRINTF("number_of_tokens:\t%d\n", context->number_of_tokens);
   PRINTF("order_type:\t%d\n", context->order_type);
@@ -11,7 +12,8 @@ static void print_context(context_t *context) {
   PRINTF("End context\n");
 }
 
-void handle_finalize(void *parameters) {
+void handle_finalize(void *parameters)
+{
   ethPluginFinalize_t *msg = (ethPluginFinalize_t *)parameters;
   context_t *context = (context_t *)msg->pluginContext;
 
@@ -20,17 +22,21 @@ void handle_finalize(void *parameters) {
   // set default numScreens
   msg->numScreens = 2;
 
-  if (context->order_type == NFT_ERC20) {
+  if (context->order_type == NFT_ERC20)
+  {
     // does not work if number_of_tokens > 256.
     context->number_of_tokens = U2BE(context->token1_amount, INT256_LENGTH - 2);
-  } else if (context->order_type == ETH_NFT ||
-             context->order_type == ERC20_NFT) {
+  }
+  else if (context->order_type == ETH_NFT ||
+           context->order_type == ERC20_NFT)
+  {
     // does not work if number_of_tokens > 256.
     context->number_of_tokens = U2BE(context->token2_amount, INT256_LENGTH - 2);
   }
 
   // Determine screens count.
-  switch ((selector_t)context->selectorIndex) {
+  switch ((selector_t)context->selectorIndex)
+  {
   case FULFILL_BASIC_ORDER:
     msg->numScreens = 2;
     break;

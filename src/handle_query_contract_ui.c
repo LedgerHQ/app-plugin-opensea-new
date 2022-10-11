@@ -2,11 +2,14 @@
 #include "text.h"
 
 static void handle_fulfill_basic_order_ui(ethQueryContractUI_t *msg,
-                                          context_t *context) {
-  switch (msg->screenIndex) {
+                                          context_t *context)
+{
+  switch (msg->screenIndex)
+  {
   case 0:
     strlcpy(msg->title, "Send", msg->titleLength);
-    switch ((basic_order_type)context->order_type) {
+    switch ((basic_order_type)context->order_type)
+    {
     case NFT_ERC20:
       snprintf(msg->msg, msg->msgLength, "%d %s", context->number_of_tokens,
                context->token1_ticker);
@@ -22,11 +25,14 @@ static void handle_fulfill_basic_order_ui(ethQueryContractUI_t *msg,
     break;
   case 1:
     strlcpy(msg->title, "Receive", msg->titleLength);
-    if (context->order_type == NFT_ERC20) {
+    if (context->order_type == NFT_ERC20)
+    {
       amountToString(context->token2_amount, INT256_LENGTH,
                      context->token2_decimals, context->token2_ticker, msg->msg,
                      msg->msgLength);
-    } else if (context->order_type == ETH_NFT) {
+    }
+    else if (context->order_type == ETH_NFT)
+    {
       snprintf(msg->msg, msg->msgLength, "%d %s", context->number_of_tokens,
                context->token2_ticker);
       // amountToString(context->token2_amount, INT256_LENGTH,
@@ -42,7 +48,8 @@ static void handle_fulfill_basic_order_ui(ethQueryContractUI_t *msg,
   }
 }
 
-void handle_query_contract_ui(void *parameters) {
+void handle_query_contract_ui(void *parameters)
+{
   ethQueryContractUI_t *msg = (ethQueryContractUI_t *)parameters;
   context_t *context = (context_t *)msg->pluginContext;
 
@@ -53,7 +60,8 @@ void handle_query_contract_ui(void *parameters) {
   msg->result = ETH_PLUGIN_RESULT_OK;
 
   // Get according screen.
-  switch (context->selectorIndex) {
+  switch (context->selectorIndex)
+  {
   case FULFILL_BASIC_ORDER:
     handle_fulfill_basic_order_ui(msg, context);
     break;

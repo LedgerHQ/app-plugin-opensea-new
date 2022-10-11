@@ -127,7 +127,7 @@ typedef enum
 
 typedef enum
 {
-  FO_ORDER_PARAM_OFFER_LEN,
+  FO_ORDER_PARAM_OFFER_LEN_ENUM,
   FO_ORDER_PARAM_OFFER_ITEM_TYPE,
   FO_ORDER_PARAM_OFFER_TOKEN,
   FO_ORDER_PARAM_OFFER_IDENTIFIER,
@@ -137,7 +137,7 @@ typedef enum
 
 typedef enum
 {
-  FO_ORDER_PARAM_CONSIDERATION_LEN,
+  FO_ORDER_PARAM_CONSIDERATION_LEN_ENUM,
   FO_ORDER_PARAM_CONSIDERATION_TOKEN,
   FO_ORDER_PARAM_CONSIDERATION_IDENTIFIER,
   FO_ORDER_PARAM_CONSIDERATION_START_AMOUNT,
@@ -194,11 +194,13 @@ typedef struct uint256_t
 typedef struct __attribute__((__packed__)) context_t
 {
   uint8_t on_struct;
+  uint8_t several_collections;
+  uint8_t number_of_nfts;
   uint8_t next_param;
   uint8_t enum_param;
   // uint32_t next_offset;    // is the value of the next target offset
   uint16_t current_length; // is the length of the current array
-  // uint16_t target_offset;  // is the offset of the parameter we want to parse
+  // uint16_t target_offset;        // is the offset of the parameter we want to parse
   uint32_t current_tuple_offset; // is the value from which a given offset is
                                  // calculated
   // uint32_t last_calldata_offset; // is the offset of the last order's
