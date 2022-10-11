@@ -69,8 +69,8 @@ void handle_init_contract(void *parameters)
     break;
   case FULFILL_ORDER:
     PRINTF("IN FULFILL_ORDER");
-    context->next_param =
-        break;
+    context->next_param = FO_ORDER_OFFSET;
+    break;
   default:
     PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);
     msg->result = ETH_PLUGIN_RESULT_ERROR;
