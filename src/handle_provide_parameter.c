@@ -116,7 +116,10 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
     if (context->order_type != NFT_ERC20) {
       uint8_t buf_amount[INT256_LENGTH] = {0};
       copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-      add_uint256(context->token1_amount, buf_amount);
+      if (add_uint256(context->token1_amount, buf_amount)) {
+        PRINTF("uint256 overflow error.\n");
+        msg->result = ETH_PLUGIN_RESULT_ERROR;
+      }
     }
     if (0 == --context->current_length)
       context->next_param = FBO__LEN_SIGNATURE;
