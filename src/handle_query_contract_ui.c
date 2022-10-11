@@ -56,6 +56,7 @@ void handle_query_contract_ui(void *parameters) {
   switch (context->selectorIndex) {
   case FULFILL_BASIC_ORDER:
     handle_fulfill_basic_order_ui(msg, context);
+    break;
   default:
     PRINTF("Error in handle_query_contract_ui's selectorIndex switch\n");
     msg->result = ETH_PLUGIN_RESULT_ERROR;
