@@ -71,7 +71,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
     break;
   case FBO__CONSIDERATION_TOKEN:
     PRINTF("FBO__CONSIDERATION_TOKEN\n");
-    copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
+    copy_address(context->token2_address, msg->parameter, ADDRESS_LENGTH);
     context->next_param = FBO__CONSIDERATION_IDENTIFIER;
     break;
   case FBO__CONSIDERATION_IDENTIFIER:
@@ -121,7 +121,8 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
     {
       uint8_t buf_amount[INT256_LENGTH] = {0};
       copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-      if (add_uint256(context->token1_amount, buf_amount)) {
+      if (add_uint256(context->token1_amount, buf_amount))
+      {
         PRINTF("uint256 overflow error.\n");
         msg->result = ETH_PLUGIN_RESULT_ERROR;
       }
@@ -147,9 +148,8 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
   case FO_ORDER_PARAM_OFFER_LEN_ENUM:
     PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
     context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
+    PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
     context->number_of_nfts = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
     if (context->current_length == 0)
       context->enum_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
     else
@@ -181,7 +181,7 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
     if (context->current_length > 0)
     {
       context->current_length--;
-      PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
+      PRINTF("LOOP CURRENT_LENGTH:%d\n", context->current_length);
       context->enum_param = FO_ORDER_PARAM_OFFER_ITEM_TYPE;
     }
     else
@@ -204,6 +204,7 @@ static void parse_consideration(ethPluginProvideParameter_t *msg, context_t *con
   case FO_ORDER_PARAM_CONSIDERATION_LEN_ENUM:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_LEN\n");
     context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
     context->number_of_tokens = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
     if (context->current_length == 0)
       context->enum_param = FO_ORDER_SIGNATURE;
@@ -238,7 +239,7 @@ static void parse_consideration(ethPluginProvideParameter_t *msg, context_t *con
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_RECIPIENT\n");
     if (context->current_length > 0)
     {
-      PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
+      PRINTF("LOOP CURRENT_LENGTH:%d\n", context->current_length);
       context->current_length--;
       context->enum_param = FO_ORDER_PARAM_CONSIDERATION_TOKEN;
     }

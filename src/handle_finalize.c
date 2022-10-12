@@ -4,6 +4,7 @@ static void print_context(context_t *context)
 {
   PRINTF("__Print context:\n");
   PRINTF("number_of_tokens:\t%d\n", context->number_of_tokens);
+  PRINTF("number_of_nfts:\t%d\n", context->number_of_nfts);
   PRINTF("order_type:\t%d\n", context->order_type);
   PRINTF("token1_address:\t%.*H\n", ADDRESS_LENGTH, context->token1_address);
   PRINTF("token1_amount:\t%.*H\n", INT256_LENGTH, context->token1_amount);
@@ -38,6 +39,7 @@ void handle_finalize(void *parameters)
   switch ((selector_t)context->selectorIndex)
   {
   case FULFILL_BASIC_ORDER:
+  case FULFILL_ORDER:
     msg->numScreens = 2;
     break;
   default:
