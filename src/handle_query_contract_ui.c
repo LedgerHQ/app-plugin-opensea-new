@@ -29,11 +29,7 @@ static void handle_fulfill_basic_order_ui(ethQueryContractUI_t *msg,
     } else if (context->order_type == ETH_NFT) {
       snprintf(msg->msg, msg->msgLength, "%d %s", context->number_of_tokens,
                context->token2_ticker);
-      // amountToString(context->token2_amount, INT256_LENGTH,
-      //                context->token2_decimals, context->token2_ticker,
-      //                msg->msg, msg->msgLength);
     }
-    // msg_number_of_tokens(msg, context, 2);
     break;
   default:
     strlcpy(msg->title, "ERROR", msg->titleLength);

@@ -41,9 +41,6 @@ static uint8_t get_basic_order_type(uint8_t basic_order_type_sol) {
   return type;
 }
 
-/**
- * parse both create, processInputOrder and processOutputOrder.
- */
 static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
                                        context_t *context) {
   // Switch to current struct parsing function.
@@ -113,18 +110,17 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
     break;
   case FBO__ADDITIONAL_AMOUNT:
     PRINTF("FBO__ADDITIONAL_AMOUNT\n");
+    uint8_t buf_amount[INT256_LENGTH] = {0};
     if (context->order_type != NFT_ERC20) {
-      uint8_t buf_amount[INT256_LENGTH] = {0};
       copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
       if (add_uint256(context->token1_amount, buf_amount)) {
         PRINTF("uint256 overflow error.\n");
         msg->result = ETH_PLUGIN_RESULT_ERROR;
       }
     } else {
-      uint8_t buf_amount[INT256_LENGTH] = {0};
       copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-      PRINTF("token2: %.*H\n", INT256_LENGTH, context->token2_amount);
-      PRINTF("bufamo: %.*H\n", INT256_LENGTH, buf_amount);
+      PRINTF("tk2_amount: %.*H\n", INT256_LENGTH, context->token2_amount);
+      PRINTF("buf_amount: %.*H\n", INT256_LENGTH, buf_amount);
       if (sub_uint256(context->token2_amount, buf_amount)) {
         PRINTF("uint256 overflow error.\n");
         msg->result = ETH_PLUGIN_RESULT_ERROR;
