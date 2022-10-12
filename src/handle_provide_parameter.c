@@ -146,24 +146,35 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
   switch ((fulfill_order_offer)context->enum_param)
   {
   case FO_ORDER_PARAM_OFFER_LEN_ENUM:
-    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
+    PRINTF("FO_ORDER_PARAM_OFFER_LEN ENUM\n");
+    PRINTF("PRINT ENUM:%d\n", context->enum_param);
+    PRINTF("PRINT NEXT:%d\n", context->next_param);
     context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
+    PRINTF("OFFER LEN ENUM CURRENT_LENGTH:%d\n", context->current_length);
     context->number_of_nfts = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    PRINTF("OFFER NUMBER NFTS:%d\n", context->number_of_nfts);
     if (context->current_length == 0)
-      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
+      context->next_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
     else
       context->enum_param = FO_ORDER_PARAM_OFFER_ITEM_TYPE;
     PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
     break;
   case FO_ORDER_PARAM_OFFER_ITEM_TYPE:
     PRINTF("FO_ORDER_PARAM_OFFER_ITEM_TYPE\n");
+    PRINTF("PRINT ENUM:%d\n", context->enum_param);
+    PRINTF("PRINT NEXT:%d\n", context->next_param);
+    PRINTF("OFFER CURRENT_LENGTH:%d\n", context->current_length);
     context->enum_param = FO_ORDER_PARAM_OFFER_TOKEN;
     break;
   case FO_ORDER_PARAM_OFFER_TOKEN:
-    PRINTF("FO_ORDER_PARAM_OFFER_ITEM_TOKEN\n");
+    PRINTF("FO_ORDER_PARAM_OFFER_TOKEN\n");
+    PRINTF("OFFER TOKEN CUR LEN:%d\n", context->current_length);
+    PRINTF("OFFER TOKEN NUMBER NFTS:%d\n", context->number_of_nfts);
     if (context->current_length == context->number_of_nfts)
+    {
+      PRINTF("COPY !!\n");
       copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
+    }
     if (memcmp(context->token1_address, msg->parameter, ADDRESS_LENGTH))
       context->several_collections++;
     context->enum_param = FO_ORDER_PARAM_OFFER_IDENTIFIER;
@@ -178,7 +189,9 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
     break;
   case FO_ORDER_PARAM_OFFER_END_AMOUNT:
     PRINTF("FO_ORDER_PARAM_OFFER_END_AMOUNT\n");
-    if (context->current_length > 0)
+    PRINTF("PRINT ENUM:%d\n", context->enum_param);
+    PRINTF("PRINT NEXT:%d\n", context->next_param);
+    if (context->current_length > 1)
     {
       context->current_length--;
       PRINTF("LOOP CURRENT_LENGTH:%d\n", context->current_length);
@@ -202,19 +215,29 @@ static void parse_consideration(ethPluginProvideParameter_t *msg, context_t *con
   switch ((fulfill_order_consideration)context->enum_param)
   {
   case FO_ORDER_PARAM_CONSIDERATION_LEN_ENUM:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_LEN\n");
+    PRINTF("PRINT ENUM:%d\n", context->enum_param);
+    PRINTF("PRINT NEXT:%d\n", context->next_param);
     context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    PRINTF("CURRENT_LENGTH:%d\n", context->current_length);
+    PRINTF("CONSIDERATION LEN CURRENT_LENGTH:%d\n", context->current_length);
     context->number_of_tokens = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
     if (context->current_length == 0)
-      context->enum_param = FO_ORDER_SIGNATURE;
+      context->next_param = FO_ORDER_SIGNATURE;
     else
-      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_TOKEN;
+      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE;
+    break;
+  case FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE:
+    PRINTF("FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE\n");
+    PRINTF("PRINT ENUM:%d\n", context->enum_param);
+    PRINTF("PRINT NEXT:%d\n", context->next_param);
+    PRINTF("CONSIDERATION ITEM TYPE CURRENT_LENGTH:%d\n", context->current_length);
+    context->enum_param = FO_ORDER_PARAM_CONSIDERATION_TOKEN;
     break;
   case FO_ORDER_PARAM_CONSIDERATION_TOKEN:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_TOKEN\n");
+    PRINTF("PRINT ENUM:%d\n", context->enum_param);
+    PRINTF("PRINT NEXT:%d\n", context->next_param);
     if (memcmp(context->token2_address, msg->parameter, PARAMETER_LENGTH))
     {
+      PRINTF("COPY ADDRESS:%d\n", context->current_length);
       copy_address(context->token2_address, msg->parameter, PARAMETER_LENGTH);
       context->several_collections++;
     }
@@ -226,22 +249,37 @@ static void parse_consideration(ethPluginProvideParameter_t *msg, context_t *con
     break;
   case FO_ORDER_PARAM_CONSIDERATION_START_AMOUNT:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_START_AMOUNT\n");
+    PRINTF("token2_amount:\t%.*H\n", INT256_LENGTH, context->token2_amount);
     context->enum_param = FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT;
+    if (context->number_of_tokens == context->current_length)
+      copy_parameter(context->token2_amount, msg->parameter, PARAMETER_LENGTH);
+    else
+    {
+      uint8_t buf_amount[INT256_LENGTH] = {0};
+      copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+      PRINTF("buf_amount:\t%.*H\n", INT256_LENGTH, buf_amount);
+      PRINTF("SUM\n");
+      if (add_uint256(context->token2_amount, buf_amount))
+      {
+        PRINTF("uint256 overflow error.\n");
+        msg->result = ETH_PLUGIN_RESULT_ERROR;
+      }
+    }
+    PRINTF("after sum token2_amount:\t%.*H\n", INT256_LENGTH, context->token2_amount);
     break;
   case FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT\n");
-    uint8_t buf_amount[INT256_LENGTH] = {0};
-    copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-    add_uint256(context->token1_amount, buf_amount);
     context->enum_param = FO_ORDER_PARAM_CONSIDERATION_RECIPIENT;
     break;
   case FO_ORDER_PARAM_CONSIDERATION_RECIPIENT:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_RECIPIENT\n");
-    if (context->current_length > 0)
+    PRINTF("PRINT ENUM:%d\n", context->enum_param);
+    PRINTF("PRINT NEXT:%d\n", context->next_param);
+    if (context->current_length > 1)
     {
-      PRINTF("LOOP CURRENT_LENGTH:%d\n", context->current_length);
       context->current_length--;
-      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_TOKEN;
+      PRINTF("LOOP CURRENT_LENGTH:%d\n", context->current_length);
+      context->enum_param = FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE;
     }
     else
       context->next_param = FO_ORDER_SIGNATURE;
@@ -311,7 +349,7 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     context->next_param = FO_ORDER_PARAM_CONDUIT_KEY;
     break;
   case FO_ORDER_PARAM_CONDUIT_KEY:
-    PRINTF("FO_ORDER_PARAM_CONDUIT_KEU\n");
+    PRINTF("FO_ORDER_PARAM_CONDUIT_KEY\n");
     context->next_param = FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS;
     break;
   case FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:

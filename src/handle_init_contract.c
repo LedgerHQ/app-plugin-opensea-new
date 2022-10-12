@@ -68,7 +68,7 @@ void handle_init_contract(void *parameters)
     context->next_param = FBO__OFFSET_BASIC_ORDER_PARAM;
     break;
   case FULFILL_ORDER:
-    PRINTF("IN FULFILL_ORDER");
+    PRINTF("IN FULFILL_ORDER\n");
     context->next_param = FO_ORDER_OFFSET;
     break;
   default:
