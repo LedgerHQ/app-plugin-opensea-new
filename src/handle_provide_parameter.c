@@ -120,6 +120,16 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
         PRINTF("uint256 overflow error.\n");
         msg->result = ETH_PLUGIN_RESULT_ERROR;
       }
+    } else {
+      uint8_t buf_amount[INT256_LENGTH] = {0};
+      copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+      PRINTF("token2: %.*H\n", INT256_LENGTH, context->token2_amount);
+      PRINTF("bufamo: %.*H\n", INT256_LENGTH, buf_amount);
+      if (sub_uint256(context->token2_amount, buf_amount)) {
+        PRINTF("uint256 overflow error.\n");
+        msg->result = ETH_PLUGIN_RESULT_ERROR;
+      }
+      PRINTF("res: %.*H\n", INT256_LENGTH, context->token2_amount);
     }
     if (0 == --context->current_length)
       context->next_param = FBO__LEN_SIGNATURE;

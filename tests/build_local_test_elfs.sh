@@ -10,10 +10,12 @@ fi
 ### Variables
 
 # FILL THESE WITH YOUR OWN SDKs PATHS and APP-ETHEREUM's ROOT
+echo "using $APP_ETHEREUM"
 NANOS_SDK=$NANOS_SDK
 NANOX_SDK=$NANOX_SDK
-APP_ETHEREUM=$APP_ETHEREUM
-APP_ETHEREUM="/plugin_dev/app-ethereum"
+# APP_ETHEREUM=$APP_ETHEREUM
+# APP_ETHEREUM="/plugin_dev/app-ethereum"
+APP_ETHEREUM="/plugin_dev/app-eth2022"
 PLUGIN_NAME='seaport'
 
 ###	Functions
