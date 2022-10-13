@@ -38,15 +38,15 @@ typedef enum
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
 // Solidity itemType
-typedef enum
-{
-  NATIVE,
-  ERC20,
-  ERC721,
-  ERC1155,
-  ERC721_WITH_CRITERIA,
-  ERC1155_WITH_CRITERIA
-} item_type;
+//typedef enum
+//{
+//  NATIVE,
+//  ERC20,
+//  ERC721,
+//  ERC1155,
+//  ERC721_WITH_CRITERIA,
+//  ERC1155_WITH_CRITERIA
+//} item_type;
 
 // Solidity basic_order_type abstraction.
 typedef enum
@@ -137,6 +137,24 @@ typedef enum
 
 typedef enum
 {
+  TX_TYPE_NONE,
+  TX_TYPE_ETH_NFT,
+  TX_TYPE_ERC20_NFT,
+  TX_TYPE_NFT_ERC20,
+  TX_TYPE_MULTIPLE_TOKENS,
+  TX_TYPE_TRANSFER_FROM,
+} tx_type;
+
+typedef enum
+{
+  ITEM_TYPE_NONE,
+  ITEM_TYPE_NATIVE,
+  ITEM_TYPE_ERC20,
+  ITEM_TYPE_NFT,
+} item_type;
+
+typedef enum
+{
   FO_ORDER_PARAM_CONSIDERATION_LEN_ENUM,
   FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE,
   FO_ORDER_PARAM_CONSIDERATION_TOKEN,
@@ -148,22 +166,21 @@ typedef enum
 
 /* structs */
 
-typedef enum
-{
-  S_NONE,
-  S_BATCHED_INPUT_ORDERS,
-  S_BATCHED_OUTPUT_ORDERS,
-  S_ORDER,
-} on_struct;
+//{
+//    S_NONE,
+//    S_BATCHED_INPUT_ORDERS,
+//    S_BATCHED_OUTPUT_ORDERS,
+//    S_ORDER,
+//} on_struct;
 
 /* 721 Standard TransferFrom Function */
 
-typedef enum
-{
-  TRANSFER_FROM__FROM,
-  TRANSFER_FROM__TO,
-  TRANSFER_FROM__TOKEN_ID,
-} transfer_from_parameter;
+//typedef enum
+//{
+//  TRANSFER_FROM__FROM,
+//  TRANSFER_FROM__TO,
+//  TRANSFER_FROM__TOKEN_ID,
+//} transfer_from_parameter;
 
 // Booleans
 #define BOOL1 (1)
@@ -199,6 +216,9 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t number_of_nfts;
   uint8_t next_param;
   uint8_t enum_param;
+  uint8_t tx_type;
+  uint8_t order_type;
+  uint8_t item_type;
   // uint32_t next_offset;    // is the value of the next target offset
   uint16_t current_length; // is the length of the current array
   // uint16_t target_offset;        // is the offset of the parameter we want to parse
@@ -207,7 +227,6 @@ typedef struct __attribute__((__packed__)) context_t
   // uint32_t last_calldata_offset; // is the offset of the last order's
   // calldata end, just before the last byte of the Tx
   uint8_t number_of_tokens; // is the number of tokens found, this is not always
-  uint8_t order_type;
   // the number of all tokens include in the Tx
   /** token1 is often the input token */
   uint8_t token1_address[ADDRESS_LENGTH];

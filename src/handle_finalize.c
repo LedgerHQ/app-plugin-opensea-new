@@ -23,18 +23,27 @@ void handle_finalize(void *parameters)
   // set default numScreens
   msg->numScreens = 2;
 
-  if (context->order_type == NFT_ERC20)
+  switch (context->selectorIndex)
   {
-    // does not work if number_of_tokens > 256.
-    context->number_of_tokens = U2BE(context->token1_amount, INT256_LENGTH - 2);
+  case FULFILL_BASIC_ORDER:
+    if (context->order_type == NFT_ERC20)
+    {
+      // does not work if number_of_tokens > 256.
+      context->number_of_tokens = U2BE(context->token1_amount, INT256_LENGTH - 2);
+    }
+    else if (context->order_type == ETH_NFT ||
+             context->order_type == ERC20_NFT)
+    {
+      // does not work if number_of_tokens > 256.
+      context->number_of_tokens = U2BE(context->token2_amount, INT256_LENGTH - 2);
+    }
+    break;
+  case FULFILL_ORDER:
+    break;
+  default:
+    msg->result = ETH_PLUGIN_RESULT_ERROR;
+    break;
   }
-  else if (context->order_type == ETH_NFT ||
-           context->order_type == ERC20_NFT)
-  {
-    // does not work if number_of_tokens > 256.
-    context->number_of_tokens = U2BE(context->token2_amount, INT256_LENGTH - 2);
-  }
-
   // Determine screens count.
   switch ((selector_t)context->selectorIndex)
   {
