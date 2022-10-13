@@ -221,23 +221,26 @@ static void parse_consideration(ethPluginProvideParameter_t *msg, context_t *con
     break;
   case FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE\n");
-    if (context->item_type == ITEM_TYPE_NONE)
+    if (context->item_type != TX_TYPE_MULTIPLE_TOKENS)
     {
-      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
-        context->item_type = ITEM_TYPE_NFT;
-      else
-        context->item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
-    }
-    if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
-    {
-      if (context->item_type != ITEM_TYPE_NFT)
+      if (context->item_type == ITEM_TYPE_NONE)
       {
-        context->tx_type = TX_TYPE_MULTIPLE_TOKENS;
-        PRINTF("MULTIPLE_TOKENS\n");
+        if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
+          context->item_type = ITEM_TYPE_NFT;
+        else
+          context->item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
       }
+      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
+      {
+        if (context->item_type != ITEM_TYPE_NFT)
+        {
+          context->tx_type = TX_TYPE_MULTIPLE_TOKENS;
+          PRINTF("MULTIPLE_TOKENS\n");
+        }
+      }
+      else if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 != context->item_type)
+        context->tx_type = TX_TYPE_MULTIPLE_TOKENS;
     }
-    else if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 != context->item_type)
-      context->tx_type = TX_TYPE_MULTIPLE_TOKENS;
     context->number_of_tokens++;
     PRINTF("ITEM TYPE:%d\n", context->item_type);
     PRINTF("CONSIDERATION ITEM TYPE CURRENT LENGTH:%d\n", context->current_length);
