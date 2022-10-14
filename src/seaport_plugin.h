@@ -46,7 +46,7 @@ extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 //  ERC1155,
 //  ERC721_WITH_CRITERIA,
 //  ERC1155_WITH_CRITERIA
-//} item_type;
+//} offer_item_type;
 
 // Solidity basic_order_type abstraction.
 typedef enum
@@ -137,24 +137,6 @@ typedef enum
 
 typedef enum
 {
-  TX_TYPE_NONE,
-  TX_TYPE_ETH_NFT,
-  TX_TYPE_ERC20_NFT,
-  TX_TYPE_NFT_ERC20,
-  TX_TYPE_MULTIPLE_TOKENS,
-  TX_TYPE_TRANSFER_FROM,
-} tx_type;
-
-typedef enum
-{
-  ITEM_TYPE_NONE,
-  ITEM_TYPE_NATIVE,
-  ITEM_TYPE_ERC20,
-  ITEM_TYPE_NFT,
-} item_type;
-
-typedef enum
-{
   FO_ORDER_PARAM_CONSIDERATION_LEN_ENUM,
   FO_ORDER_PARAM_CONSIDERATION_ITEM_TYPE,
   FO_ORDER_PARAM_CONSIDERATION_TOKEN,
@@ -163,6 +145,42 @@ typedef enum
   FO_ORDER_PARAM_CONSIDERATION_END_AMOUNT,
   FO_ORDER_PARAM_CONSIDERATION_RECIPIENT,
 } fulfill_order_consideration;
+
+typedef enum
+{
+  TX_TYPE_NONE,
+  TX_TYPE_ETH_NFT,
+  TX_TYPE_ERC20_NFT,
+  TX_TYPE_NFT_ERC20,
+  TX_TYPE_NFT_NFT,
+  TX_TYPE_MIX_NFT,
+  TX_TYPE_NFT_MIX,
+  TX_TYPE_TRANSFER_FROM,
+} tx_type;
+
+typedef enum
+{
+  OFFER_ITEM_TYPE_NONE,
+  OFFER_ITEM_TYPE_NATIVE,
+  OFFER_ITEM_TYPE_ERC20,
+  OFFER_ITEM_TYPE_NFT,
+  OFFER_ITEM_TYPE_MIXED_TOKENS,
+} offer_item_type;
+
+typedef enum
+{
+  CONSIDERATION_ITEM_TYPE_NONE,
+  CONSIDERATION_ITEM_TYPE_NATIVE,
+  CONSIDERATION_ITEM_TYPE_ERC20,
+  CONSIDERATION_ITEM_TYPE_NFT,
+  CONSIDERATION_ITEM_TYPE_MIXED_TOKENS,
+} consideration_item_type;
+
+typedef enum
+{
+  BUY_NOW,
+  ACCEPT_OFFER,
+} sale_side;
 
 /* structs */
 
@@ -211,14 +229,13 @@ typedef struct uint256_t
 // 124 / 160
 typedef struct __attribute__((__packed__)) context_t
 {
-  uint8_t on_struct;
-  uint8_t several_collections;
-  uint8_t number_of_nfts;
+  // uint8_t on_struct;
+  uint8_t offers_len;
+  uint8_t considerations_len;
   uint8_t next_param;
   uint8_t enum_param;
   uint8_t tx_type;
-  uint8_t order_type;
-  uint8_t item_type;
+  uint8_t basic_order_type;
   // uint32_t next_offset;    // is the value of the next target offset
   uint16_t current_length; // is the length of the current array
   // uint16_t target_offset;        // is the offset of the parameter we want to parse
@@ -229,13 +246,19 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t number_of_tokens; // is the number of tokens found, this is not always
   // the number of all tokens include in the Tx
   /** token1 is often the input token */
+
+  uint8_t sale_side;
+  uint8_t offer_item_type;
+  uint8_t consideration_item_type;
+
   uint8_t token1_address[ADDRESS_LENGTH];
+  uint8_t offerer_address[ADDRESS_LENGTH];
   uint8_t token1_amount[INT256_LENGTH];
   uint8_t token1_decimals;
   char token1_ticker[MAX_TICKER_LEN];
   /** token2 is the output token */
   uint8_t token2_address[ADDRESS_LENGTH];
-  uint8_t token2_amount[INT256_LENGTH];
+  uint8_t token2_amount[ADDRESS_LENGTH];
   uint8_t token2_decimals;
   char token2_ticker[MAX_TICKER_LEN];
 
@@ -244,7 +267,7 @@ typedef struct __attribute__((__packed__)) context_t
   // to determine the action
   selector_t selectorIndex; // method id
   uint8_t booleans;         // bitwise booleans
-  uint8_t skip;             // number of parameters to skip
+  uint8_t skip;             // number of parameters to skip//
 } context_t;
 
 // Piece of code that will check that the above structure is not bigger than 5

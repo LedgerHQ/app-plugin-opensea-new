@@ -8,7 +8,7 @@ static void handle_fulfill_basic_order_ui(ethQueryContractUI_t *msg,
   {
   case 0:
     strlcpy(msg->title, "Send", msg->titleLength);
-    switch ((basic_order_type)context->order_type)
+    switch ((basic_order_type)context->basic_order_type)
     {
     case NFT_ERC20:
       snprintf(msg->msg, msg->msgLength, "%d %s", context->number_of_tokens,
@@ -25,13 +25,13 @@ static void handle_fulfill_basic_order_ui(ethQueryContractUI_t *msg,
     break;
   case 1:
     strlcpy(msg->title, "Receive", msg->titleLength);
-    if (context->order_type == NFT_ERC20)
+    if (context->basic_order_type == NFT_ERC20)
     {
       amountToString(context->token2_amount, INT256_LENGTH,
                      context->token2_decimals, context->token2_ticker, msg->msg,
                      msg->msgLength);
     }
-    else if (context->order_type == ETH_NFT)
+    else if (context->basic_order_type == ETH_NFT)
     {
       snprintf(msg->msg, msg->msgLength, "%d %s", context->number_of_tokens,
                context->token2_ticker);
