@@ -200,7 +200,6 @@ static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_
   {
   case FO_OFFER_LEN_INIT:
     PRINTF("FO_OFFER_LEN_INIT\n");
-    context->number_of_nfts = context->current_length;
     context->enum_param = FO_OFFER_ITEM_TYPE;
     break;
   case FO_OFFER_ITEM_TYPE:
@@ -210,7 +209,9 @@ static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_
     {
       if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
       {
+        PRINTF("OFFER_ITEM_TYPE_NFT\n");
         context->offer_item_type = OFFER_ITEM_TYPE_NFT;
+        context->number_of_nfts = context->current_length;
       }
       else
         context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
@@ -220,12 +221,14 @@ static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_
       context->offer_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
       ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
     }
+
+    // else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 == 1) && context->offer_item_type != OFFER_ITEM_TYPE_NATIVE)
     print_item(context); // utilitary
     context->enum_param = FO_OFFER_TOKEN;
     break;
   case FO_OFFER_TOKEN:
     PRINTF("FO_OFFER_TOKEN\n");
-    if (context->number_of_nfts == context->current_length)
+    if (!memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH)) ///// TB FIXED
     {
       PRINTF("COPY ADDRESS\n");
       copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
@@ -251,18 +254,18 @@ static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_
     break;
   case FO_OFFER_START_AMOUNT:
     PRINTF("FO_OFFER_START_AMOUNT\n");
-    //uint8_t buf_amount[INT256_LENGTH] = {0};
-    //if (context->offer_item_type != OFFER_ITEM_TYPE_NFT)
-    //{
-    //  copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-    //  if (add_uint256(context->token2_amount, buf_amount))
-    //  {
-    //    PRINTF("uint256 overflow error.\n");
-    //    msg->result = ETH_PLUGIN_RESULT_ERROR;
-    //  }
-    //}
-    //  else if not nft
-    //    ERROR !
+    uint8_t buf_amount[INT256_LENGTH] = {0};
+    copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+    PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
+    if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE || context->offer_item_type == OFFER_ITEM_TYPE_ERC20)
+    {
+      PRINTF("SUM\n");
+      if (add_uint256(context->token1_amount, buf_amount))
+      {
+        PRINTF("uint256 overflow error.\n");
+        msg->result = ETH_PLUGIN_RESULT_ERROR;
+      }
+    }
     context->enum_param = FO_OFFER_END_AMOUNT;
     break;
   case FO_OFFER_END_AMOUNT:
@@ -293,6 +296,7 @@ static void parse_fulfill_order_consideration(ethPluginProvideParameter_t *msg, 
       PRINTF("SET CONSIDERATION ITEM\n");
       if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
       {
+        context->number_of_nfts = context->current_length;
         context->consideration_item_type = CONSIDERATION_ITEM_TYPE_NFT;
       }
       else
