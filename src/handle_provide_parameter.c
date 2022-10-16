@@ -141,22 +141,88 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
   }
 }
 
-static void parse_offer_fulfill_order(ethPluginProvideParameter_t *msg, context_t *context)
+//static void parse_fulfill_order_item(ethPluginProvideParameter_t *msg, context_t *context)
+//{
+//  switch ((fulfill_order_offer_item_type)context->enum_param)
+//  {
+//  }
+//}
+
+static void print_item(context_t *context)
+{
+  PRINTF("PRINT ITEMS\n");
+  if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
+    PRINTF("ITEM TYPE FOUND: NONE\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE)
+    PRINTF("ITEM TYPE FOUND: NATIVE\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_ERC20S)
+    PRINTF("ITEM TYPE FOUND: ERC20\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_NFT)
+    PRINTF("ITEM TYPE FOUND: NFT\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
+    PRINTF("ITEM TYPE FOUND: MULTIPLE NFTS\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_ERC20S)
+    PRINTF("ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_MIXED_TYPES)
+    PRINTF("ITEM TYPE FOUND: MIXED TYPES\n", context->offer_item_type);
+}
+
+static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_t *context)
 {
   PRINTF("PARSE OFFER\n");
   switch ((fulfill_order_offer)context->enum_param)
   {
   case FO_OFFER_LEN_INIT:
     PRINTF("FO_OFFER_LEN_INIT\n");
+    context->number_of_nfts = context->current_length;
     context->enum_param = FO_OFFER_ITEM_TYPE;
     break;
   case FO_OFFER_ITEM_TYPE:
     PRINTF("FO_OFFER_ITEM_TYPE\n");
     PRINTF("OFFER ITEM TYPE CURRENT_LENGTH:%d\n", context->current_length);
+    if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
+    {
+      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
+      {
+        context->offer_item_type = OFFER_ITEM_TYPE_NFT;
+      }
+      else
+        context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+    }
+    else if (!(U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1) && context->offer_item_type == OFFER_ITEM_TYPE_NFT)
+    {
+      context->offer_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
+      ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
+    }
+    print_item(context); // utilitary
     context->enum_param = FO_OFFER_TOKEN;
     break;
   case FO_OFFER_TOKEN:
     PRINTF("FO_OFFER_TOKEN\n");
+    if (context->number_of_nfts == context->current_length)
+    {
+      PRINTF("COPY ADDRESS\n");
+      copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
+    }
+    if (memcmp(context->token1_address, msg->parameter + 12, ADDRESS_LENGTH))
+    {
+      if (context->offer_item_type == OFFER_ITEM_TYPE_NFT)
+      {
+        PRINTF("OFFER_ITEM_TYPE_MULTIPLE_NFTS\n");
+        context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_NFTS;
+      }
+      else
+      {
+        PRINTF("OFFER_ITEM_TYPE_MULTIPLE_ERC20S\n");
+        context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_ERC20S;
+      }
+    }
     context->enum_param = FO_OFFER_IDENTIFIER;
     break;
   case FO_OFFER_IDENTIFIER:
@@ -179,7 +245,7 @@ static void parse_offer_fulfill_order(ethPluginProvideParameter_t *msg, context_
   }
 }
 
-static void parse_consideration_fulfill_order(ethPluginProvideParameter_t *msg, context_t *context)
+static void parse_fulfill_order_consideration(ethPluginProvideParameter_t *msg, context_t *context)
 {
   PRINTF("PARSE CONSIDERATION\n");
   switch ((fulfill_order_consideration)context->enum_param)
@@ -308,14 +374,10 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     PRINTF("OFFER CURRENT_LEN:%d\n", context->current_length);
     if (context->current_length > 0)
     {
-      parse_offer_fulfill_order(msg, context);
+      parse_fulfill_order_offer(msg, context);
     }
     if (context->current_length == 0)
     {
-      if (context->enum_param == FO_OFFER_LEN_INIT)
-      {
-        context->number_of_tokens = 1; //////////   ??????????
-      }
       context->next_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
       context->enum_param = 0;
     }
@@ -329,14 +391,10 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     PRINTF("CONSIDERATION CURRENT_LEN:%d\n", context->current_length);
     if (context->current_length > 0)
     {
-      parse_consideration_fulfill_order(msg, context);
+      parse_fulfill_order_consideration(msg, context);
     }
     if (context->current_length == 0)
     {
-      if (context->enum_param == FO_CONSIDERATION_LEN_INIT)
-      {
-        context->number_of_tokens = 1; //////// ??????????
-      }
       context->next_param = FO_ORDER_SIGNATURE;
       context->enum_param = 0;
     }

@@ -156,22 +156,25 @@ typedef enum
   TX_TYPE_MIX_NFT,
   TX_TYPE_NFT_MIX,
   TX_TYPE_TRANSFER_FROM,
+  TX_TYPE_COULD_NOT_PARSE,
 } tx_type;
 
 typedef enum
 {
   OFFER_ITEM_TYPE_NONE,
   OFFER_ITEM_TYPE_NATIVE,
-  OFFER_ITEM_TYPE_ERC20,
+  OFFER_ITEM_TYPE_ERC20S,
   OFFER_ITEM_TYPE_NFT,
-  OFFER_ITEM_TYPE_MIXED_TOKENS,
+  OFFER_ITEM_TYPE_MULTIPLE_NFTS,
+  OFFER_ITEM_TYPE_MULTIPLE_ERC20S,
+  OFFER_ITEM_TYPE_MIXED_TYPES,
 } offer_item_type;
 
 typedef enum
 {
   CONSIDERATION_ITEM_TYPE_NONE,
   CONSIDERATION_ITEM_TYPE_NATIVE,
-  CONSIDERATION_ITEM_TYPE_ERC20,
+  CONSIDERATION_ITEM_TYPE_ERC20S,
   CONSIDERATION_ITEM_TYPE_NFT,
   CONSIDERATION_ITEM_TYPE_MIXED_TOKENS,
 } consideration_item_type;
@@ -236,6 +239,7 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t enum_param;
   uint8_t tx_type;
   uint8_t basic_order_type;
+
   // uint32_t next_offset;    // is the value of the next target offset
   uint16_t current_length; // is the length of the current array
   // uint16_t target_offset;        // is the offset of the parameter we want to parse
@@ -251,6 +255,7 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t offer_item_type;
   uint8_t consideration_item_type;
 
+  uint8_t number_of_nfts;
   uint8_t token1_address[ADDRESS_LENGTH];
   uint8_t offerer_address[ADDRESS_LENGTH];
   uint8_t token1_amount[INT256_LENGTH];

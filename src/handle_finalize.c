@@ -3,14 +3,15 @@
 static void print_context(context_t *context)
 {
   PRINTF("__Print context:\n");
-  PRINTF("number_of_tokens:\t%d\n", context->number_of_tokens);
-  PRINTF("number_of_offers:\t%d\n", context->offers_len);
+  // PRINTF("number_of_tokens:\t%d\n", context->number_of_tokens);
+  PRINTF("number_of_nfts:\t%d\n", context->number_of_nfts);
+  // PRINTF("number_of_offers:\t%d\n", context->offers_len);
   //  PRINTF("basic_order_type:\t%d\n", context->basic_order_type);
   PRINTF("token1_address:\t%.*H\n", ADDRESS_LENGTH, context->token1_address);
   PRINTF("token1_amount:\t%.*H\n", INT256_LENGTH, context->token1_amount);
   PRINTF("token2_address:\t%.*H\n", ADDRESS_LENGTH, context->token2_address);
   PRINTF("token2_amount:\t%.*H\n", INT256_LENGTH, context->token2_amount);
-  PRINTF("several_collections:%d\n", INT256_LENGTH, context->token2_amount);
+  // PRINTF("several_collections:%d\n", INT256_LENGTH, context->token2_amount);
   PRINTF("sale_side:%d\n", context->sale_side);
   PRINTF("offer_item_type:%d\n", context->offer_item_type);
   PRINTF("consideration_item_type:%d\n", context->consideration_item_type);
