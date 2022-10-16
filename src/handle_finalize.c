@@ -1,5 +1,50 @@
 #include "seaport_plugin.h"
 
+static void print_item2(context_t *context)
+{
+  if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
+    PRINTF("OFFER ITEM TYPE FOUND: NONE\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE)
+    PRINTF("OFFER ITEM TYPE FOUND: NATIVE\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_ERC20)
+    PRINTF("OFFER ITEM TYPE FOUND: ERC20\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_NFT)
+    PRINTF("OFFER ITEM TYPE FOUND: NFT\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
+    PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE NFTS\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_ERC20S)
+    PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->offer_item_type);
+
+  if (context->offer_item_type == OFFER_ITEM_TYPE_MIXED_TYPES)
+    PRINTF("OFFER ITEM TYPE FOUND: MIXED TYPES\n", context->offer_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NONE)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: NONE\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NATIVE)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: NATIVE\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_ERC20)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: ERC20\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: NFT\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE NFTS\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MIXED_TYPES)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
+}
+
 static void print_context(context_t *context)
 {
   PRINTF("__Print context:\n");
@@ -15,6 +60,7 @@ static void print_context(context_t *context)
   PRINTF("sale_side:%d\n", context->sale_side);
   PRINTF("offer_item_type:%d\n", context->offer_item_type);
   PRINTF("consideration_item_type:%d\n", context->consideration_item_type);
+  print_item2(context);
   PRINTF("End context\n");
 }
 

@@ -150,27 +150,47 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
 
 static void print_item(context_t *context)
 {
-  PRINTF("PRINT ITEMS\n");
   if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
-    PRINTF("ITEM TYPE FOUND: NONE\n", context->offer_item_type);
+    PRINTF("OFFER ITEM TYPE FOUND: NONE\n", context->offer_item_type);
 
   if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE)
-    PRINTF("ITEM TYPE FOUND: NATIVE\n", context->offer_item_type);
+    PRINTF("OFFER ITEM TYPE FOUND: NATIVE\n", context->offer_item_type);
 
-  if (context->offer_item_type == OFFER_ITEM_TYPE_ERC20S)
-    PRINTF("ITEM TYPE FOUND: ERC20\n", context->offer_item_type);
+  if (context->offer_item_type == OFFER_ITEM_TYPE_ERC20)
+    PRINTF("OFFER ITEM TYPE FOUND: ERC20\n", context->offer_item_type);
 
   if (context->offer_item_type == OFFER_ITEM_TYPE_NFT)
-    PRINTF("ITEM TYPE FOUND: NFT\n", context->offer_item_type);
+    PRINTF("OFFER ITEM TYPE FOUND: NFT\n", context->offer_item_type);
 
   if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
-    PRINTF("ITEM TYPE FOUND: MULTIPLE NFTS\n", context->offer_item_type);
+    PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE NFTS\n", context->offer_item_type);
 
   if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_ERC20S)
-    PRINTF("ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->offer_item_type);
+    PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->offer_item_type);
 
   if (context->offer_item_type == OFFER_ITEM_TYPE_MIXED_TYPES)
-    PRINTF("ITEM TYPE FOUND: MIXED TYPES\n", context->offer_item_type);
+    PRINTF("OFFER ITEM TYPE FOUND: MIXED TYPES\n", context->offer_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NONE)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: NONE\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NATIVE)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: NATIVE\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_ERC20)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: ERC20\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: NFT\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE NFTS\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->consideration_item_type);
+
+  if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MIXED_TYPES)
+    PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
 }
 
 static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_t *context)
@@ -195,7 +215,7 @@ static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_
       else
         context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
     }
-    else if (!(U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1) && context->offer_item_type == OFFER_ITEM_TYPE_NFT)
+    else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 <= 1) && context->offer_item_type == OFFER_ITEM_TYPE_NFT)
     {
       context->offer_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
       ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
@@ -231,6 +251,18 @@ static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_
     break;
   case FO_OFFER_START_AMOUNT:
     PRINTF("FO_OFFER_START_AMOUNT\n");
+    //uint8_t buf_amount[INT256_LENGTH] = {0};
+    //if (context->offer_item_type != OFFER_ITEM_TYPE_NFT)
+    //{
+    //  copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+    //  if (add_uint256(context->token2_amount, buf_amount))
+    //  {
+    //    PRINTF("uint256 overflow error.\n");
+    //    msg->result = ETH_PLUGIN_RESULT_ERROR;
+    //  }
+    //}
+    //  else if not nft
+    //    ERROR !
     context->enum_param = FO_OFFER_END_AMOUNT;
     break;
   case FO_OFFER_END_AMOUNT:
@@ -256,6 +288,23 @@ static void parse_fulfill_order_consideration(ethPluginProvideParameter_t *msg, 
     break;
   case FO_CONSIDERATION_ITEM_TYPE:
     PRINTF("FO_CONSIDERATION_ITEM_TYPE\n");
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NONE)
+    {
+      PRINTF("SET CONSIDERATION ITEM\n");
+      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
+      {
+        context->consideration_item_type = CONSIDERATION_ITEM_TYPE_NFT;
+      }
+      else
+        context->consideration_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+    }
+    else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 <= 1) && context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
+    {
+      PRINTF("MIXED TYPES\n");
+      context->consideration_item_type = CONSIDERATION_ITEM_TYPE_MIXED_TYPES;
+      ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
+    }
+    print_item(context); // utilitary
     // PRINTF("OFFER ITEM TYPE:%d\n", context->offer_item_type);
     context->enum_param = FO_CONSIDERATION_TOKEN;
     break;
@@ -269,17 +318,18 @@ static void parse_fulfill_order_consideration(ethPluginProvideParameter_t *msg, 
     break;
   case FO_CONSIDERATION_START_AMOUNT:
     PRINTF("FO_CONSIDERATION_START_AMOUNT\n");
-    //if () CREATE GET AMOUNT BASED OFF ITEM TYPE
-    //{
-    //  uint8_t buf_amount[INT256_LENGTH] = {0};
-    //  copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-    //  if (context->offer_item_type != ITEM_TYPE_NFT)
-    //    if (add_uint256(context->token2_amount, buf_amount))
-    //    {
-    //      PRINTF("uint256 overflow error.\n");
-    //      msg->result = ETH_PLUGIN_RESULT_ERROR;
-    //    }
-    //}
+    uint8_t buf_amount[INT256_LENGTH] = {0};
+    copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+    PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NATIVE || context->consideration_item_type == CONSIDERATION_ITEM_TYPE_ERC20)
+    {
+      PRINTF("SUM\n");
+      if (add_uint256(context->token1_amount, buf_amount))
+      {
+        PRINTF("uint256 overflow error.\n");
+        msg->result = ETH_PLUGIN_RESULT_ERROR;
+      }
+    }
     context->enum_param = FO_CONSIDERATION_END_AMOUNT;
     break;
   case FO_CONSIDERATION_END_AMOUNT:
