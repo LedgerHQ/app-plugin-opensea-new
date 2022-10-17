@@ -257,7 +257,7 @@ static void parse_fulfill_order_offer(ethPluginProvideParameter_t *msg, context_
     uint8_t buf_amount[INT256_LENGTH] = {0};
     copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
     PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
-    if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE || context->offer_item_type == OFFER_ITEM_TYPE_ERC20)
+    if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE || context->offer_item_type == OFFER_ITEM_TYPE_ERC20) /// TB Adapted to sale side
     {
       PRINTF("SUM\n");
       if (add_uint256(context->token1_amount, buf_amount))
@@ -351,6 +351,18 @@ static void parse_fulfill_order_consideration(ethPluginProvideParameter_t *msg, 
     break;
   }
 }
+
+//static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
+//                                  context_t *context)
+//{
+//  switch (fullfill_order_parameter)context->next_param)
+//    {
+//    default:
+//      PRINTF("Param not supported: %d\n", context->next_param);
+//      msg->result = ETH_PLUGIN_RESULT_ERROR;
+//      break;
+//    }
+//}
 
 static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
                                   context_t *context)
