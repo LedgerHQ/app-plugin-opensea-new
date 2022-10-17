@@ -123,41 +123,48 @@ typedef enum
   FO_ORDER_PARAM_OFFER_LEN,
   FO_ORDER_PARAM_CONSIDERATION_LEN,
   FO_ORDER_SIGNATURE,
-} fullfill_order_parameter;
+} fullfill_order;
+
+/////////// WIP
+typedef enum
+{
+  ORDER_OFFSETS,
+  parameters_OFFSET,
+  ORDER_SIGNATURE_OFFSET,
+  parameters_OFFERER,
+  ORDER_SIGNATURE_LEN,
+  ORDER_SIGNATURE,
+} orders;
 
 typedef enum
 {
-  FO_OFFER_LEN_INIT,
-  FO_OFFER_ITEM_TYPE,
-  FO_OFFER_TOKEN,
-  FO_OFFER_IDENTIFIER,
-  FO_OFFER_START_AMOUNT,
-  FO_OFFER_END_AMOUNT,
-} fulfill_order_offer;
+  FAO_ORDERS_OFFSET,
+  FAO_OFFER_FULFILLMENT_OFFSET,
+  FAO_CONSIDERATION_FULFILLMENT_OFFSET,
+  FAO_FULFILLER_CONDUIT_KEY,
+  FAO_MAXIMUM_FULFILLED,
+  FAO_ORDERS_LEN,
+  FAO_ORDERS_OFFSETS,
+  FAO_ORDERS_PARAM_OFFSET,
+  FAO_ORDERS_FULFILLMEMTS,
+} fullfill_available_orders;
 
 typedef enum
 {
-  FO_CONSIDERATION_LEN_INIT,
-  FO_CONSIDERATION_ITEM_TYPE,
-  FO_CONSIDERATION_TOKEN,
-  FO_CONSIDERATION_IDENTIFIER,
-  FO_CONSIDERATION_START_AMOUNT,
-  FO_CONSIDERATION_END_AMOUNT,
-  FO_CONSIDERATION_RECIPIENT,
-} fulfill_order_consideration;
-
-typedef enum
-{
-  TX_TYPE_NONE,
-  TX_TYPE_ETH_NFT,
-  TX_TYPE_ERC20_NFT,
-  TX_TYPE_NFT_ERC20,
-  TX_TYPE_NFT_NFT,
-  TX_TYPE_MIX_NFT,
-  TX_TYPE_NFT_MIX,
-  TX_TYPE_TRANSFER_FROM,
-  TX_TYPE_COULD_NOT_PARSE,
-} tx_type;
+  PARAM_OFFERER,
+  PARAM_ZONE,
+  PARAM_OFFER_OFFSET,
+  PARAM_CONSIDERATION_OFFSET,
+  PARAM_ORDER_TYPE,
+  PARAM_START_TIME,
+  PARAM_END_TIME,
+  PARAM_ZONE_HASH,
+  PARAM_SALT,
+  PARAM_CONDUIT_KEY,
+  PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS,
+  PARAM_OFFER_LEN,
+  PARAM_CONSIDERATION_LEN,
+} parameters;
 
 typedef enum
 {
@@ -172,6 +179,16 @@ typedef enum
 
 typedef enum
 {
+  FO_OFFER_LEN_INIT,
+  FO_OFFER_ITEM_TYPE,
+  FO_OFFER_TOKEN,
+  FO_OFFER_IDENTIFIER,
+  FO_OFFER_START_AMOUNT,
+  FO_OFFER_END_AMOUNT,
+} offer;
+
+typedef enum
+{
   CONSIDERATION_ITEM_TYPE_NONE,
   CONSIDERATION_ITEM_TYPE_NATIVE,
   CONSIDERATION_ITEM_TYPE_ERC20,
@@ -180,6 +197,30 @@ typedef enum
   CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S,
   CONSIDERATION_ITEM_TYPE_MIXED_TYPES,
 } consideration_item_type;
+
+typedef enum
+{
+  FO_CONSIDERATION_LEN_INIT,
+  FO_CONSIDERATION_ITEM_TYPE,
+  FO_CONSIDERATION_TOKEN,
+  FO_CONSIDERATION_IDENTIFIER,
+  FO_CONSIDERATION_START_AMOUNT,
+  FO_CONSIDERATION_END_AMOUNT,
+  FO_CONSIDERATION_RECIPIENT,
+} consideration;
+
+typedef enum
+{
+  TX_TYPE_NONE,
+  TX_TYPE_ETH_NFT,
+  TX_TYPE_ERC20_NFT,
+  TX_TYPE_NFT_ERC20,
+  TX_TYPE_NFT_NFT,
+  TX_TYPE_MIX_NFT,
+  TX_TYPE_NFT_MIX,
+  TX_TYPE_TRANSFER_FROM,
+  TX_TYPE_COULD_NOT_PARSE,
+} tx_type;
 
 typedef enum
 {
@@ -235,10 +276,11 @@ typedef struct uint256_t
 typedef struct __attribute__((__packed__)) context_t
 {
   // uint8_t on_struct;
-  uint8_t offers_len;
+  uint8_t orders_len;
   uint8_t considerations_len;
-  uint8_t next_param;
-  uint8_t enum_param;
+  uint8_t next_param;  //
+  uint8_t enum_param;  //
+  uint8_t parse_param; // names tb changed
   uint8_t tx_type;
   uint8_t basic_order_type;
 
