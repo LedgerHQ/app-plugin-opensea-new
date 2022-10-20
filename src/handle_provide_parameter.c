@@ -198,30 +198,28 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
   PRINTF("PARSE OFFER\n");
   switch ((offers)context->items_index)
   {
-  case OFFER_LEN:
-    PRINTF("OFFER_LEN\n");
-    context->items_index = OFFER_ITEM_TYPE;
-    break;
   case OFFER_ITEM_TYPE:
     PRINTF("OFFER_ITEM_TYPE\n");
     PRINTF("OFFER ITEM TYPE CURRENT_LENGTH:%d\n", context->current_length);
     if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
     {
-      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
+      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
       {
         PRINTF("OFFER_ITEM_TYPE_NFT\n");
         context->offer_item_type = OFFER_ITEM_TYPE_NFT;
-        context->number_of_nfts = context->current_length;
       }
       else
         context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
     }
-    else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 <= 1) && context->offer_item_type == OFFER_ITEM_TYPE_NFT)
+    if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) && (context->offer_item_type == OFFER_ITEM_TYPE_NFT || context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS))
+    {
+      context->number_of_nfts++;
+    }
+    if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 <= 1) && context->offer_item_type == OFFER_ITEM_TYPE_NFT)
     {
       context->offer_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
       ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
     }
-    // else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 == 1) && context->offer_item_type != OFFER_ITEM_TYPE_NATIVE)
     print_item(context); // utilitary
     context->items_index = OFFER_TOKEN;
     break;
@@ -239,7 +237,7 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
         PRINTF("OFFER_ITEM_TYPE_MULTIPLE_NFTS\n");
         context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_NFTS;
       }
-      else
+      else if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE || context->offer_item_type == OFFER_ITEM_TYPE_ERC20)
       {
         PRINTF("OFFER_ITEM_TYPE_MULTIPLE_ERC20S\n");
         context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_ERC20S;
@@ -284,10 +282,6 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
   PRINTF("PARSE CONSIDERATION\n");
   switch ((considerations)context->items_index)
   {
-  case CONSIDERATION_LEN:
-    PRINTF("CONSIDERATION_LEN\n");
-    context->items_index = CONSIDERATION_ITEM_TYPE;
-    break;
   case CONSIDERATION_ITEM_TYPE:
     PRINTF("CONSIDERATION_ITEM_TYPE\n");
     if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NONE)
@@ -300,6 +294,10 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
       }
       else
         context->consideration_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+    }
+    else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1) && context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
+    {
+      context->number_of_tokens++;
     }
     else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 <= 1) && context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
     {
@@ -350,6 +348,8 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
   }
 }
 
+/////////// NUMBER OF TOKENS + CURRENT SIZE VERIF ?
+
 static void parse_param(ethPluginProvideParameter_t *msg,
                         context_t *context)
 {
@@ -399,40 +399,37 @@ static void parse_param(ethPluginProvideParameter_t *msg,
     break;
   case PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:
     PRINTF("PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS\n");
-    context->param_index = PARAM_OFFER_LEN;
+    context->param_index = PARAM_OFFERS_LEN;
     context->items_index = 0;
     break;
-  case PARAM_OFFER_LEN:
-    PRINTF("PARAM_OFFER_LEN\n");
-    if (context->items_index == OFFER_LEN)
-    {
-      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    }
+  case PARAM_OFFERS_LEN:
+    PRINTF("PARAM_OFFERS_LEN\n");
+    context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    context->param_index = PARAM_OFFERS;
+    break;
+  case PARAM_OFFERS:
+    PRINTF("PARAM_OFFERS\n");
     PRINTF("OFFER CURRENT_LEN:%d\n", context->current_length);
     parse_offer(msg, context);
     if (context->current_length == 0)
     {
-      context->param_index = PARAM_CONSIDERATION_LEN;
+      context->param_index = PARAM_CONSIDERATIONS_LEN;
       context->items_index = 0;
     }
     break;
-  case PARAM_CONSIDERATION_LEN:
-    PRINTF("PARAM_CONSIDERATION_LEN\n");
-    if (context->items_index == CONSIDERATION_LEN)
-    {
-      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    }
-    if (context->current_length == 0) // Edge case for Transferfrom (send for free)
-    {
-      PRINTF("0 CONSIDERATION = TRANSFER FROM\n");
-    }
-    else
-      parse_considerations(msg, context);
+  case PARAM_CONSIDERATIONS_LEN:
+    PRINTF("PARAM_CONSIDERATIONS_LEN\n");
+    context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    context->param_index = PARAM_CONSIDERATIONS;
+    break;
+  case PARAM_CONSIDERATIONS:
+    PRINTF("PARAM_CONSIDERATIONS\n");
     PRINTF("CONSIDERATION CURRENT_LEN:%d\n", context->current_length);
+    parse_considerations(msg, context);
     if (context->current_length == 0)
     {
-      context->items_index = 0;
       context->param_index = PARAM_END;
+      context->items_index = 0;
     }
     break;
   default:
@@ -558,6 +555,10 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     break;
   case FO_ORDER_SIGNATURE_OFFSET:
     PRINTF("FO_ORDER_SIGNATURE_OFFSET\n");
+    context->next_param = FO_ORDER_PARAM;
+    break;
+  case FO_ORDER_PARAM:
+    PRINTF("FO_ORDER_PARAM\n");
     parse_param(msg, context);
     if (context->param_index == PARAM_END)
     {
