@@ -69,7 +69,7 @@ void handle_init_contract(void *parameters)
     break;
   case FULFILL_ORDER:
     PRINTF("IN FULFILL_ORDER\n");
-    context->next_param = FO_ORDER_OFFSET;
+    context->next_param = FO_OFFSET;
     break;
   default:
     PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);

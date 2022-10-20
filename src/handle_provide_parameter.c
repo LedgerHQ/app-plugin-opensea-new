@@ -143,7 +143,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
 
 //static void parse_fulfill_order_item(ethPluginProvideParameter_t *msg, context_t *context)
 //{
-//  switch ((offer_item_type)context->enum_param)
+//  switch ((offer_item_type)context->offer_consideration_index)
 //  {
 //  }
 //}
@@ -196,14 +196,14 @@ static void print_item(context_t *context)
 static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
 {
   PRINTF("PARSE OFFER\n");
-  switch ((offer)context->enum_param)
+  switch ((offers)context->offer_consideration_index)
   {
-  case FO_OFFER_LEN_INIT:
-    PRINTF("FO_OFFER_LEN_INIT\n");
-    context->enum_param = FO_OFFER_ITEM_TYPE;
+  case OFFER_LEN:
+    PRINTF("OFFER_LEN\n");
+    context->offer_consideration_index = OFFER_ITEM_TYPE;
     break;
-  case FO_OFFER_ITEM_TYPE:
-    PRINTF("FO_OFFER_ITEM_TYPE\n");
+  case OFFER_ITEM_TYPE:
+    PRINTF("OFFER_ITEM_TYPE\n");
     PRINTF("OFFER ITEM TYPE CURRENT_LENGTH:%d\n", context->current_length);
     if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
     {
@@ -221,13 +221,12 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
       context->offer_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
       ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
     }
-
     // else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 == 1) && context->offer_item_type != OFFER_ITEM_TYPE_NATIVE)
     print_item(context); // utilitary
-    context->enum_param = FO_OFFER_TOKEN;
+    context->offer_consideration_index = OFFER_TOKEN;
     break;
-  case FO_OFFER_TOKEN:
-    PRINTF("FO_OFFER_TOKEN\n");
+  case OFFER_TOKEN:
+    PRINTF("OFFER_TOKEN\n");
     if (!memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH)) ///// TB FIXED
     {
       PRINTF("COPY ADDRESS\n");
@@ -246,14 +245,14 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
         context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_ERC20S;
       }
     }
-    context->enum_param = FO_OFFER_IDENTIFIER;
+    context->offer_consideration_index = OFFER_IDENTIFIER;
     break;
-  case FO_OFFER_IDENTIFIER:
-    PRINTF("FO_OFFER_IDENTIFIER\n");
-    context->enum_param = FO_OFFER_START_AMOUNT;
+  case OFFER_IDENTIFIER:
+    PRINTF("OFFER_IDENTIFIER\n");
+    context->offer_consideration_index = OFFER_START_AMOUNT;
     break;
-  case FO_OFFER_START_AMOUNT:
-    PRINTF("FO_OFFER_START_AMOUNT\n");
+  case OFFER_START_AMOUNT:
+    PRINTF("OFFER_START_AMOUNT\n");
     uint8_t buf_amount[INT256_LENGTH] = {0};
     copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
     PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
@@ -266,12 +265,11 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
         msg->result = ETH_PLUGIN_RESULT_ERROR;
       }
     }
-    context->enum_param = FO_OFFER_END_AMOUNT;
+    context->offer_consideration_index = OFFER_END_AMOUNT;
     break;
-  case FO_OFFER_END_AMOUNT:
-    PRINTF("FO_OFFER_END_AMOUNT\n");
-    context->current_length--;
-    context->enum_param = FO_OFFER_ITEM_TYPE;
+  case OFFER_END_AMOUNT:
+    PRINTF("OFFER_END_AMOUNT\n");
+    context->offer_consideration_index = OFFER_ITEM_TYPE;
     break;
   default:
     PRINTF("Param not supported: %d\n", context->next_param);
@@ -283,14 +281,14 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
 static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *context)
 {
   PRINTF("PARSE CONSIDERATION\n");
-  switch ((considerations)context->enum_param)
+  switch ((considerations)context->offer_consideration_index)
   {
-  case FO_CONSIDERATION_LEN_INIT:
-    PRINTF("FO_CONSIDERATION_LEN_INIT\n");
-    context->enum_param = FO_CONSIDERATION_ITEM_TYPE;
+  case CONSIDERATION_LEN:
+    PRINTF("CONSIDERATION_LEN\n");
+    context->offer_consideration_index = CONSIDERATION_ITEM_TYPE;
     break;
-  case FO_CONSIDERATION_ITEM_TYPE:
-    PRINTF("FO_CONSIDERATION_ITEM_TYPE\n");
+  case CONSIDERATION_ITEM_TYPE:
+    PRINTF("CONSIDERATION_ITEM_TYPE\n");
     if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NONE)
     {
       PRINTF("SET CONSIDERATION ITEM\n");
@@ -306,21 +304,21 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
     {
       PRINTF("MIXED TYPES\n");
       context->consideration_item_type = CONSIDERATION_ITEM_TYPE_MIXED_TYPES;
-      ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
+      ////////// IF MIXED TYPES NUMBER OF NFTS NOT TRUSTABLE
     }
     print_item(context); // utilitary
-    context->enum_param = FO_CONSIDERATION_TOKEN;
+    context->offer_consideration_index = CONSIDERATION_TOKEN;
     break;
-  case FO_CONSIDERATION_TOKEN:
-    PRINTF("FO_CONSIDERATION_TOKEN\n");
-    context->enum_param = FO_CONSIDERATION_IDENTIFIER;
+  case CONSIDERATION_TOKEN:
+    PRINTF("CONSIDERATION_TOKEN\n");
+    context->offer_consideration_index = CONSIDERATION_IDENTIFIER;
     break;
-  case FO_CONSIDERATION_IDENTIFIER:
-    PRINTF("FO_CONSIDERATION_IDENTIFIER\n");
-    context->enum_param = FO_CONSIDERATION_START_AMOUNT;
+  case CONSIDERATION_IDENTIFIER:
+    PRINTF("CONSIDERATION_IDENTIFIER\n");
+    context->offer_consideration_index = CONSIDERATION_START_AMOUNT;
     break;
-  case FO_CONSIDERATION_START_AMOUNT:
-    PRINTF("FO_CONSIDERATION_START_AMOUNT\n");
+  case CONSIDERATION_START_AMOUNT:
+    PRINTF("CONSIDERATION_START_AMOUNT\n");
     uint8_t buf_amount[INT256_LENGTH] = {0};
     copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
     PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
@@ -333,16 +331,15 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
         msg->result = ETH_PLUGIN_RESULT_ERROR;
       }
     }
-    context->enum_param = FO_CONSIDERATION_END_AMOUNT;
+    context->offer_consideration_index = CONSIDERATION_END_AMOUNT;
     break;
-  case FO_CONSIDERATION_END_AMOUNT:
-    PRINTF("FO_CONSIDERATION_END_AMOUNT\n");
-    context->enum_param = FO_CONSIDERATION_RECIPIENT;
+  case CONSIDERATION_END_AMOUNT:
+    PRINTF("CONSIDERATION_END_AMOUNT\n");
+    context->offer_consideration_index = CONSIDERATION_RECIPIENT;
     break;
-  case FO_CONSIDERATION_RECIPIENT:
-    PRINTF("FO_CONSIDERATION_RECIPIENT\n");
-    context->current_length--;
-    context->enum_param = FO_CONSIDERATION_ITEM_TYPE;
+  case CONSIDERATION_RECIPIENT:
+    PRINTF("CONSIDERATION_RECIPIENT\n");
+    context->offer_consideration_index = CONSIDERATION_ITEM_TYPE;
     break;
   default:
     PRINTF("Param not supported: %d\n", context->next_param);
@@ -352,142 +349,192 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
 }
 
 //////// PARSE PARAMS !!!!!!!!!!!!!
-static void parse_params(ethPluginProvideParameter_t *msg,
+static void parse_param(ethPluginProvideParameter_t *msg,
+                        context_t *context)
+{
+  PRINTF("PARSE PARAM\n");
+  switch ((parameters)context->param_index)
+  {
+  case PARAM_OFFERER:
+    PRINTF("PARAM_OFFERER\n");
+    // copy_address(context->offerer_address, msg->parameter, ADDRESS_LENGTH);
+    context->param_index = PARAM_ZONE;
+    break;
+  case PARAM_ZONE:
+    PRINTF("PARAM_ZONE\n");
+    context->param_index = PARAM_OFFER_OFFSET;
+    break;
+  case PARAM_OFFER_OFFSET:
+    PRINTF("PARAM_OFFSET\n");
+    context->param_index = PARAM_CONSIDERATION_OFFSET;
+    break;
+  case PARAM_CONSIDERATION_OFFSET:
+    PRINTF("PARAM_CONSIDERATION_OFFSET\n");
+    context->param_index = PARAM_ORDER_TYPE;
+    break;
+  case PARAM_ORDER_TYPE:
+    PRINTF("PARAM_ORDER_TYPE\n");
+    context->param_index = PARAM_START_TIME;
+    break;
+  case PARAM_START_TIME:
+    PRINTF("PARAM_START_TIME\n");
+    context->param_index = PARAM_END_TIME;
+    break;
+  case PARAM_END_TIME:
+    PRINTF("PARAM_END_TIME\n");
+    context->param_index = PARAM_ZONE_HASH;
+    break;
+  case PARAM_ZONE_HASH:
+    PRINTF("PARAM_ZONE_HASH\n");
+    context->param_index = PARAM_SALT;
+    break;
+  case PARAM_SALT:
+    PRINTF("PARAM_SALT\n");
+    context->param_index = PARAM_CONDUIT_KEY;
+    break;
+  case PARAM_CONDUIT_KEY:
+    PRINTF("PARAM_CONDUIT_KEY\n");
+    context->param_index = PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS;
+    break;
+  case PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:
+    PRINTF("PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS\n");
+    context->param_index = PARAM_OFFER_LEN;
+    context->offer_consideration_index = 0;
+    break;
+  case PARAM_OFFER_LEN:
+    PRINTF("PARAM_OFFER_LEN\n");
+    if (context->offer_consideration_index == OFFER_LEN)
+    {
+      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    }
+    PRINTF("OFFER CURRENT_LEN:%d\n", context->current_length);
+    parse_offer(msg, context);
+    context->current_length--;
+    if (context->current_length == 0)
+    {
+      context->param_index = PARAM_CONSIDERATION_LEN;
+      context->offer_consideration_index = 0;
+    }
+    break;
+  case PARAM_CONSIDERATION_LEN:
+    PRINTF("PARAM_CONSIDERATION_LEN\n");
+    if (context->offer_consideration_index == CONSIDERATION_LEN)
+    {
+      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    }
+    if (context->current_length == 0)
+      PRINTF("0 CONSIDERATION = TRANSFER FROM\n");
+    else
+      parse_considerations(msg, context);
+    PRINTF("CONSIDERATION CURRENT_LEN:%d\n", context->current_length);
+    context->current_length--;
+    if (context->current_length == 0)
+    {
+      context->offer_consideration_index = 0;
+      context->param_index = PARAM_END;
+    }
+    break;
+  default:
+    PRINTF("Param not supported: %d\n", context->param_index);
+    msg->result = ETH_PLUGIN_RESULT_ERROR;
+    break;
+  }
+}
+
+static void parse_orders(ethPluginProvideParameter_t *msg,
                          context_t *context)
 {
-  switch (parameters)context->parse_param)
+  switch ((orders)context->orders_index)
+  {
+  case ORDER_PARAMETER_OFFSET:
+    PRINTF("ORDER_PARAMETER_OFFSET");
+    context->orders_index = ORDER_SIGNATURE_OFFSET;
+    break;
+  case ORDER_SIGNATURE_OFFSET:
+    PRINTF("ORDER_SIGNATURE_OFFSET");
+    context->orders_index = ORDER_PARAMETER_OFFERER;
+    break;
+  case ORDER_PARAMETER_OFFERER:
+    PRINTF("ORDER_PARAMETER_OFFERER");
+    parse_param(msg, context);
+    if (context->param_index == PARAM_END)
     {
-    case FO_ORDER_PARAM_OFFERER:
-      PRINTF("FO_ORDER_PARAM_OFFERER\n");
-      // copy_address(context->offerer_address, msg->parameter, ADDRESS_LENGTH);
-      context->parse_param = FO_ORDER_PARAM_ZONE;
-      break;
-    case FO_ORDER_PARAM_ZONE:
-      PRINTF("FO_ORDER_PARAM_ZONE\n");
-      context->parse_param = FO_ORDER_PARAM_OFFER_OFFSET;
-      break;
-    case FO_ORDER_PARAM_OFFER_OFFSET:
-      PRINTF("FO_ORDER_PARAM_OFFSET\n");
-      context->parse_param = FO_ORDER_PARAM_CONSIDERATION_OFFSET;
-      break;
-    case FO_ORDER_PARAM_CONSIDERATION_OFFSET:
-      PRINTF("FO_ORDER_PARAM_CONSIDERATION_OFFSET\n");
-      context->parse_param = FO_ORDER_PARAM_ORDER_TYPE;
-      break;
-    case FO_ORDER_PARAM_ORDER_TYPE:
-      PRINTF("FO_ORDER_PARAM_ORDER_TYPE\n");
-      context->parse_param = FO_ORDER_PARAM_START_TIME;
-      break;
-    case FO_ORDER_PARAM_START_TIME:
-      PRINTF("FO_ORDER_PARAM_START_TIME\n");
-      context->parse_param = FO_ORDER_PARAM_END_TIME;
-      break;
-    case FO_ORDER_PARAM_END_TIME:
-      PRINTF("FO_ORDER_PARAM_END_TIME\n");
-      context->parse_param = FO_ORDER_PARAM_ZONE_HASH;
-      break;
-    case FO_ORDER_PARAM_ZONE_HASH:
-      PRINTF("FO_ORDER_PARAM_ZONE_HASH\n");
-      context->parse_param = FO_ORDER_PARAM_SALT;
-      break;
-    case FO_ORDER_PARAM_SALT:
-      PRINTF("FO_ORDER_PARAM_SALT\n");
-      context->parse_param = FO_ORDER_PARAM_CONDUIT_KEY;
-      break;
-    case FO_ORDER_PARAM_CONDUIT_KEY:
-      PRINTF("FO_ORDER_PARAM_CONDUIT_KEY\n");
-      context->parse_param = FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS;
-      break;
-    case FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:
-      PRINTF("FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS\n");
-      context->parse_param = FO_ORDER_PARAM_OFFER_LEN;
-      context->enum_param = 0;
-      break;
-    case FO_ORDER_PARAM_OFFER_LEN:
-      PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
-      if (context->enum_param == FO_OFFER_LEN_INIT)
-      {
-        context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-      }
-      PRINTF("OFFER CURRENT_LEN:%d\n", context->current_length);
-      if (context->current_length > 0)
-      {
-        parse_offer(msg, context);
-      }
-      if (context->current_length == 0)
-      {
-        context->parse_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
-        context->enum_param = 0;
-      }
-      break;
-    case FO_ORDER_PARAM_CONSIDERATION_LEN:
-      PRINTF("FO_ORDER_PARAM_CONSIDERATION_LEN\n");
-      if (context->enum_param == FO_CONSIDERATION_LEN_INIT)
-      {
-        context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-      }
-      PRINTF("CONSIDERATION CURRENT_LEN:%d\n", context->current_length);
-      if (context->current_length > 0)
-      {
-        parse_considerations(msg, context);
-      }
-      if (context->current_length == 0)
-      {
-        context->parse_param = FO_ORDER_SIGNATURE;
-        context->enum_param = 0;
-      }
-      break;
-    default:
-      PRINTF("Param not supported: %d\n", context->parse_param);
-      msg->result = ETH_PLUGIN_RESULT_ERROR;
-      break;
+      PRINTF("PARAM END\n");
+      context->param_index = 0;
+      context->next_param = ORDER_SIGNATURE_LEN;
     }
+    break;
+  case ORDER_SIGNATURE_LEN:
+    PRINTF("ORDER_SIGNATURE_OFFSET");
+    context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    if (context->current_length % 20)
+    {
+      PRINTF("ORDER_SIGNATURE_LEN");
+      context->skip++;
+    }
+    while (context->current_length >= 0)
+    {
+      context->current_length -= 20;
+      context->skip++;
+    }
+    context->orders_index = ORDER_SIGNATURE;
+    break;
+  case ORDER_SIGNATURE:
+    PRINTF("ORDER_SIGNATURE_OFFSET");
+    context->orders_index = ORDER_SIGNATURE_LEN;
+    break;
+  default:
+    PRINTF("Param not supported: %d\n", context->param_index);
+    msg->result = ETH_PLUGIN_RESULT_ERROR;
+    break;
+  }
 }
-static void handle_fullfill_available_orders(ethPluginProvideParameter_t *msg,
-                                             context_t *context)
+
+static void handle_fulfill_available_orders(ethPluginProvideParameter_t *msg,
+                                            context_t *context)
 {
   switch ((fulfill_available_orders)context->next_param)
   {
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
-    context->next_param =
-        break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_OFFSET:
+    PRINTF("FAO_OFFSET\n");
+    context->next_param = FAO_OFFER_FULFILLMENT_OFFSET;
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_OFFER_FULFILLMENT_OFFSET:
+    PRINTF("FAO_OFFER_FULFILLMENT_OFFSET\n");
+    context->next_param = FAO_CONSIDERATION_FULFILLMENT_OFFSET;
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_CONSIDERATION_FULFILLMENT_OFFSET:
+    PRINTF("FAO_CONSIDERATION_FULFILLMENT_OFFSET\n");
+    context->next_param = FAO_FULFILLER_CONDUIT_KEY;
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_FULFILLER_CONDUIT_KEY:
+    PRINTF("FAO_FULFILLER_CONDUIT_KEY\n");
+    context->next_param = FAO_MAXIMUM_FULFILLED;
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_MAXIMUM_FULFILLED:
+    PRINTF("FAO_MAXIMUM_FULFILLED\n");
+    context->next_param = FAO_ORDERS_LEN;
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_ORDERS_LEN:
+    PRINTF("FAO_ORDERS_LEN\n");
+    context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    context->skip = U2BE(msg->parameter, PARAMETER_LENGTH - 2); // skips order's offsets
+    PRINTF("ORDER_LEN FOUND:%d\n");
+    PRINTF("SKIP FOUND:%d\n");
+    context->next_param = FAO_ORDERS;
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_ORDERS:
+    PRINTF("FAO_ORDERS_LEN\n");
+    parse_orders(msg, context);
+    context->orders_len--;
+    if (context->orders_len == 0)
+      context->next_param = FAO_FULFILLMEMTS;
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
+  case FAO_FULFILLMEMTS:
+    PRINTF("FAO_FULFILLMEMTS\n");
     break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
-    break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
-    break;
-  case FO_ORDERS_OFFSET:
-    PRINTF("FO_ORDERS_OFFSET\n");
-    break;
-
   default:
-    PRINTF("Param not supported: %d\n", context->parse_param);
+    PRINTF("Param not supported: %d\n", context->param_index);
     msg->result = ETH_PLUGIN_RESULT_ERROR;
     break;
   }
@@ -498,8 +545,8 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
 {
   switch ((fulfill_order)context->next_param)
   {
-  case FO_ORDER_OFFSET:
-    PRINTF("FO_ORDER_OFFSET\n");
+  case FO_OFFSET:
+    PRINTF("FO_OFFSET\n");
     context->next_param = FO_FULFILLER_CONDUIT_KEY;
     break;
   case FO_FULFILLER_CONDUIT_KEY:
@@ -559,11 +606,11 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
   case FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:
     PRINTF("FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS\n");
     context->next_param = FO_ORDER_PARAM_OFFER_LEN;
-    context->enum_param = 0;
+    context->offer_consideration_index = 0;
     break;
   case FO_ORDER_PARAM_OFFER_LEN:
     PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
-    if (context->enum_param == FO_OFFER_LEN_INIT)
+    if (context->offer_consideration_index == OFFER_LEN)
     {
       context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
     }
@@ -575,12 +622,12 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     if (context->current_length == 0)
     {
       context->next_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
-      context->enum_param = 0;
+      context->offer_consideration_index = 0;
     }
     break;
   case FO_ORDER_PARAM_CONSIDERATION_LEN:
     PRINTF("FO_ORDER_PARAM_CONSIDERATION_LEN\n");
-    if (context->enum_param == FO_CONSIDERATION_LEN_INIT)
+    if (context->offer_consideration_index == CONSIDERATION_LEN)
     {
       context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
     }
@@ -592,7 +639,7 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     if (context->current_length == 0)
     {
       context->next_param = FO_ORDER_SIGNATURE;
-      context->enum_param = 0;
+      context->offer_consideration_index = 0;
     }
     break;
   case FO_ORDER_SIGNATURE:

@@ -105,7 +105,7 @@ typedef enum
 
 typedef enum
 {
-  FO_ORDER_OFFSET,
+  FO_OFFSET,
   FO_FULFILLER_CONDUIT_KEY,
   FO_ORDER_PARAM_OFFSET,
   FO_ORDER_SIGNATURE_OFFSET,
@@ -123,31 +123,19 @@ typedef enum
   FO_ORDER_PARAM_OFFER_LEN,
   FO_ORDER_PARAM_CONSIDERATION_LEN,
   FO_ORDER_SIGNATURE,
-} fullfill_order;
-
-/////////// WIP
-typedef enum
-{
-  ORDER_OFFSETS,
-  parameters_OFFSET,
-  ORDER_SIGNATURE_OFFSET,
-  parameters_OFFERER,
-  ORDER_SIGNATURE_LEN,
-  ORDER_SIGNATURE,
-} orders;
+} fulfill_order;
 
 typedef enum
 {
-  FAO_ORDERS_OFFSET,
+  FAO_OFFSET,
   FAO_OFFER_FULFILLMENT_OFFSET,
   FAO_CONSIDERATION_FULFILLMENT_OFFSET,
   FAO_FULFILLER_CONDUIT_KEY,
   FAO_MAXIMUM_FULFILLED,
   FAO_ORDERS_LEN,
-  FAO_ORDERS_OFFSETS,
-  FAO_ORDERS_PARAM_OFFSET,
-  FAO_ORDERS_FULFILLMEMTS,
-} fullfill_available_orders;
+  FAO_ORDERS,
+  FAO_FULFILLMEMTS,
+} fulfill_available_orders;
 
 typedef enum
 {
@@ -164,7 +152,19 @@ typedef enum
   PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS,
   PARAM_OFFER_LEN,
   PARAM_CONSIDERATION_LEN,
+  PARAM_END,
+
 } parameters;
+
+/////////// WIP
+typedef enum
+{
+  ORDER_PARAMETER_OFFSET,
+  ORDER_SIGNATURE_OFFSET,
+  ORDER_PARAMETER_OFFERER,
+  ORDER_SIGNATURE_LEN,
+  ORDER_SIGNATURE,
+} orders;
 
 typedef enum
 {
@@ -179,13 +179,13 @@ typedef enum
 
 typedef enum
 {
-  FO_OFFER_LEN_INIT,
-  FO_OFFER_ITEM_TYPE,
-  FO_OFFER_TOKEN,
-  FO_OFFER_IDENTIFIER,
-  FO_OFFER_START_AMOUNT,
-  FO_OFFER_END_AMOUNT,
-} offer;
+  OFFER_LEN,
+  OFFER_ITEM_TYPE,
+  OFFER_TOKEN,
+  OFFER_IDENTIFIER,
+  OFFER_START_AMOUNT,
+  OFFER_END_AMOUNT,
+} offers;
 
 typedef enum
 {
@@ -200,14 +200,14 @@ typedef enum
 
 typedef enum
 {
-  FO_CONSIDERATION_LEN_INIT,
-  FO_CONSIDERATION_ITEM_TYPE,
-  FO_CONSIDERATION_TOKEN,
-  FO_CONSIDERATION_IDENTIFIER,
-  FO_CONSIDERATION_START_AMOUNT,
-  FO_CONSIDERATION_END_AMOUNT,
-  FO_CONSIDERATION_RECIPIENT,
-} consideration;
+  CONSIDERATION_LEN,
+  CONSIDERATION_ITEM_TYPE,
+  CONSIDERATION_TOKEN,
+  CONSIDERATION_IDENTIFIER,
+  CONSIDERATION_START_AMOUNT,
+  CONSIDERATION_END_AMOUNT,
+  CONSIDERATION_RECIPIENT,
+} considerations;
 
 typedef enum
 {
@@ -277,10 +277,12 @@ typedef struct __attribute__((__packed__)) context_t
 {
   // uint8_t on_struct;
   uint8_t orders_len;
-  uint8_t considerations_len;
-  uint8_t next_param;  //
-  uint8_t enum_param;  //
-  uint8_t parse_param; // names tb changed
+
+  uint8_t orders_index;
+  uint8_t param_index;
+  uint8_t offer_consideration_index;
+
+  uint8_t next_param; // selector based
   uint8_t tx_type;
   uint8_t basic_order_type;
 
