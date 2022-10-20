@@ -466,16 +466,14 @@ static void parse_orders(ethPluginProvideParameter_t *msg,
     }
     break;
   case ORDER_SIGNATURE:
-    PRINTF("ORDER_SIGNATURE\n");
+    PRINTF("ORDER_SIGNATURE\n"); // If len = 0 what happens ?
     context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    if (context->current_length % 32) // If len = 0 what happens ?
+    if (context->current_length % 32)
     {
       context->skip++;
     }
     while (context->current_length >= 32)
     {
-      PRINTF("SIG CUR LEN:%d\n", context->current_length);
-      PRINTF("SIGNATURE - 32\n");
       context->current_length -= 32;
       context->skip++;
     }
@@ -560,87 +558,12 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg,
     break;
   case FO_ORDER_SIGNATURE_OFFSET:
     PRINTF("FO_ORDER_SIGNATURE_OFFSET\n");
-    context->next_param = FO_ORDER_PARAM_OFFERER;
-    break;
-    ///// CALL HERE FOR PARSE PARAM
-  case FO_ORDER_PARAM_OFFERER:
-    PRINTF("FO_ORDER_PARAM_OFFERER\n");
-    // copy_address(context->offerer_address, msg->parameter, ADDRESS_LENGTH);
-    context->next_param = FO_ORDER_PARAM_ZONE;
-    break;
-  case FO_ORDER_PARAM_ZONE:
-    PRINTF("FO_ORDER_PARAM_ZONE\n");
-    context->next_param = FO_ORDER_PARAM_OFFER_OFFSET;
-    break;
-  case FO_ORDER_PARAM_OFFER_OFFSET:
-    PRINTF("FO_ORDER_PARAM_OFFER_OFFSET\n");
-    context->next_param = FO_ORDER_PARAM_CONSIDERATION_OFFSET;
-    break;
-  case FO_ORDER_PARAM_CONSIDERATION_OFFSET:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_OFFSET\n");
-    context->next_param = FO_ORDER_PARAM_ORDER_TYPE;
-    break;
-  case FO_ORDER_PARAM_ORDER_TYPE:
-    PRINTF("FO_ORDER_PARAM_ORDER_TYPE\n");
-    context->next_param = FO_ORDER_PARAM_START_TIME;
-    break;
-  case FO_ORDER_PARAM_START_TIME:
-    PRINTF("FO_ORDER_PARAM_START_TIME\n");
-    context->next_param = FO_ORDER_PARAM_END_TIME;
-    break;
-  case FO_ORDER_PARAM_END_TIME:
-    PRINTF("FO_ORDER_PARAM_END_TIME\n");
-    context->next_param = FO_ORDER_PARAM_ZONE_HASH;
-    break;
-  case FO_ORDER_PARAM_ZONE_HASH:
-    PRINTF("FO_ORDER_PARAM_ZONE_HASH\n");
-    context->next_param = FO_ORDER_PARAM_SALT;
-    break;
-  case FO_ORDER_PARAM_SALT:
-    PRINTF("FO_ORDER_PARAM_SALT\n");
-    context->next_param = FO_ORDER_PARAM_CONDUIT_KEY;
-    break;
-  case FO_ORDER_PARAM_CONDUIT_KEY:
-    PRINTF("FO_ORDER_PARAM_CONDUIT_KEY\n");
-    context->next_param = FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS;
-    break;
-  case FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:
-    PRINTF("FO_ORDER_PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS\n");
-    context->next_param = FO_ORDER_PARAM_OFFER_LEN;
-    context->items_index = 0;
-    break;
-  case FO_ORDER_PARAM_OFFER_LEN:
-    PRINTF("FO_ORDER_PARAM_OFFER_LEN\n");
-    if (context->items_index == OFFER_LEN)
+    parse_param(msg, context);
+    if (context->param_index == PARAM_END)
     {
-      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    }
-    PRINTF("OFFER CURRENT_LEN:%d\n", context->current_length);
-    if (context->current_length > 0)
-    {
-      parse_offer(msg, context);
-    }
-    if (context->current_length == 0)
-    {
-      context->next_param = FO_ORDER_PARAM_CONSIDERATION_LEN;
-      context->items_index = 0;
-    }
-    break;
-  case FO_ORDER_PARAM_CONSIDERATION_LEN:
-    PRINTF("FO_ORDER_PARAM_CONSIDERATION_LEN\n");
-    if (context->items_index == CONSIDERATION_LEN)
-    {
-      context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-    }
-    PRINTF("CONSIDERATION CURRENT_LEN:%d\n", context->current_length);
-    if (context->current_length > 0)
-    {
-      parse_considerations(msg, context);
-    }
-    if (context->current_length == 0)
-    {
+      PRINTF("PARAM END\n");
+      context->param_index = 0;
       context->next_param = FO_ORDER_SIGNATURE;
-      context->items_index = 0;
     }
     break;
   case FO_ORDER_SIGNATURE:

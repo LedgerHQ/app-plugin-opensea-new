@@ -185,7 +185,7 @@ typedef enum
   OFFER_IDENTIFIER,
   OFFER_START_AMOUNT,
   OFFER_END_AMOUNT,
-} offers;
+} offers; // pointed to by context->items_index
 
 typedef enum
 {
@@ -207,7 +207,7 @@ typedef enum
   CONSIDERATION_START_AMOUNT,
   CONSIDERATION_END_AMOUNT,
   CONSIDERATION_RECIPIENT,
-} considerations;
+} considerations; // pointed to by context->items_index
 
 typedef enum
 {
