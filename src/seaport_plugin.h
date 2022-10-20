@@ -27,13 +27,14 @@ extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
 // Should follow the exact same order as the array declared in main.c
 typedef enum
 {
+  FULFILL_AVAILABLE_ORDERS,
   FULFILL_BASIC_ORDER,
-  FULFILL_ORDER
+  FULFILL_ORDER,
 } selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 2
+#define NUM_SELECTORS 3
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -161,8 +162,7 @@ typedef enum
 {
   ORDER_PARAMETER_OFFSET,
   ORDER_SIGNATURE_OFFSET,
-  ORDER_PARAMETER_OFFERER,
-  ORDER_SIGNATURE_LEN,
+  ORDER_PARAMETER,
   ORDER_SIGNATURE,
 } orders;
 
@@ -280,7 +280,7 @@ typedef struct __attribute__((__packed__)) context_t
 
   uint8_t orders_index;
   uint8_t param_index;
-  uint8_t offer_consideration_index;
+  uint8_t items_index;
 
   uint8_t next_param; // selector based
   uint8_t tx_type;

@@ -90,6 +90,7 @@ void handle_finalize(void *parameters)
     }
     break;
   case FULFILL_ORDER:
+  case FULFILL_AVAILABLE_ORDERS:
     break;
   default:
     msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -98,6 +99,7 @@ void handle_finalize(void *parameters)
   // Determine screens count.
   switch ((selector_t)context->selectorIndex)
   {
+  case FULFILL_AVAILABLE_ORDERS:
   case FULFILL_BASIC_ORDER:
   case FULFILL_ORDER:
     msg->numScreens = 2;
