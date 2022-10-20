@@ -211,14 +211,15 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
       else
         context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
     }
-    if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) && (context->offer_item_type == OFFER_ITEM_TYPE_NFT || context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS))
+    if (context->offer_item_type == OFFER_ITEM_TYPE_NFT || context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
     {
-      context->number_of_nfts++;
-    }
-    if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 <= 1) && context->offer_item_type == OFFER_ITEM_TYPE_NFT)
-    {
-      context->offer_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
-      ////////// IF MIXED TYPES NUMBER OF TOKENS NOT TRUSTABLE
+      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
+        context->number_of_nfts++;
+      else
+      {
+        PRINTF("MIXED TYPES\n");
+        context->consideration_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
+      }
     }
     print_item(context); // utilitary
     context->items_index = OFFER_TOKEN;
@@ -289,21 +290,20 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
       PRINTF("SET CONSIDERATION ITEM\n");
       if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
       {
-        context->number_of_nfts = context->current_length;
         context->consideration_item_type = CONSIDERATION_ITEM_TYPE_NFT;
       }
       else
         context->consideration_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
     }
-    else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1) && context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT || context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS)
     {
-      context->number_of_tokens++;
-    }
-    else if ((U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 <= 1) && context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
-    {
-      PRINTF("MIXED TYPES\n");
-      context->consideration_item_type = CONSIDERATION_ITEM_TYPE_MIXED_TYPES;
-      ////////// IF MIXED TYPES NUMBER OF NFTS NOT TRUSTABLE
+      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
+        context->number_of_nfts++;
+      else
+      {
+        PRINTF("MIXED TYPES\n");
+        context->consideration_item_type = CONSIDERATION_ITEM_TYPE_MIXED_TYPES;
+      }
     }
     print_item(context); // utilitary
     context->items_index = CONSIDERATION_TOKEN;
