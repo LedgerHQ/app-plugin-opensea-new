@@ -63,6 +63,11 @@ void handle_init_contract(void *parameters)
   // Set `next_param` to be the first field we expect to parse.
   switch (context->selectorIndex)
   {
+
+  case FULFILL_ADVANCED_ORDER:
+    PRINTF("IN FULFILL_ADVANCED_ORDER\n");
+    context->next_param = FADO_OFFSET;
+    break;
   case FULFILL_AVAILABLE_ORDERS:
     PRINTF("IN FULFILL_AVAILABLE_ORDERS\n");
     context->next_param = FAO_OFFSET;

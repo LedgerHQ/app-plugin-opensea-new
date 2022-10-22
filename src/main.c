@@ -25,14 +25,16 @@
 #include "seaport_plugin.h"
 
 // List of selectors supported by this plugin.
-static const uint32_t FULFILL_AVAILABLE_ORDER_SELECTOR = 0xed98a574;
+static const uint32_t FULFILL_ADVANCED_ORDER_SELECTOR = 0xe7acab24;
+static const uint32_t FULFILL_AVAILABLE_ORDERS_SELECTOR = 0xed98a574;
 static const uint32_t FULFILL_BASIC_ORDER_SELECTOR = 0xfb0f3ee1;
 static const uint32_t FULFILL_ORDER_SELECTOR = 0xb3a34c4c;
 
 // Array of all the different plugin selectors. Make sure this follows the same
 // order as the enum defined in `seaport_plugin.h`
 const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS] = {
-    FULFILL_AVAILABLE_ORDER_SELECTOR,
+    FULFILL_ADVANCED_ORDER_SELECTOR,
+    FULFILL_AVAILABLE_ORDERS_SELECTOR,
     FULFILL_BASIC_ORDER_SELECTOR,
     FULFILL_ORDER_SELECTOR,
 };

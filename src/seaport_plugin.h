@@ -27,6 +27,7 @@ extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
 // Should follow the exact same order as the array declared in main.c
 typedef enum
 {
+  FULFILL_ADVANCED_ORDER,
   FULFILL_AVAILABLE_ORDERS,
   FULFILL_BASIC_ORDER,
   FULFILL_ORDER,
@@ -34,7 +35,7 @@ typedef enum
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 3
+#define NUM_SELECTORS 4
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -113,6 +114,28 @@ typedef enum
   FO_ORDER_PARAM,
   FO_ORDER_SIGNATURE,
 } fulfill_order;
+
+//typedef enum
+//{
+//
+//} advanced_orders;
+
+typedef enum
+{
+  FADO_OFFSET,
+  FADO_CRITERIA_RESOLVERS_OFFSET,
+  FADO_FULFILLER_CONDUIT_KEY,
+  FADO_RECIPIENT,
+  FADO_PARAM_OFFSET,
+  FADO_NUMERATOR,
+  FADO_DENOMINATOR,
+  FADO_SIGNATURE_OFFSET,
+  FADO_EXTRADATA_OFFSET,
+  FADO_PARAM,
+  FADO_SIGNATURE_LEN,
+  //  FADO_EXTRADA_LEN,
+  //  FADO_CRITERIA_RESOLVERS_LEN,
+} fulfill_advanced_order;
 
 typedef enum
 {
@@ -297,10 +320,10 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t token1_decimals;
   char token1_ticker[MAX_TICKER_LEN];
   /** token2 is the output token */
-  uint8_t token2_address[ADDRESS_LENGTH];
-  uint8_t token2_amount[ADDRESS_LENGTH];
-  uint8_t token2_decimals;
-  char token2_ticker[MAX_TICKER_LEN];
+  uint8_t token2_address[ADDRESS_LENGTH]; // 20
+  uint8_t token2_amount[ADDRESS_LENGTH];  //20
+  uint8_t token2_decimals;                // 1
+  char token2_ticker[MAX_TICKER_LEN];     // 12
 
   // uint8_t nft_id[INT256_LENGTH];
   // uint8_t ui_selector;      // ui_selector is the byte set by SeaPort front

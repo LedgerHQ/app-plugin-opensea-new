@@ -211,11 +211,6 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
       else
         context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
     }
-    if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) <= 1 && (context->offer_item_type == OFFER_ITEM_TYPE_NFT || context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS))
-    {
-      PRINTF("MIXED TYPES\n");
-      context->consideration_item_type = OFFER_ITEM_TYPE_MIXED_TYPES;
-    }
     print_item(context); // utilitary
     context->items_index = OFFER_TOKEN;
     break;
@@ -292,16 +287,29 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
       else
         context->consideration_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
     }
-    if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) <= 1 && (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT || context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS))
-    {
-      PRINTF("MIXED TYPES\n");
-      context->consideration_item_type = CONSIDERATION_ITEM_TYPE_MIXED_TYPES;
-    }
     print_item(context); // utilitary
     context->items_index = CONSIDERATION_TOKEN;
     break;
   case CONSIDERATION_TOKEN:
     PRINTF("CONSIDERATION_TOKEN\n");
+    if (!memcmp(context->token2_address, NULL_ADDRESS, ADDRESS_LENGTH)) ///// TB FIXED (if native, pointless repetitive cmp)
+    {
+      PRINTF("COPY ADDRESS\n");
+      copy_address(context->token2_address, msg->parameter, ADDRESS_LENGTH);
+    }
+    if (memcmp(context->token2_address, msg->parameter + 12, ADDRESS_LENGTH))
+    {
+      if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
+      {
+        PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS\n");
+        context->consideration_item_type = CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS;
+      }
+      else if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NATIVE || context->consideration_item_type == CONSIDERATION_ITEM_TYPE_ERC20)
+      {
+        PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S\n");
+        context->consideration_item_type = CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S;
+      }
+    }
     context->items_index = CONSIDERATION_IDENTIFIER;
     break;
   case CONSIDERATION_IDENTIFIER:
@@ -490,6 +498,67 @@ static void parse_orders(ethPluginProvideParameter_t *msg,
   }
 }
 
+static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg,
+                                          context_t *context)
+{
+  switch ((fulfill_advanced_order)context->next_param)
+  {
+  case FADO_OFFSET:
+    PRINTF("FADO_OFFSET\n");
+    context->next_param = FADO_CRITERIA_RESOLVERS_OFFSET;
+    break;
+  case FADO_CRITERIA_RESOLVERS_OFFSET:
+    PRINTF("FADO_CRITERIA_RESOLVERS_OFFSET\n");
+    context->next_param = FADO_FULFILLER_CONDUIT_KEY;
+    break;
+  case FADO_FULFILLER_CONDUIT_KEY:
+    PRINTF("FADO_FULFILLER_CONDUIT_KEY\n");
+    context->next_param = FADO_RECIPIENT;
+    break;
+  case FADO_RECIPIENT:
+    PRINTF("FADO_RECIPIENT\n");
+    context->next_param = FADO_PARAM_OFFSET;
+    break;
+  case FADO_PARAM_OFFSET:
+    PRINTF("FADO_PARAM_OFFSET\n");
+    context->next_param = FADO_NUMERATOR;
+    break;
+  case FADO_NUMERATOR:
+    PRINTF("FADO_NUMERATOR\n");
+    context->next_param = FADO_DENOMINATOR;
+    break;
+  case FADO_DENOMINATOR:
+    PRINTF("FADO_DENOMINATOR\n");
+    context->next_param = FADO_SIGNATURE_OFFSET;
+    break;
+  case FADO_SIGNATURE_OFFSET:
+    PRINTF("FADO_SIGNATURE_OFFSET\n");
+    context->next_param = FADO_EXTRADATA_OFFSET;
+    break;
+  case FADO_EXTRADATA_OFFSET:
+    PRINTF("FADO_EXTRADATA_OFFSET\n");
+    context->next_param = FADO_PARAM;
+    break;
+  case FADO_PARAM:
+    PRINTF("FADO_PARAM\n");
+    parse_param(msg, context);
+    if (context->param_index == PARAM_END)
+    {
+      PRINTF("PARAM END\n");
+      context->param_index = 0;
+      context->next_param = FADO_SIGNATURE_LEN;
+    }
+    break;
+  case FADO_SIGNATURE_LEN:
+    PRINTF("FADO_CRITERIA_RESOLVERS_OFFSET\n");
+    break;
+  default:
+    PRINTF("Param not supported: %d\n", context->param_index);
+    msg->result = ETH_PLUGIN_RESULT_ERROR;
+    break;
+  }
+}
+
 static void handle_fulfill_available_orders(ethPluginProvideParameter_t *msg,
                                             context_t *context)
 {
@@ -605,6 +674,9 @@ void handle_provide_parameter(void *parameters)
 
   switch (context->selectorIndex)
   {
+  case FULFILL_ADVANCED_ORDER:
+    handle_fulfill_advanced_order(msg, context);
+    break;
   case FULFILL_AVAILABLE_ORDERS:
     handle_fulfill_available_orders(msg, context);
     break;
