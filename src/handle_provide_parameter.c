@@ -512,6 +512,77 @@ static void parse_orders(ethPluginProvideParameter_t *msg,
   }
 }
 
+static void parse_advanced_orders(ethPluginProvideParameter_t *msg,
+                                  context_t *context)
+{
+  switch ((advanced_orders)context->next_param)
+  {
+  case ADVANCED_PARAMETER_OFFSET:
+    PRINTF("ADVANCED_PARAMETER_OFFSET\n");
+    context->orders_index = ADVANCED_NUMERATOR;
+    break;
+  case ADVANCED_NUMERATOR:
+    PRINTF("ADVANCED_NUMERATOR\n");
+    context->orders_index = ADVANCED_DENOMINATOR;
+    break;
+  case ADVANCED_DENOMINATOR:
+    PRINTF("ADVANCED_DENOMINATOR\n");
+    context->orders_index = ADVANCED_SIGNATURE_OFFSET;
+    break;
+  case ADVANCED_SIGNATURE_OFFSET:
+    PRINTF("ADVANCED_SIGNATURE_OFFSET\n");
+    context->orders_index = ADVANCED_EXTRADATA_OFFSET;
+    break;
+  case ADVANCED_EXTRADATA_OFFSET:
+    PRINTF("ADVANCED_EXTRADATA_OFFSET\n");
+    context->orders_index = ADVANCED_PARAMETER;
+    break;
+  case ADVANCED_PARAMETER:
+    PRINTF("ADVANCED_PARAMETER\n");
+    parse_param(msg, context);
+    if (context->param_index == PARAM_END)
+    {
+      PRINTF("PARAM END\n");
+      context->param_index = 0;
+      context->orders_index = ADVANCED_SIGNATURE_LEN;
+    }
+    break;
+  case ADVANCED_SIGNATURE_LEN:
+    PRINTF("ADVANCED_SIGNATURE_LEN\n");
+    context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    if (context->current_length % 32)
+    {
+      context->skip++;
+    }
+    while (context->current_length >= 32)
+    {
+      context->current_length -= 32;
+      context->skip++;
+    }
+    context->orders_index = ADVANCED_EXTRADATA_LEN;
+    break;
+  case ADVANCED_EXTRADATA_LEN:
+    PRINTF("ADVANCED_EXTRADATA_LEN\n");
+    context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    if (context->current_length % 32)
+    {
+      context->skip++;
+    }
+    while (context->current_length >= 32)
+    {
+      context->current_length -= 32;
+      context->skip++;
+    }
+    context->orders_len--;
+    context->orders_index = ADVANCED_PARAMETER_OFFSET;
+    break;
+  default:
+    PRINTF("Param not supported: %d\n", context->param_index);
+    msg->result = ETH_PLUGIN_RESULT_ERROR;
+    break;
+  }
+}
+
 static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg,
                                           context_t *context)
 {
