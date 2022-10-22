@@ -27,15 +27,16 @@ extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
 // Should follow the exact same order as the array declared in main.c
 typedef enum
 {
-  FULFILL_ADVANCED_ORDER,
-  FULFILL_AVAILABLE_ORDERS,
-  FULFILL_BASIC_ORDER,
   FULFILL_ORDER,
+  FULFILL_BASIC_ORDER,
+  FULFILL_AVAILABLE_ORDERS,
+  FULFILL_ADVANCED_ORDER,
+  FULFILL_AVAILABLE_ADVANCED_ORDERS,
 } selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 4
+#define NUM_SELECTORS 5
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -88,6 +89,16 @@ typedef enum
 
 typedef enum
 {
+  FO_OFFSET,
+  FO_FULFILLER_CONDUIT_KEY,
+  FO_ORDER_PARAM_OFFSET,
+  FO_ORDER_SIGNATURE_OFFSET,
+  FO_ORDER_PARAM,
+  FO_ORDER_SIGNATURE,
+} fulfill_order;
+
+typedef enum
+{
   FBO__OFFSET_BASIC_ORDER_PARAM,
   FBO__CONSIDERATION_TOKEN,
   FBO__CONSIDERATION_IDENTIFIER,
@@ -107,21 +118,6 @@ typedef enum
 
 typedef enum
 {
-  FO_OFFSET,
-  FO_FULFILLER_CONDUIT_KEY,
-  FO_ORDER_PARAM_OFFSET,
-  FO_ORDER_SIGNATURE_OFFSET,
-  FO_ORDER_PARAM,
-  FO_ORDER_SIGNATURE,
-} fulfill_order;
-
-//typedef enum
-//{
-//  ADVANCED_ORDER_OFFSET
-//} advanced_orders;
-
-typedef enum
-{
   FADO_OFFSET,
   FADO_CRITERIA_RESOLVERS_OFFSET,
   FADO_FULFILLER_CONDUIT_KEY,
@@ -136,6 +132,20 @@ typedef enum
   //  FADO_EXTRADA_LEN,
   //  FADO_CRITERIA_RESOLVERS_LEN,
 } fulfill_advanced_order;
+
+typedef enum
+{
+  FAADO_OFFSET,
+  FAADO_ORDERS_LEN,
+  FAADO_ORDERS_OFFSETS,
+  FAADO_CRITERIA_RESOLVERS_OFFSET,
+  FAADO_FULFILLER_CONDUIT_KEY,
+  FAADO_RECIPIENT,
+  FAADO_MAXIMUM_FULFILLED,
+  FAADO_ORDERS,
+  FAADO_CRITERIA_AND_FULFILLMENTS,
+  FAADO_FULFILLMEMTS,
+} fulfill_available_advanced_orders;
 
 typedef enum
 {
@@ -189,6 +199,7 @@ typedef enum
   PARAM_END,
 
 } parameters;
+
 typedef enum
 {
   OFFER_ITEM_TYPE_NONE,

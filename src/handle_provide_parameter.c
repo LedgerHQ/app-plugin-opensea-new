@@ -515,7 +515,7 @@ static void parse_orders(ethPluginProvideParameter_t *msg,
 static void parse_advanced_orders(ethPluginProvideParameter_t *msg,
                                   context_t *context)
 {
-  switch ((advanced_orders)context->next_param)
+  switch ((advanced_orders)context->orders_index)
   {
   case ADVANCED_PARAMETER_OFFSET:
     PRINTF("ADVANCED_PARAMETER_OFFSET\n");
@@ -575,6 +575,62 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg,
     }
     context->orders_len--;
     context->orders_index = ADVANCED_PARAMETER_OFFSET;
+    break;
+  default:
+    PRINTF("Param not supported: %d\n", context->param_index);
+    msg->result = ETH_PLUGIN_RESULT_ERROR;
+    break;
+  }
+}
+
+static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t *msg,
+                                                     context_t *context)
+{
+  switch ((fulfill_available_advanced_orders)context->next_param)
+  {
+  case FAADO_OFFSET:
+    PRINTF("FAADO_OFFSET\n");
+    context->next_param = FAADO_ORDERS_LEN;
+    break;
+  case FAADO_ORDERS_LEN:
+    PRINTF("FAADO_ORDERS_LEN\n");
+    context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+    context->skip = context->orders_len;
+    PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
+    context->next_param = FAADO_ORDERS_OFFSETS;
+    break;
+  case FAADO_ORDERS_OFFSETS:
+    PRINTF("FAADO_ORDERS_OFFSETS\n");
+    parse_advanced_orders(msg, context);
+    PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
+    if (context->orders_len == 0)
+    {
+      PRINTF("END ORDERS\n");
+      context->next_param = FAADO_CRITERIA_RESOLVERS_OFFSET;
+    }
+    break;
+  case FAADO_CRITERIA_RESOLVERS_OFFSET:
+    PRINTF("FAADO_CRITERIA_RESOLVERS_OFFSET\n");
+    context->next_param = FAADO_FULFILLER_CONDUIT_KEY;
+    break;
+  case FAADO_FULFILLER_CONDUIT_KEY:
+    PRINTF("FAADO_FULFILLER_CONDUIT_KEY\n");
+    context->next_param = FAADO_RECIPIENT;
+    break;
+  case FAADO_RECIPIENT:
+    PRINTF("FAADO_RECIPIENT\n");
+    context->next_param = FAADO_MAXIMUM_FULFILLED;
+    break;
+  case FAADO_MAXIMUM_FULFILLED:
+    PRINTF("FAADO_MAXIMUM_FULFILLED\n");
+    context->next_param = FAADO_ORDERS;
+    break;
+  case FAADO_ORDERS:
+    PRINTF("FAADO_ORDERS\n");
+    context->next_param = FAADO_CRITERIA_AND_FULFILLMENTS;
+    break;
+  case FAADO_CRITERIA_AND_FULFILLMENTS:
+    PRINTF("FAADO_CRITERIA_AND_FULFILLMENTS\n");
     break;
   default:
     PRINTF("Param not supported: %d\n", context->param_index);
@@ -759,17 +815,20 @@ void handle_provide_parameter(void *parameters)
 
   switch (context->selectorIndex)
   {
-  case FULFILL_ADVANCED_ORDER:
-    handle_fulfill_advanced_order(msg, context);
-    break;
-  case FULFILL_AVAILABLE_ORDERS:
-    handle_fulfill_available_orders(msg, context);
+  case FULFILL_ORDER:
+    handle_fullfill_order(msg, context);
     break;
   case FULFILL_BASIC_ORDER:
     handle_fulfill_basic_order(msg, context);
     break;
-  case FULFILL_ORDER:
-    handle_fullfill_order(msg, context);
+  case FULFILL_AVAILABLE_ORDERS:
+    handle_fulfill_available_orders(msg, context);
+    break;
+  case FULFILL_ADVANCED_ORDER:
+    handle_fulfill_advanced_order(msg, context);
+    break;
+  case FULFILL_AVAILABLE_ADVANCED_ORDERS:
+    handle_fulfill_available_advanced_orders(msg, context);
     break;
   default:
     PRINTF("Selector Index not supported: %d\n", context->selectorIndex);
