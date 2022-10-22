@@ -10,3 +10,5 @@ DS_Store/
 **.swp
 Save*
 *.vim
+
+tests/src/apdu/dummy.apdu

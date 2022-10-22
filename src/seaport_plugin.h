@@ -117,7 +117,7 @@ typedef enum
 
 //typedef enum
 //{
-//
+//  ADVANCED_ORDER_OFFSET
 //} advanced_orders;
 
 typedef enum
@@ -318,12 +318,14 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t token1_address[ADDRESS_LENGTH]; // 20
   uint8_t token1_amount[INT256_LENGTH];   // 32
   uint8_t token1_decimals;                // 1
-  char token1_ticker[MAX_TICKER_LEN];     // 12
+  char token1_ticker[MAX_TICKER_LEN];     // 12 || TOTAL = 65
   /**  */
   uint8_t token2_address[ADDRESS_LENGTH]; // 20
   uint8_t token2_amount[INT256_LENGTH];   // 32
-  uint120_t denominator;                  // 16
-  uint120_t numerator;                    // 16
+  //uint128_t denominator;                  // 16
+  //uint128_t numerator;                    // 16 || TOTAL = 84
+  uint8_t token2_decimals;            // 1
+  char token2_ticker[MAX_TICKER_LEN]; // 12 || TOTAL = 65
 
   // uint8_t nft_id[INT256_LENGTH];
   // uint8_t ui_selector;      // ui_selector is the byte set by SeaPort front

@@ -291,12 +291,15 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
     if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NONE)
     {
       PRINTF("SET CONSIDERATION ITEM\n");
-      if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
+      if (context->sale_side == BUY_NOW)
       {
-        context->consideration_item_type = CONSIDERATION_ITEM_TYPE_NFT;
+        if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1)
+        {
+          context->consideration_item_type = CONSIDERATION_ITEM_TYPE_NFT;
+        }
+        else
+          context->consideration_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
       }
-      else
-        context->consideration_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
     }
     print_item(context); // utilitary
     context->items_index = CONSIDERATION_TOKEN;
