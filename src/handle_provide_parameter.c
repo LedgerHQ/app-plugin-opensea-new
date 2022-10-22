@@ -191,6 +191,7 @@ static void print_item(context_t *context)
 
   if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MIXED_TYPES)
     PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
+  context->sale_side == 0 ? PRINTF("BUY_NOW\n") : PRINTF("ACCEPT_OFFER\n");
 }
 
 static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
@@ -210,6 +211,16 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context)
       }
       else
         context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+    }
+    if (context->offer_item_type > 1)
+    {
+      PRINTF("BUY_NOW\n");
+      context->sale_side = BUY_NOW;
+    }
+    else
+    {
+      PRINTF("ACCEPT_OFFER\n");
+      context->sale_side = ACCEPT_OFFER;
     }
     print_item(context); // utilitary
     context->items_index = OFFER_TOKEN;
