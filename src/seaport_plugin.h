@@ -301,7 +301,7 @@ typedef struct __attribute__((__packed__)) context_t
   uint16_t current_length; // is the length of the current array
   // uint16_t target_offset;        // is the offset of the parameter we want to parse
   uint32_t current_tuple_offset; // is the value from which a given offset is
-                                 // calculated
+  // calculated
   // uint32_t last_calldata_offset; // is the offset of the last order's
   // calldata end, just before the last byte of the Tx
   uint8_t number_of_tokens; // is the number of tokens found, this is not always
@@ -312,26 +312,31 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t offer_item_type;
   uint8_t consideration_item_type;
 
-  uint8_t number_of_nfts;
-  uint8_t token1_address[ADDRESS_LENGTH];
-  uint8_t offerer_address[ADDRESS_LENGTH];
+  uint16_t number_of_nfts; // 19 (sum = 11(11 * uint8) + 4(2 * uint16) + 4(1 * uint32))
+                           //  trim = 19 - 1 - 4 - 1 - 1 = 12
   /** offer info */
-  uint8_t token1_amount[INT256_LENGTH];
-  uint8_t token1_decimals;
-  char token1_ticker[MAX_TICKER_LEN];
-  /** token2 is the output token */
+  uint8_t token1_address[ADDRESS_LENGTH]; // 20
+  uint8_t token1_amount[INT256_LENGTH];   // 32
+  uint8_t token1_decimals;                // 1
+  char token1_ticker[MAX_TICKER_LEN];     // 12
+  /**  */
   uint8_t token2_address[ADDRESS_LENGTH]; // 20
-  uint8_t token2_amount[ADDRESS_LENGTH];  //20
-  uint8_t token2_decimals;                // 1
-  char token2_ticker[MAX_TICKER_LEN];     // 12
+  uint8_t token2_amount[INT256_LENGTH];   // 32
+  uint120_t denominator;                  // 16
+  uint120_t numerator;                    // 16
 
   // uint8_t nft_id[INT256_LENGTH];
   // uint8_t ui_selector;      // ui_selector is the byte set by SeaPort front
   // to determine the action
-  selector_t selectorIndex; // method id
-  uint8_t booleans;         // bitwise booleans
-  uint8_t skip;             // number of parameters to skip//
+
+  /* Screen utils */
+  selector_t selectorIndex; // method id  // 4
+  uint8_t screenIndex;      // 1
+  uint8_t booleans;         // bitwise booleans for screenIndex
+  uint8_t skip;             // number of parameters to skip
 } context_t;
+
+// TOTAL =
 
 // Piece of code that will check that the above structure is not bigger than 5
 // * 32. Do not remove this check.
