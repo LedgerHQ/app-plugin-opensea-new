@@ -292,6 +292,7 @@ typedef struct __attribute__((__packed__)) context_t
   uint8_t number_of_nfts;
   uint8_t token1_address[ADDRESS_LENGTH];
   uint8_t offerer_address[ADDRESS_LENGTH];
+  /** offer info */
   uint8_t token1_amount[INT256_LENGTH];
   uint8_t token1_decimals;
   char token1_ticker[MAX_TICKER_LEN];
