@@ -14,7 +14,9 @@ void handle_query_contract_id(void *parameters) {
   // Get selector according screen.
   switch (context->selectorIndex) {
   case FULFILL_BASIC_ORDER:
-    strlcpy(msg->version, "accept", msg->versionLength);
+    PRINTF("PENZO (basic_order_type)context->order_type: %d\n",
+           context->order_type);
+    strlcpy(msg->version, "exchange", msg->versionLength);
     break;
   default:
     PRINTF("Selector index: %d not supported\n", context->selectorIndex);

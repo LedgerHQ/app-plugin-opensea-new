@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "eth_internals.h"
 #include "eth_plugin_interface.h"
+#include <stdint.h>
 #include <string.h>
 
 // Number of decimals used when the token wasn't found in the Crypto Asset List.
@@ -14,6 +15,8 @@
 #define WMATIC "WMATIC "
 #define ETH "ETH "
 #define WETH "WETH "
+#define UNKNOWN_ERC20 "? "
+#define UNKNOWN_NFT "NFT"
 
 // Utility addresses checking
 #define NULL_ADDRESS "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
@@ -110,39 +113,51 @@ typedef enum {
 
 // Booleans
 #define BOOL1 (1)
-#define BOOL2 (1 << 2)
-#define BOOL3 (1 << 3)
-#define BOOL4 (1 << 4)
-#define BOOL5 (1 << 5)
-#define BOOL6 (1 << 6)
-#define BOOL7 (1 << 7)
-#define BOOL8 (1 << 8)
+#define BOOL2 (1 << 1)
+#define BOOL3 (1 << 2)
+#define ITEM1_IS_NFT (1 << 3) // 0: ERC20/ETH, 1: NFT
+#define ITEM2_IS_NFT (1 << 4)
+#define ITEM1_FOUND (1 << 5)
+#define ITEM2_FOUND (1 << 6)
+#define IS_ETH (1 << 7)
 
 #define UPPER_P(x) x->elements[0]
 #define LOWER_P(x) x->elements[1]
 #define UPPER(x) x.elements[0]
 #define LOWER(x) x.elements[1]
 
-typedef struct uint128_t {
-  uint64_t elements[2];
-} uint128_t;
+// screen array correspondance
+#define SEND_UI 1 // Must remain first screen in screen array and always up.
+#define SEND_UI_ERR (1 << 1)
+#define RECEIVE_UI (1 << 2)
+#define RECEIVE_UI_ERR (1 << 3)
+#define LAST_UI (1 << 7)
 
-typedef struct uint256_t {
-  uint128_t elements[2];
-} uint256_t;
+#define RIGHT_SCROLL 1
+#define LEFT_SCROLL 0
+
+// typedef struct uint128_t {
+//   uint64_t elements[2];
+// } uint128_t;
+
+// typedef struct uint256_t {
+//   uint128_t elements[2];
+// } uint256_t;
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
-// 124 / 160
+// 146 / 160
 typedef struct __attribute__((__packed__)) context_t {
   uint8_t on_struct;
   uint8_t next_param;
   // uint32_t next_offset;    // is the value of the next target offset
   uint16_t current_length; // is the length of the current array
-  // uint16_t target_offset;  // is the offset of the parameter we want to parse
+                           // uint16_t target_offset;  // is the offset of the
+                           // parameter we want to parse
   uint32_t current_tuple_offset; // is the value from which a given offset is
                                  // calculated
-  // uint32_t last_calldata_offset; // is the offset of the last order's
-  // calldata end, just before the last byte of the Tx
+                                 // uint32_t last_calldata_offset; // is the
+                                 // offset of the last order's calldata end,
+                                 // just before the last byte of the Tx
   uint8_t number_of_tokens; // is the number of tokens found, this is not always
   uint8_t order_type;
   // the number of all tokens include in the Tx
@@ -153,12 +168,21 @@ typedef struct __attribute__((__packed__)) context_t {
   char token1_ticker[MAX_TICKER_LEN];
   /** token2 is the output token */
   uint8_t token2_address[ADDRESS_LENGTH];
-  uint8_t token2_amount[INT256_LENGTH];
+  // uint8_t token2_amount[INT256_LENGTH];
+  union {
+    uint8_t token2_amount[INT256_LENGTH];
+    uint8_t offerer[ADDRESS_LENGTH];
+  };
   uint8_t token2_decimals;
   char token2_ticker[MAX_TICKER_LEN];
 
+  // screen utils
+  uint8_t screen_array;
+  uint8_t previous_screen_index;
+  uint8_t plugin_screen_index;
+
   // uint8_t nft_id[INT256_LENGTH];
-  // uint8_t ui_selector;      // ui_selector is the byte set by SeaPort front
+  // uint8_t ui_selector; // ui_selector is the byte set by SeaPort front
   // to determine the action
   selector_t selectorIndex; // method id
   uint8_t booleans;         // bitwise booleans

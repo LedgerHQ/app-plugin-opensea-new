@@ -1,5 +1,9 @@
 #include "seaport_plugin.h"
 
+/*
+** Debug
+*/
+
 static void print_context(context_t *context) {
   PRINTF("__Print context:\n");
   PRINTF("number_of_tokens:\t%d\n", context->number_of_tokens);
@@ -11,33 +15,55 @@ static void print_context(context_t *context) {
   PRINTF("End context\n");
 }
 
+/*
+** Screens Utility
+*/
+
+static uint8_t count_screens(uint8_t screen_array) {
+  uint8_t total = 0;
+  uint8_t scout = 1;
+  for (uint8_t i = 0; i < 8; i++) {
+    if (scout & screen_array)
+      total++;
+    scout <<= 1;
+  }
+  return total;
+}
+
+/*
+** handle_finalize()
+*/
+
 void handle_finalize(void *parameters) {
   ethPluginFinalize_t *msg = (ethPluginFinalize_t *)parameters;
   context_t *context = (context_t *)msg->pluginContext;
 
   // set default decimals
   context->token1_decimals = DEFAULT_DECIMAL;
-  // set default numScreens
-  msg->numScreens = 2;
+  context->screen_array |= SEND_UI;
+  context->screen_array |= RECEIVE_UI;
 
-  if (context->order_type == NFT_ERC20) {
-    // does not work if number_of_tokens > 256.
-    context->number_of_tokens = U2BE(context->token1_amount, INT256_LENGTH - 2);
-  } else if (context->order_type == ETH_NFT ||
-             context->order_type == ERC20_NFT) {
-    // does not work if number_of_tokens > 256.
-    context->number_of_tokens = U2BE(context->token2_amount, INT256_LENGTH - 2);
-  }
+  // set IS_ETH if one of the addresses is 0x0000...
+  if (!memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH) ||
+      !memcmp(context->token2_address, NULL_ADDRESS, ADDRESS_LENGTH))
+    context->booleans |= IS_ETH;
 
-  // Determine screens count.
-  switch ((selector_t)context->selectorIndex) {
-  case FULFILL_BASIC_ORDER:
-    msg->numScreens = 2;
-    break;
-  default:
-    PRINTF("Param not supported: %d\n", context->next_param);
-    msg->result = ETH_PLUGIN_RESULT_ERROR;
-    return;
+  // set booleans for fulfillBasicOrder
+  if (context->selectorIndex == FULFILL_BASIC_ORDER) {
+    PRINTF("PENZO FINALIZE IM IN!\n");
+    switch (context->order_type) {
+    case ETH_NFT:
+      context->booleans |= ITEM2_IS_NFT;
+      break;
+    case ERC20_NFT:
+      context->booleans |= ITEM2_IS_NFT;
+      break;
+    case NFT_ERC20:
+      context->booleans |= ITEM1_IS_NFT;
+      break;
+    default:
+      PRINTF("PENZO FINALIZE selectorIndex switch ERROR\n");
+    }
   }
 
   PRINTF("Setting tokenLookup1 to: %.*H\n", ADDRESS_LENGTH,
@@ -48,15 +74,8 @@ void handle_finalize(void *parameters) {
          context->token2_address);
   msg->tokenLookup2 = context->token2_address;
 
-  PRINTF("Booleans:\n");
-  PRINTF("BOOL1  %d\n", context->booleans & BOOL1);
-
-  /* print readable amount */
-  // uint8_t buf[INT256_LENGTH] = {0};
-  // amountToString(context->token1_amount, INT256_LENGTH, 18, "OSEF ", buf,
-  // 78); PRINTF("buf amountToString: %s \n", buf);
-
-  print_context(context);
+  msg->numScreens = count_screens(context->screen_array);
+  print_context(context); // dbg
 
   msg->uiType = ETH_UI_TYPE_GENERIC;
   msg->result = ETH_PLUGIN_RESULT_OK;

@@ -140,6 +140,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg,
     break;
   }
 }
+
 static void handle_transfer_from(ethPluginProvideParameter_t *msg,
                                  context_t *context) {
   switch ((transfer_from_parameter)context->next_param) {
