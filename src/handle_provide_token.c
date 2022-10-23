@@ -5,62 +5,50 @@
 // `NULL`, this means the ethereum app didn't find any info regarding the
 // requested tokens!
 
-void handle_provide_token(void *parameters)
-{
-  ethPluginProvideInfo_t *msg = (ethPluginProvideInfo_t *)parameters;
-  context_t *context = (context_t *)msg->pluginContext;
+void handle_provide_token(void *parameters) {
+    ethPluginProvideInfo_t *msg = (ethPluginProvideInfo_t *) parameters;
+    context_t *context = (context_t *) msg->pluginContext;
 
-  // if (context->basic_order_type != ETH_NFT) {
-  if (context->basic_order_type == NFT_ERC20 || context->basic_order_type == ERC20_NFT)
-  {
-    if (msg->item1)
-    {
-      if (context->basic_order_type == NFT_ERC20)
-      {
-        strlcpy(context->token1_ticker, (char *)msg->item1->nft.collectionName,
-                sizeof(context->token1_ticker));
-      }
-      else if (context->basic_order_type == ERC20_NFT)
-      {
-        context->token1_decimals = msg->item1->token.decimals;
-        strlcpy(context->token1_ticker, (char *)msg->item1->token.ticker,
-                sizeof(context->token1_ticker));
-      }
-      // no item1
+    // if (context->basic_order_type != ETH_NFT) {
+    if (context->basic_order_type == NFT_ERC20 || context->basic_order_type == ERC20_NFT) {
+        if (msg->item1) {
+            if (context->basic_order_type == NFT_ERC20) {
+                strlcpy(context->token1_ticker,
+                        (char *) msg->item1->nft.collectionName,
+                        sizeof(context->token1_ticker));
+            } else if (context->basic_order_type == ERC20_NFT) {
+                context->token1_decimals = msg->item1->token.decimals;
+                strlcpy(context->token1_ticker,
+                        (char *) msg->item1->token.ticker,
+                        sizeof(context->token1_ticker));
+            }
+            // no item1
+        } else {
+            PRINTF("handle_provide_token NO item1\n");
+            strlcpy(context->token1_ticker, "NFT", sizeof(context->token1_ticker));
+        }
+        // is ETH_NFT
+    } else {
+        strlcpy(context->token1_ticker, ETH, sizeof(context->token1_ticker));
     }
-    else
-    {
-      PRINTF("handle_provide_token NO item1\n");
-      strlcpy(context->token1_ticker, "NFT", sizeof(context->token1_ticker));
-    }
-    // is ETH_NFT
-  }
-  else
-  {
-    strlcpy(context->token1_ticker, ETH, sizeof(context->token1_ticker));
-  }
 
-  if (msg->item2)
-  {
-    if (context->basic_order_type == NFT_ERC20)
-    {
-      context->token2_decimals = msg->item2->token.decimals;
-      strlcpy(context->token2_ticker, (char *)msg->item2->token.ticker,
-              sizeof(context->token2_ticker));
+    if (msg->item2) {
+        if (context->basic_order_type == NFT_ERC20) {
+            context->token2_decimals = msg->item2->token.decimals;
+            strlcpy(context->token2_ticker,
+                    (char *) msg->item2->token.ticker,
+                    sizeof(context->token2_ticker));
+        } else if (context->basic_order_type == ERC20_NFT || context->basic_order_type == ETH_NFT) {
+            strlcpy(context->token2_ticker,
+                    (char *) msg->item2->nft.collectionName,
+                    sizeof(context->token2_ticker));
+        }
+        // no item2
+    } else {
+        PRINTF("handle_provide_token NO item2\n");
+        if (context->basic_order_type == ETH_NFT || context->basic_order_type == ERC20_NFT)
+            strlcpy(context->token2_ticker, "NFT", sizeof(context->token2_ticker));
     }
-    else if (context->basic_order_type == ERC20_NFT || context->basic_order_type == ETH_NFT)
-    {
-      strlcpy(context->token2_ticker, (char *)msg->item2->nft.collectionName,
-              sizeof(context->token2_ticker));
-    }
-    // no item2
-  }
-  else
-  {
-    PRINTF("handle_provide_token NO item2\n");
-    if (context->basic_order_type == ETH_NFT || context->basic_order_type == ERC20_NFT)
-      strlcpy(context->token2_ticker, "NFT", sizeof(context->token2_ticker));
-  }
 
-  msg->result = ETH_PLUGIN_RESULT_OK;
+    msg->result = ETH_PLUGIN_RESULT_OK;
 }

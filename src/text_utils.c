@@ -22,6 +22,18 @@ void msg_ticker_or_address(ethQueryContractUI_t *msg, context_t *context,
     snprintf(msg->msg, msg->msgLength, "ERROR");
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 void msg_2tickers_ui(ethQueryContractUI_t *msg, context_t *context) {
   snprintf(msg->msg, msg->msgLength, "%s and %s", context->token1_ticker,
            context->token2_ticker);
