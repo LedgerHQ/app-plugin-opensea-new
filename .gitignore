@@ -12,3 +12,4 @@ Save*
 *.vim
 
 tests/src/apdu/dummy.apdu
+tests/src/apdu
