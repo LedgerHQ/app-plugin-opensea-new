@@ -9,6 +9,7 @@ const transactionUploadDelay = 60000;
 
 const sim_options_nano = {
   ...DEFAULT_START_OPTIONS,
+  pressDelay: 20000,
   logging: true,
   X11: true,
   startDelay: 5000,
@@ -37,7 +38,7 @@ const nano_models: DeviceModel[] = [
 const resolutionConfig = {
   externalPlugins: true,
   nft: false,
-  erc20: false
+  erc20: true
 };
 
 let genericTx = {
