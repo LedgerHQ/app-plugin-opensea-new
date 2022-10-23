@@ -43,6 +43,7 @@ static void print_item2(context_t *context)
 
   if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MIXED_TYPES)
     PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
+  context->sale_side == 0 ? PRINTF("BUY_NOW\n") : PRINTF("ACCEPT_OFFER\n");
 }
 
 static void print_context(context_t *context)
