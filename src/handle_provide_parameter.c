@@ -192,75 +192,75 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
         case OFFER_ITEM_TYPE:
             PRINTF("OFFER_ITEM_TYPE\n");
             PRINTF("OFFER ITEM TYPE CURRENT_LENGTH:%d\n", context->current_length);
-            if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
-
+            if (context->offer_item_type == OFFER_ITEM_TYPE_NONE) {
                 if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
                     PRINTF("OFFER_ITEM_TYPE_NFT\n");
                     context->offer_item_type = OFFER_ITEM_TYPE_NFT;
                 } else
                     context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
-    }
-    if (context->offer_item_type > 2) {
-        PRINTF("OFFER_BUY_NOW\n");
-        context->sale_side = BUY_NOW;
-    } else {
-        PRINTF("OFFER_ACCEPT_OFFER\n");
-        context->sale_side = ACCEPT_OFFER;
-    }
-    print_item(context);  // utilitary
-    context->items_index = OFFER_TOKEN;
-    break;
-    case OFFER_TOKEN:
-        PRINTF("OFFER_TOKEN\n");
-        if (!memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH))  ///// TB FIXED
-        {
-            PRINTF("COPY ADDRESS\n");
-            copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
-        }
-        if (memcmp(context->token1_address, msg->parameter + 12, ADDRESS_LENGTH)) {
-            if (context->offer_item_type == OFFER_ITEM_TYPE_NFT) {
-                PRINTF("OFFER_ITEM_TYPE_MULTIPLE_NFTS\n");
-                context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_NFTS;
-            } else if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE ||
-                       context->offer_item_type == OFFER_ITEM_TYPE_ERC20) {
-                PRINTF("OFFER_ITEM_TYPE_MULTIPLE_ERC20S\n");
-                context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_ERC20S;
             }
-        }
-        context->items_index = OFFER_IDENTIFIER;
-        break;
-    case OFFER_IDENTIFIER:
-        PRINTF("OFFER_IDENTIFIER\n");
-        context->items_index = OFFER_START_AMOUNT;
-        break;
-    case OFFER_START_AMOUNT:
-        PRINTF("OFFER_START_AMOUNT\n");
-        uint8_t buf_amount[INT256_LENGTH] = {0};
-        copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-        PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
-        if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE ||
-            context->offer_item_type == OFFER_ITEM_TYPE_ERC20)  /// TB Adapted to sale side
-        {
-            PRINTF("SUM\n");
-            if (add_uint256(context->token1_amount, buf_amount)) {
-                PRINTF("uint256 overflow error.\n");
-                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            if (context->offer_item_type > 2) {
+                PRINTF("OFFER_BUY_NOW\n");
+                context->sale_side = BUY_NOW;
+            } else {
+                PRINTF("OFFER_ACCEPT_OFFER\n");
+                context->sale_side = ACCEPT_OFFER;
             }
-        } else if (context->offer_item_type == OFFER_ITEM_TYPE_NFT ||
-                   context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
-            context->number_of_nfts += U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-        context->items_index = OFFER_END_AMOUNT;
-        break;
-    case OFFER_END_AMOUNT:
-        PRINTF("OFFER_END_AMOUNT\n");
-        context->current_length--;
-        context->items_index = OFFER_ITEM_TYPE;
-        break;
-    default:
-        PRINTF("Param not supported: %d\n", context->next_param);
-        msg->result = ETH_PLUGIN_RESULT_ERROR;
-        break;
-}
+            print_item(context);  // utilitary
+            context->items_index = OFFER_TOKEN;
+            break;
+        case OFFER_TOKEN:
+            PRINTF("OFFER_TOKEN\n");
+            if (!memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH))  ///// TB FIXED
+            {
+                PRINTF("COPY ADDRESS\n");
+                copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
+            }
+            if (memcmp(context->token1_address, msg->parameter + 12, ADDRESS_LENGTH)) {
+                if (context->offer_item_type == OFFER_ITEM_TYPE_NFT) {
+                    PRINTF("OFFER_ITEM_TYPE_MULTIPLE_NFTS\n");
+                    context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_NFTS;
+                } else if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE ||
+                           context->offer_item_type == OFFER_ITEM_TYPE_ERC20) {
+                    PRINTF("OFFER_ITEM_TYPE_MULTIPLE_ERC20S\n");
+                    context->offer_item_type = OFFER_ITEM_TYPE_MULTIPLE_ERC20S;
+                }
+            }
+            context->items_index = OFFER_IDENTIFIER;
+            break;
+        case OFFER_IDENTIFIER:
+            PRINTF("OFFER_IDENTIFIER\n");
+            context->items_index = OFFER_START_AMOUNT;
+            break;
+        case OFFER_START_AMOUNT:
+            PRINTF("OFFER_START_AMOUNT\n");
+            uint8_t buf_amount[INT256_LENGTH] = {0};
+            copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+            PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
+            if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE ||
+
+                context->offer_item_type == OFFER_ITEM_TYPE_ERC20)  /// TB Adapted to sale side
+            {
+                PRINTF("SUM\n");
+                if (add_uint256(context->token1_amount, buf_amount)) {
+                    PRINTF("uint256 overflow error.\n");
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                }
+            } else if (context->offer_item_type == OFFER_ITEM_TYPE_NFT ||
+                       context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
+                context->number_of_nfts += U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->items_index = OFFER_END_AMOUNT;
+            break;
+        case OFFER_END_AMOUNT:
+            PRINTF("OFFER_END_AMOUNT\n");
+            context->current_length--;
+            context->items_index = OFFER_ITEM_TYPE;
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
 }
 
 static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *context) {
@@ -537,35 +537,72 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
     }
 }
 
+static void handle_match_orders(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch ((match_orders) context->next_param) {
+        case MO_OFFSET:
+            PRINTF("MO_OFFSET\n");
+            context->next_param = MO_FULFILLMENT_OFFSET;
+            break;
+        case MO_FULFILLMENT_OFFSET:
+            PRINTF("MO_FULFILLMENT_OFFSET\n");
+            context->next_param = MO_ORDERS_LEN;
+            break;
+        case MO_ORDERS_LEN:
+            PRINTF("MO_ORDERS_LEN\n");
+            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->skip = context->orders_len;
+            PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
+            context->next_param = MO_ORDERS_OFFSET;
+            break;
+        case MO_ORDERS_OFFSET:
+            PRINTF("MO_ORDERS_OFFSET\n");
+            context->next_param = MO_SIGNATURE_OFFSET;
+            break;
+        case MO_SIGNATURE_OFFSET:
+            PRINTF("MO_SIGNATURE_OFFSET\n");
+            context->next_param = MO_ORDERS;
+            break;
+        case MO_ORDERS:
+            PRINTF("MO_ORDERS\n");
+            parse_advanced_orders(msg, context);
+            PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
+            if (context->orders_len == 0) {
+                PRINTF("END ORDERS\n");
+                context->next_param = MO_SIGNATURE_OFFSET;
+            }
+            context->next_param = MO_SIGNATURE_LEN;
+            break;
+        case MO_SIGNATURE_LEN:
+            PRINTF("MO_SIGNATURE_LEN\n");
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->param_index);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t *msg,
                                                      context_t *context) {
     switch ((fulfill_available_advanced_orders) context->next_param) {
         case FAADO_OFFSET:
             PRINTF("FAADO_OFFSET\n");
-            context->next_param = FAADO_ORDERS_LEN;
-            break;
-        case FAADO_ORDERS_LEN:
-            PRINTF("FAADO_ORDERS_LEN\n");
-            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            context->skip = context->orders_len;
-            PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
-            context->next_param = FAADO_ORDERS_OFFSETS;
-            break;
-        case FAADO_ORDERS_OFFSETS:
-            PRINTF("FAADO_ORDERS_OFFSETS\n");
-            parse_advanced_orders(msg, context);
-            PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
-            if (context->orders_len == 0) {
-                PRINTF("END ORDERS\n");
-                context->next_param = FAADO_CRITERIA_RESOLVERS_OFFSET;
-            }
+            context->next_param = FAADO_CRITERIA_RESOLVERS_OFFSET;
             break;
         case FAADO_CRITERIA_RESOLVERS_OFFSET:
             PRINTF("FAADO_CRITERIA_RESOLVERS_OFFSET\n");
+            context->next_param = FAADO_OFFER_FULFILLMENTS;
+            break;
+        case FAADO_OFFER_FULFILLMENTS:
+            PRINTF("FAADO_OFFER_FULFILLMENTS\n");
+            context->next_param = FAADO_CONSIDERATION_FULFILLMENTS;
+            break;
+        case FAADO_CONSIDERATION_FULFILLMENTS:
+            PRINTF("FAADO_CONSIDERATION_FULFILLMENTS\n");
             context->next_param = FAADO_FULFILLER_CONDUIT_KEY;
             break;
         case FAADO_FULFILLER_CONDUIT_KEY:
-            PRINTF("FAADO_FULFILLER_CONDUIT_KEY\n");
+            PRINTF("FAADO_RECIPIENT\n");
             context->next_param = FAADO_RECIPIENT;
             break;
         case FAADO_RECIPIENT:
@@ -574,11 +611,23 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
             break;
         case FAADO_MAXIMUM_FULFILLED:
             PRINTF("FAADO_MAXIMUM_FULFILLED\n");
+            context->next_param = FAADO_ORDERS_LEN;
+            break;
+        case FAADO_ORDERS_LEN:
+            PRINTF("FAADO_ORDERS_LEN\n");
+            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->skip = context->orders_len;
+            PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = FAADO_ORDERS;
             break;
         case FAADO_ORDERS:
             PRINTF("FAADO_ORDERS\n");
-            context->next_param = FAADO_CRITERIA_AND_FULFILLMENTS;
+            parse_advanced_orders(msg, context);
+            PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
+            if (context->orders_len == 0) {
+                PRINTF("END ORDERS\n");
+                context->next_param = FAADO_CRITERIA_AND_FULFILLMENTS;
+            }
             break;
         case FAADO_CRITERIA_AND_FULFILLMENTS:
             PRINTF("FAADO_CRITERIA_AND_FULFILLMENTS\n");

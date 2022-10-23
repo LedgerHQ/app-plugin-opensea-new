@@ -105,6 +105,21 @@ typedef enum {
     // FBO__TMP
 } fulfill_basic_order_parameter;
 
+// typedef enum {
+//  MAO_OFFSET,
+//
+//} match_advanced_orders;
+
+typedef enum {
+    MO_OFFSET,
+    MO_FULFILLMENT_OFFSET,
+    MO_ORDERS_LEN,
+    MO_ORDERS_OFFSET,
+    MO_SIGNATURE_OFFSET,
+    MO_ORDERS,
+    MO_SIGNATURE_LEN,
+} match_orders;
+
 typedef enum {
     FADO_OFFSET,
     FADO_CRITERIA_RESOLVERS_OFFSET,
@@ -123,15 +138,15 @@ typedef enum {
 
 typedef enum {
     FAADO_OFFSET,
-    FAADO_ORDERS_LEN,
-    FAADO_ORDERS_OFFSETS,
     FAADO_CRITERIA_RESOLVERS_OFFSET,
+    FAADO_OFFER_FULFILLMENTS,
+    FAADO_CONSIDERATION_FULFILLMENTS,
     FAADO_FULFILLER_CONDUIT_KEY,
     FAADO_RECIPIENT,
     FAADO_MAXIMUM_FULFILLED,
+    FAADO_ORDERS_LEN,
     FAADO_ORDERS,
     FAADO_CRITERIA_AND_FULFILLMENTS,
-    FAADO_FULFILLMEMTS,
 } fulfill_available_advanced_orders;
 
 typedef enum {
