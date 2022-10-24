@@ -112,6 +112,15 @@ typedef enum {
 //} match_advanced_orders;
 
 typedef enum {
+    MAO_OFFSET,
+    MAO_CRITERIA_RESOLVERS_OFFSET,
+    MAO_FULFILLMENTS_OFFSET,
+    MAO_ADVANCED_ORDERS_LEN,
+    MAO_ADVANCED_ORDERS,
+    MAO_CRITERIA_AND_FULFILLMENTS,
+} match_advanced_orders;
+
+typedef enum {
     MO_OFFSET,
     MO_FULFILLMENT_OFFSET,
     MO_ORDERS_LEN,

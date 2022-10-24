@@ -541,6 +541,47 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
     }
 }
 
+static void handle_match_advanced_orders(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch ((match_advanced_orders) context->next_param) {
+        case MAO_OFFSET:
+            PRINTF("MAO_OFFSET\n");
+            context->next_param = MAO_CRITERIA_RESOLVERS_OFFSET;
+            break;
+        case MAO_CRITERIA_RESOLVERS_OFFSET:
+            PRINTF("MAO_CRITERIA_RESOLVERS_OFFSET\n");
+            context->next_param = MAO_FULFILLMENTS_OFFSET;
+            break;
+        case MAO_FULFILLMENTS_OFFSET:
+            PRINTF("MAO_FULFILLMENTS_OFFSET\n");
+            context->next_param = MAO_ADVANCED_ORDERS_LEN;
+            break;
+        case MAO_ADVANCED_ORDERS_LEN:
+            PRINTF("MAO_ADVANCED_ORDERS_LEN\n");
+            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->skip = context->orders_len;
+            PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
+            context->next_param = MAO_ADVANCED_ORDERS;
+            break;
+        case MAO_ADVANCED_ORDERS:
+            PRINTF("MAO_ADVANCED_ORDERS\n");
+            parse_advanced_orders(msg, context);
+            PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
+            if (context->orders_len == 0) {
+                PRINTF("END ORDERS\n");
+                context->next_param = MAO_CRITERIA_AND_FULFILLMENTS;
+                break;
+            }
+            break;
+        case MAO_CRITERIA_AND_FULFILLMENTS:
+            PRINTF("MAO_CRITERIA_AND_FULFILLMENTS\n");
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->param_index);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
 static void handle_match_orders(ethPluginProvideParameter_t *msg, context_t *context) {
     switch ((match_orders) context->next_param) {
         case MO_OFFSET:
