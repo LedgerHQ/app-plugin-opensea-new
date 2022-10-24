@@ -26,11 +26,18 @@ extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
 
 // Enumeration of the different selectors possible.
 // Should follow the exact same order as the array declared in main.c
-typedef enum { FULFILL_BASIC_ORDER } selector_t;
+typedef enum {
+    FULFILL_ORDER,
+    FULFILL_BASIC_ORDER,
+    FULFILL_AVAILABLE_ORDERS,
+    FULFILL_ADVANCED_ORDER,
+    FULFILL_AVAILABLE_ADVANCED_ORDERS,
+    MATCH_ORDERS,
+} selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 1
+#define NUM_SELECTORS 6
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -46,6 +53,15 @@ typedef enum {
 
 // Solidity basic_order_type abstraction.
 typedef enum { ETH_NFT, ERC20_NFT, NFT_ERC20 } basic_order_type;
+
+typedef enum {
+    FO_OFFSET,
+    FO_FULFILLER_CONDUIT_KEY,
+    FO_ORDER_PARAM_OFFSET,
+    FO_ORDER_SIGNATURE_OFFSET,
+    FO_ORDER_PARAM,
+    FO_ORDER_SIGNATURE,
+} fulfill_order;
 
 typedef enum {
     FBO__OFFSET_BASIC_ORDER_PARAM,
@@ -65,14 +81,170 @@ typedef enum {
     // FBO__TMP
 } fulfill_basic_order_parameter;
 
-/* structs */
+typedef enum {
+    MAO_OFFSET,
+    MAO_CRITERIA_RESOLVERS_OFFSET,
+    MAO_FULFILLMENTS_OFFSET,
+    MAO_ADVANCED_ORDERS_LEN,
+    MAO_ADVANCED_ORDERS,
+    MAO_CRITERIA_AND_FULFILLMENTS,
+} match_advanced_orders;
 
 typedef enum {
-    S_NONE,
-    S_BATCHED_INPUT_ORDERS,
-    S_BATCHED_OUTPUT_ORDERS,
-    S_ORDER,
-} on_struct;
+    MO_OFFSET,
+    MO_FULFILLMENT_OFFSET,
+    MO_ORDERS_LEN,
+    MO_ORDERS,
+    MO_FULFILLMENT,
+} match_orders;
+
+typedef enum {
+    FADO_OFFSET,
+    FADO_CRITERIA_RESOLVERS_OFFSET,
+    FADO_FULFILLER_CONDUIT_KEY,
+    FADO_RECIPIENT,
+    FADO_PARAM_OFFSET,
+    FADO_NUMERATOR,
+    FADO_DENOMINATOR,
+    FADO_SIGNATURE_OFFSET,
+    FADO_EXTRADATA_OFFSET,
+    FADO_PARAM,
+    FADO_SIGNATURE,
+} fulfill_advanced_order;
+
+typedef enum {
+    FAADO_OFFSET,
+    FAADO_CRITERIA_RESOLVERS_OFFSET,
+    FAADO_OFFER_FULFILLMENTS,
+    FAADO_CONSIDERATION_FULFILLMENTS,
+    FAADO_FULFILLER_CONDUIT_KEY,
+    FAADO_RECIPIENT,
+    FAADO_MAXIMUM_FULFILLED,
+    FAADO_ORDERS_LEN,
+    FAADO_ORDERS,
+    FAADO_CRITERIA_AND_FULFILLMENTS,
+} fulfill_available_advanced_orders;
+
+typedef enum {
+    FAO_OFFSET,
+    FAO_OFFER_FULFILLMENT_OFFSET,
+    FAO_CONSIDERATION_FULFILLMENT_OFFSET,
+    FAO_FULFILLER_CONDUIT_KEY,
+    FAO_MAXIMUM_FULFILLED,
+    FAO_ORDERS_LEN,
+    FAO_ORDERS,
+    FAO_FULFILLMEMTS,
+} fulfill_available_orders;
+
+typedef enum {
+    ADVANCED_PARAMETER_OFFSET,
+    ADVANCED_NUMERATOR,
+    ADVANCED_DENOMINATOR,
+    ADVANCED_SIGNATURE_OFFSET,
+    ADVANCED_EXTRADATA_OFFSET,
+    ADVANCED_PARAMETER,
+    ADVANCED_SIGNATURE_LEN,
+    ADVANCED_EXTRADATA_LEN,
+} advanced_orders;
+
+typedef enum {
+    ORDER_PARAMETER_OFFSET,
+    ORDER_SIGNATURE_OFFSET,
+    ORDER_PARAMETER,
+    ORDER_SIGNATURE,
+} orders;
+
+typedef enum {
+    PARAM_OFFERER,
+    PARAM_ZONE,
+    PARAM_OFFER_OFFSET,
+    PARAM_CONSIDERATION_OFFSET,
+    PARAM_ORDER_TYPE,
+    PARAM_START_TIME,
+    PARAM_END_TIME,
+    PARAM_ZONE_HASH,
+    PARAM_SALT,
+    PARAM_CONDUIT_KEY,
+    PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS,
+    PARAM_OFFERS_LEN,
+    PARAM_OFFERS,
+    PARAM_CONSIDERATIONS_LEN,
+    PARAM_CONSIDERATIONS,
+    PARAM_END,
+
+} parameters;
+
+typedef enum {
+    OFFER_ITEM_TYPE_NONE,
+    OFFER_ITEM_TYPE_NATIVE,
+    OFFER_ITEM_TYPE_ERC20,
+    OFFER_ITEM_TYPE_NFT,
+    OFFER_ITEM_TYPE_MULTIPLE_NFTS,
+    OFFER_ITEM_TYPE_MULTIPLE_ERC20S,
+    OFFER_ITEM_TYPE_MIXED_TYPES,
+} offer_item_type;
+
+typedef enum {
+    OFFER_ITEM_TYPE,
+    OFFER_TOKEN,
+    OFFER_IDENTIFIER,
+    OFFER_START_AMOUNT,
+    OFFER_END_AMOUNT,
+} offers;  // pointed to by context->items_index
+
+typedef enum {
+    CONSIDERATION_ITEM_TYPE_NONE,
+    CONSIDERATION_ITEM_TYPE_NATIVE,
+    CONSIDERATION_ITEM_TYPE_ERC20,
+    CONSIDERATION_ITEM_TYPE_NFT,
+    CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS,
+    CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S,
+    CONSIDERATION_ITEM_TYPE_MIXED_TYPES,
+} consideration_item_type;
+
+typedef enum {
+    CONSIDERATION_ITEM_TYPE,
+    CONSIDERATION_TOKEN,
+    CONSIDERATION_IDENTIFIER,
+    CONSIDERATION_START_AMOUNT,
+    CONSIDERATION_END_AMOUNT,
+    CONSIDERATION_RECIPIENT,
+} considerations;  // pointed to by context->items_index
+
+typedef enum {
+    TX_TYPE_NONE,
+    TX_TYPE_ETH_NFT,
+    TX_TYPE_ERC20_NFT,
+    TX_TYPE_NFT_ERC20,
+    TX_TYPE_NFT_NFT,
+    TX_TYPE_MIX_NFT,
+    TX_TYPE_NFT_MIX,
+    TX_TYPE_TRANSFER_FROM,
+    TX_TYPE_COULD_NOT_PARSE,
+} tx_type;
+
+typedef enum {
+    BUY_NOW,
+    ACCEPT_OFFER,
+} sale_side;
+
+/* structs */
+
+//{
+//    S_NONE,
+//    S_BATCHED_INPUT_ORDERS,
+//    S_BATCHED_OUTPUT_ORDERS,
+//    S_ORDER,
+//} on_struct;
+
+/* 721 Standard TransferFrom Function */
+
+// typedef enum
+//{
+//  TRANSFER_FROM__FROM,
+//  TRANSFER_FROM__TO,
+//  TRANSFER_FROM__TOKEN_ID,
+//} transfer_from_parameter;
 
 // Booleans
 #define BOOL1        (1)
@@ -109,9 +281,24 @@ typedef struct __attribute__((__packed__)) context_t {
     uint32_t current_tuple_offset;  // is the value from which a given offset is calculated
     uint8_t skip;                   // number of parameters to skip
 
+    // Struct parsing
+    uint8_t orders_len;
+    uint8_t orders_index;
+    uint8_t param_index;
+    uint8_t items_index;
+
     // Tx info
     uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
     uint8_t booleans;    // bitwise booleans
+    uint8_t tx_type;
+    uint8_t sale_side;
+    uint8_t offer_item_type;
+    uint8_t consideration_item_type;
+    uint16_t number_of_nfts;
+
+    // ERC1155 info
+    uint8_t numerator[16];
+    uint8_t denominator[16];
 
     // Token info
     uint8_t token1_address[ADDRESS_LENGTH];
@@ -127,6 +314,8 @@ typedef struct __attribute__((__packed__)) context_t {
     // Method ID
     selector_t selectorIndex;
 } context_t;
+
+// TOTAL =
 
 // Piece of code that will check that the above structure is not bigger than 5
 // * 32. Do not remove this check.

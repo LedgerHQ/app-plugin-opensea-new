@@ -12,3 +12,5 @@ Save*
 *.vim
 
 tags
+tests/src/apdu/dummy.apdu
+tests/src/apdu

@@ -1,16 +1,67 @@
 #include "seaport_plugin.h"
 
-/*
-** Debug
-*/
+static void print_item2(context_t *context) {
+    if (context->offer_item_type == OFFER_ITEM_TYPE_NONE)
+        PRINTF("OFFER ITEM TYPE FOUND: NONE\n", context->offer_item_type);
+
+    if (context->offer_item_type == OFFER_ITEM_TYPE_NATIVE)
+        PRINTF("OFFER ITEM TYPE FOUND: NATIVE\n", context->offer_item_type);
+
+    if (context->offer_item_type == OFFER_ITEM_TYPE_ERC20)
+        PRINTF("OFFER ITEM TYPE FOUND: ERC20\n", context->offer_item_type);
+
+    if (context->offer_item_type == OFFER_ITEM_TYPE_NFT)
+        PRINTF("OFFER ITEM TYPE FOUND: NFT\n", context->offer_item_type);
+
+    if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
+        PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE NFTS\n", context->offer_item_type);
+
+    if (context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_ERC20S)
+        PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->offer_item_type);
+
+    if (context->offer_item_type == OFFER_ITEM_TYPE_MIXED_TYPES)
+        PRINTF("OFFER ITEM TYPE FOUND: MIXED TYPES\n", context->offer_item_type);
+
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NONE)
+        PRINTF("CONSIDERATION ITEM TYPE FOUND: NONE\n", context->consideration_item_type);
+
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NATIVE)
+        PRINTF("CONSIDERATION ITEM TYPE FOUND: NATIVE\n", context->consideration_item_type);
+
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_ERC20)
+        PRINTF("CONSIDERATION ITEM TYPE FOUND: ERC20\n", context->consideration_item_type);
+
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT)
+        PRINTF("CONSIDERATION ITEM TYPE FOUND: NFT\n", context->consideration_item_type);
+
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS)
+        PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE NFTS\n", context->consideration_item_type);
+
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S)
+        PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE_ERC20S\n",
+               context->consideration_item_type);
+
+    if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MIXED_TYPES)
+        PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
+    context->sale_side == 0 ? PRINTF("BUY_NOW\n") : PRINTF("ACCEPT_OFFER\n");
+}
 
 static void print_context(context_t *context) {
     PRINTF("__Print context:\n");
-    PRINTF("order_type:\t%d\n", context->order_type);
+    // PRINTF("number_of_tokens:\t%d\n", context->number_of_tokens);
+    PRINTF("number_of_nfts:\t%d\n", context->number_of_nfts);
+    // PRINTF("number_of_offers:\t%d\n", context->offers_len);
+    //  PRINTF("basic_order_type:\t%d\n", context->basic_order_type);
     PRINTF("token1_address:\t%.*H\n", ADDRESS_LENGTH, context->token1_address);
     PRINTF("token1_amount:\t%.*H\n", INT256_LENGTH, context->token1_amount);
     PRINTF("token2_address:\t%.*H\n", ADDRESS_LENGTH, context->token2_address);
     PRINTF("token2_amount:\t%.*H\n", INT256_LENGTH, context->token2_amount);
+    PRINTF("End context\n");
+    // PRINTF("several_collections:%d\n", INT256_LENGTH, context->token2_amount);
+    PRINTF("sale_side:%d\n", context->sale_side);
+    PRINTF("offer_item_type:%d\n", context->offer_item_type);
+    PRINTF("consideration_item_type:%d\n", context->consideration_item_type);
+    print_item2(context);
     PRINTF("End context\n");
 }
 
