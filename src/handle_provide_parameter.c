@@ -247,8 +247,10 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
                     msg->result = ETH_PLUGIN_RESULT_ERROR;
                 }
             } else if (context->offer_item_type == OFFER_ITEM_TYPE_NFT ||
-                       context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS)
+                       context->offer_item_type == OFFER_ITEM_TYPE_MULTIPLE_NFTS) {
+                PRINTF("SUM NFT\n");
                 context->number_of_nfts += U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            }
             context->items_index = OFFER_END_AMOUNT;
             break;
         case OFFER_END_AMOUNT:
@@ -321,8 +323,10 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
                     msg->result = ETH_PLUGIN_RESULT_ERROR;
                 }
             } else if (context->consideration_item_type == CONSIDERATION_ITEM_TYPE_NFT ||
-                       context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS)
+                       context->consideration_item_type == CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS) {
+                PRINTF("SUM NFT\n");
                 context->number_of_nfts += U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            }
             context->items_index = CONSIDERATION_END_AMOUNT;
             break;
         case CONSIDERATION_END_AMOUNT:
@@ -552,28 +556,19 @@ static void handle_match_orders(ethPluginProvideParameter_t *msg, context_t *con
             context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
-            context->next_param = MO_ORDERS_OFFSET;
-            break;
-        case MO_ORDERS_OFFSET:
-            PRINTF("MO_ORDERS_OFFSET\n");
-            context->next_param = MO_SIGNATURE_OFFSET;
-            break;
-        case MO_SIGNATURE_OFFSET:
-            PRINTF("MO_SIGNATURE_OFFSET\n");
             context->next_param = MO_ORDERS;
             break;
         case MO_ORDERS:
             PRINTF("MO_ORDERS\n");
-            parse_advanced_orders(msg, context);
+            parse_orders(msg, context);
             PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
             if (context->orders_len == 0) {
                 PRINTF("END ORDERS\n");
-                context->next_param = MO_SIGNATURE_OFFSET;
+                context->next_param = MO_FULFILLMENT;
+                break;
             }
-            context->next_param = MO_SIGNATURE_LEN;
-            break;
-        case MO_SIGNATURE_LEN:
-            PRINTF("MO_SIGNATURE_LEN\n");
+        case MO_FULFILLMENT:
+            PRINTF("MO_FULFILLMENT\n");
             break;
         default:
             PRINTF("Param not supported: %d\n", context->param_index);
@@ -683,10 +678,10 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
             if (context->param_index == PARAM_END) {
                 PRINTF("PARAM END\n");
                 context->param_index = 0;
-                context->next_param = FADO_SIGNATURE_LEN;
+                context->next_param = FADO_SIGNATURE;
             }
             break;
-        case FADO_SIGNATURE_LEN:
+        case FADO_SIGNATURE:
             PRINTF("FADO_CRITERIA_RESOLVERS_OFFSET\n");
             break;
         default:
@@ -817,6 +812,9 @@ void handle_provide_parameter(void *parameters) {
             break;
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
             handle_fulfill_available_advanced_orders(msg, context);
+            break;
+        case MATCH_ORDERS:
+            handle_match_orders(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

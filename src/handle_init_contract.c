@@ -69,8 +69,12 @@ void handle_init_contract(void *parameters) {
             context->next_param = FADO_OFFSET;
             break;
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
-            PRINTF("IN FULFILL_ADVANCED_ORDER\n");
-            context->next_param = FADO_OFFSET;
+            PRINTF("IN FULFILL_AVAILABLE_ADVANCED_ORDERS\n");
+            context->next_param = FAADO_OFFSET;
+            break;
+        case MATCH_ORDERS:
+            PRINTF("IN MATCH_ORDERS_SELECTOR\n");
+            context->next_param = MO_OFFSET;
             break;
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);

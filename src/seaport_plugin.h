@@ -29,11 +29,12 @@ typedef enum {
     FULFILL_AVAILABLE_ORDERS,
     FULFILL_ADVANCED_ORDER,
     FULFILL_AVAILABLE_ADVANCED_ORDERS,
+    MATCH_ORDERS,
 } selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 5
+#define NUM_SELECTORS 6
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -114,10 +115,8 @@ typedef enum {
     MO_OFFSET,
     MO_FULFILLMENT_OFFSET,
     MO_ORDERS_LEN,
-    MO_ORDERS_OFFSET,
-    MO_SIGNATURE_OFFSET,
     MO_ORDERS,
-    MO_SIGNATURE_LEN,
+    MO_FULFILLMENT,
 } match_orders;
 
 typedef enum {
@@ -131,9 +130,7 @@ typedef enum {
     FADO_SIGNATURE_OFFSET,
     FADO_EXTRADATA_OFFSET,
     FADO_PARAM,
-    FADO_SIGNATURE_LEN,
-    //  FADO_EXTRADA_LEN,
-    //  FADO_CRITERIA_RESOLVERS_LEN,
+    FADO_SIGNATURE,
 } fulfill_advanced_order;
 
 typedef enum {

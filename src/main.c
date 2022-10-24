@@ -30,6 +30,7 @@ static const uint32_t FULFILL_BASIC_ORDER_SELECTOR = 0xfb0f3ee1;
 static const uint32_t FULFILL_AVAILABLE_ORDERS_SELECTOR = 0xed98a574;
 static const uint32_t FULFILL_ADVANCED_ORDER_SELECTOR = 0xe7acab24;
 static const uint32_t FULFILL_AVAILABLE_ADVANCED_ORDERS_SELECTOR = 0x87201b41;
+static const uint32_t MATCH_ORDERS_SELECTOR = 0xa8174404;
 
 // Array of all the different plugin selectors. Make sure this follows the same
 // order as the enum defined in `seaport_plugin.h`
@@ -39,6 +40,7 @@ const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS] = {
     FULFILL_AVAILABLE_ORDERS_SELECTOR,
     FULFILL_ADVANCED_ORDER_SELECTOR,
     FULFILL_AVAILABLE_ADVANCED_ORDERS_SELECTOR,
+    MATCH_ORDERS_SELECTOR,
 };
 
 // Function to dispatch calls from the ethereum app.

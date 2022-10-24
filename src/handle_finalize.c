@@ -88,6 +88,7 @@ void handle_finalize(void *parameters) {
         case FULFILL_ADVANCED_ORDER:
         case FULFILL_AVAILABLE_ORDERS:
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
+        case MATCH_ORDERS:
             break;
         default:
             msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -100,6 +101,7 @@ void handle_finalize(void *parameters) {
         case FULFILL_AVAILABLE_ORDERS:
         case FULFILL_ADVANCED_ORDER:
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
+        case MATCH_ORDERS:
             msg->numScreens = 2;
             break;
         default:
