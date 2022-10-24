@@ -6,24 +6,22 @@
 // requested tokens!
 
 void handle_provide_token(void *parameters) {
-  ethPluginProvideInfo_t *msg = (ethPluginProvideInfo_t *)parameters;
-  context_t *context = (context_t *)msg->pluginContext;
+    ethPluginProvideInfo_t *msg = (ethPluginProvideInfo_t *) parameters;
+    context_t *context = (context_t *) msg->pluginContext;
 
-  if (msg->item1)
-    context->booleans |= ITEM1_FOUND;
-  // check if not ETH address
-  else if (memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH)) {
-    context->screen_array |= SEND_UI_ERR;
-    msg->additionalScreens++;
-  }
+    if (msg->item1) context->booleans |= ITEM1_FOUND;
+    // check if not ETH address
+    else if (!ADDRESS_IS_NULL_ADDRESS(context->token1_address)) {
+        context->screen_array |= SEND_UI_ERR;
+        msg->additionalScreens++;
+    }
 
-  if (msg->item2)
-    context->booleans |= ITEM2_FOUND;
-  // check if not ETH address
-  else if (memcmp(context->token2_address, NULL_ADDRESS, ADDRESS_LENGTH)) {
-    context->screen_array |= RECEIVE_UI_ERR;
-    msg->additionalScreens++;
-  }
+    if (msg->item2) context->booleans |= ITEM2_FOUND;
+    // check if not ETH address
+    else if (!ADDRESS_IS_NULL_ADDRESS(context->token2_address)) {
+        context->screen_array |= RECEIVE_UI_ERR;
+        msg->additionalScreens++;
+    }
 
-  msg->result = ETH_PLUGIN_RESULT_OK;
+    msg->result = ETH_PLUGIN_RESULT_OK;
 }
