@@ -41,16 +41,6 @@ typedef enum {
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
-// Solidity itemType
-typedef enum {
-    NATIVE,
-    ERC20,
-    ERC721,
-    ERC1155,
-    ERC721_WITH_CRITERIA,
-    ERC1155_WITH_CRITERIA
-} item_type;
-
 // Solidity basic_order_type abstraction.
 typedef enum { ETH_NFT, ERC20_NFT, NFT_ERC20 } basic_order_type;
 
@@ -175,14 +165,14 @@ typedef enum {
 } parameters;
 
 typedef enum {
-    OFFER_ITEM_TYPE_NONE,
-    OFFER_ITEM_TYPE_NATIVE,
-    OFFER_ITEM_TYPE_ERC20,
-    OFFER_ITEM_TYPE_NFT,
-    OFFER_ITEM_TYPE_MULTIPLE_NFTS,
-    OFFER_ITEM_TYPE_MULTIPLE_ERC20S,
-    OFFER_ITEM_TYPE_MIXED_TYPES,
-} offer_item_type;
+    ITEM_TYPE_NONE,
+    ITEM_TYPE_NATIVE,
+    ITEM_TYPE_ERC20,
+    ITEM_TYPE_NFT,
+    ITEM_TYPE_MULTIPLE_NFTS,
+    ITEM_TYPE_MULTIPLE_ERC20S,
+    ITEM_TYPE_MIXED_TYPES,
+} item_type;
 
 typedef enum {
     OFFER_ITEM_TYPE,
@@ -191,16 +181,6 @@ typedef enum {
     OFFER_START_AMOUNT,
     OFFER_END_AMOUNT,
 } offers;  // pointed to by context->items_index
-
-typedef enum {
-    CONSIDERATION_ITEM_TYPE_NONE,
-    CONSIDERATION_ITEM_TYPE_NATIVE,
-    CONSIDERATION_ITEM_TYPE_ERC20,
-    CONSIDERATION_ITEM_TYPE_NFT,
-    CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS,
-    CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S,
-    CONSIDERATION_ITEM_TYPE_MIXED_TYPES,
-} consideration_item_type;
 
 typedef enum {
     CONSIDERATION_ITEM_TYPE,
@@ -223,20 +203,6 @@ typedef enum {
     TX_TYPE_COULD_NOT_PARSE,
 } tx_type;
 
-typedef enum {
-    BUY_NOW,
-    ACCEPT_OFFER,
-} sale_side;
-
-/* structs */
-
-//{
-//    S_NONE,
-//    S_BATCHED_INPUT_ORDERS,
-//    S_BATCHED_OUTPUT_ORDERS,
-//    S_ORDER,
-//} on_struct;
-
 /* 721 Standard TransferFrom Function */
 
 // typedef enum
@@ -249,7 +215,7 @@ typedef enum {
 // Booleans
 #define BOOL1        (1)
 #define BOOL2        (1 << 1)
-#define BOOL3        (1 << 2)
+#define IS_ACCEPT    (1 << 2)
 #define ITEM1_IS_NFT (1 << 3)  // 0: ERC20/ETH, 1: NFT
 #define ITEM2_IS_NFT (1 << 4)
 #define ITEM1_FOUND  (1 << 5)
@@ -291,9 +257,9 @@ typedef struct __attribute__((__packed__)) context_t {
     uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
     uint8_t booleans;    // bitwise booleans
     uint8_t tx_type;
-    uint8_t sale_side;
     uint8_t offer_item_type;
     uint8_t consideration_item_type;
+    uint8_t current_item_type;
     uint16_t number_of_nfts;
 
     // ERC1155 info
