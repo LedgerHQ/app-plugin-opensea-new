@@ -124,47 +124,42 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
 }
 
 static void print_item(context_t *context) {
-    if (context->offer_item_type == ITEM_TYPE_NONE)
-        PRINTF("OFFER_ITEM_TYPE FOUND: NONE\n", context->offer_item_type);
+    if (context->token1.type == ITEM_TYPE_NONE)
+        PRINTF("OFFER_ITEM_TYPE FOUND: NONE\n", context->token1.type);
 
-    if (context->offer_item_type == ITEM_TYPE_NATIVE)
-        PRINTF("OFFER_ITEM_TYPE FOUND: NATIVE\n", context->offer_item_type);
+    if (context->token1.type == ITEM_TYPE_NATIVE)
+        PRINTF("OFFER_ITEM_TYPE FOUND: NATIVE\n", context->token1.type);
 
-    if (context->offer_item_type == ITEM_TYPE_ERC20)
-        PRINTF("OFFER_ITEM_TYPE FOUND: ERC20\n", context->offer_item_type);
+    if (context->token1.type == ITEM_TYPE_ERC20)
+        PRINTF("OFFER_ITEM_TYPE FOUND: ERC20\n", context->token1.type);
 
-    if (context->offer_item_type == ITEM_TYPE_NFT)
-        PRINTF("OFFER_ITEM_TYPE FOUND: NFT\n", context->offer_item_type);
+    if (context->token1.type == ITEM_TYPE_NFT)
+        PRINTF("OFFER_ITEM_TYPE FOUND: NFT\n", context->token1.type);
 
-    if (context->offer_item_type == ITEM_TYPE_MULTIPLE_NFTS)
-        PRINTF("OFFER_ITEM_TYPE FOUND: MULTIPLE NFTS\n", context->offer_item_type);
+    if (context->token1.type == ITEM_TYPE_MULTIPLE_NFTS)
+        PRINTF("OFFER_ITEM_TYPE FOUND: MULTIPLE NFTS\n", context->token1.type);
 
-    if (context->offer_item_type == ITEM_TYPE_MULTIPLE_ERC20S)
-        PRINTF("OFFER_ITEM_TYPE FOUND: MULTIPLE_ERC20S\n", context->offer_item_type);
+    if (context->token1.type == ITEM_TYPE_MULTIPLE_ERC20S)
+        PRINTF("OFFER_ITEM_TYPE FOUND: MULTIPLE_ERC20S\n", context->token1.type);
 
-    if (context->offer_item_type == ITEM_TYPE_MIXED_TYPES)
-        PRINTF("OFFER_ITEM_TYPE FOUND: MIXED TYPES\n", context->offer_item_type);
+    if (context->token1.type == ITEM_TYPE_MIXED_TYPES)
+        PRINTF("OFFER_ITEM_TYPE FOUND: MIXED TYPES\n", context->token1.type);
 
-    if (context->consideration_item_type == ITEM_TYPE_NONE)
-        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: NONE\n", context->consideration_item_type);
+    if (context->token2.type == ITEM_TYPE_NONE)
+        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: NONE\n", context->token2.type);
 
-    if (context->consideration_item_type == ITEM_TYPE_NATIVE)
-        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: NATIVE\n", context->consideration_item_type);
-
-    if (context->consideration_item_type == ITEM_TYPE_ERC20)
-        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: ERC20\n", context->consideration_item_type);
-
-    if (context->consideration_item_type == ITEM_TYPE_NFT)
-        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: NFT\n", context->consideration_item_type);
-
-    if (context->consideration_item_type == ITEM_TYPE_MULTIPLE_NFTS)
-        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: MULTIPLE NFTS\n", context->consideration_item_type);
-
-    if (context->consideration_item_type == ITEM_TYPE_MULTIPLE_ERC20S)
-        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: MULTIPLE_ERC20S\n", context->consideration_item_type);
-
-    if (context->consideration_item_type == ITEM_TYPE_MIXED_TYPES)
-        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
+    if (context->token2.type == ITEM_TYPE_NATIVE)
+        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: NATIVE\n", context->token2.type);
+    if (context->token2.type == ITEM_TYPE_ERC20)
+        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: ERC20\n", context->token2.type);
+    if (context->token2.type == ITEM_TYPE_NFT)
+        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: NFT\n", context->token2.type);
+    if (context->token2.type == ITEM_TYPE_MULTIPLE_NFTS)
+        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: MULTIPLE NFTS\n", context->token2.type);
+    if (context->token2.type == ITEM_TYPE_MULTIPLE_ERC20S)
+        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: MULTIPLE_ERC20S\n", context->token2.type);
+    if (context->token2.type == ITEM_TYPE_MIXED_TYPES)
+        PRINTF("CONSIDERATON_ITEM_TYPE FOUND: MIXED TYPES\n", context->token2.type);
     context->booleans &IS_ACCEPT ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
 }
 
@@ -177,16 +172,16 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             context->current_item_type = ITEM_TYPE_NONE;
             if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
                 context->current_item_type = ITEM_TYPE_NFT;
-                if (context->offer_item_type == ITEM_TYPE_NONE) {
+                if (context->token1.type == ITEM_TYPE_NONE) {
                     PRINTF("OFFER_BUY_NOW\n");
-                    context->offer_item_type = ITEM_TYPE_NFT;
+                    context->token1.type = ITEM_TYPE_NFT;
                 }
             } else {
                 context->current_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
-                if (context->offer_item_type == ITEM_TYPE_NONE) {
+                if (context->token1.type == ITEM_TYPE_NONE) {
                     PRINTF("OFFER_ACCEPT_OFFER\n");
                     context->booleans |= IS_ACCEPT;
-                    context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+                    context->token1.type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
                 }
             }
             print_item(context);  // utilitary
@@ -194,24 +189,24 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             break;
         case OFFER_TOKEN:
             PRINTF("OFFER_TOKEN\n");
-            if (context->offer_item_type != ITEM_TYPE_NATIVE &&
+            if (context->token1.type != ITEM_TYPE_NATIVE &&
                 !memcmp(context->token1.address, NULL_ADDRESS, ADDRESS_LENGTH)) {
                 PRINTF("COPY ADDRESS\n");
                 copy_address(context->token1.address, msg->parameter, ADDRESS_LENGTH);
             }
             if (memcmp(context->token1.address, msg->parameter + 12, ADDRESS_LENGTH)) {
-                if (context->offer_item_type == ITEM_TYPE_NFT &&
-                    context->current_item_type == context->offer_item_type) {
+                if (context->token1.type == ITEM_TYPE_NFT &&
+                    context->current_item_type == context->token1.type) {
                     PRINTF("OFFER_ITEM_TYPE_MULTIPLE_NFTS\n");
-                    context->offer_item_type = ITEM_TYPE_MULTIPLE_NFTS;
-                } else if ((context->offer_item_type == ITEM_TYPE_NATIVE ||
-                            context->offer_item_type == ITEM_TYPE_ERC20) &&
-                           context->current_item_type == context->offer_item_type) {
+                    context->token1.type = ITEM_TYPE_MULTIPLE_NFTS;
+                } else if ((context->token1.type == ITEM_TYPE_NATIVE ||
+                            context->token1.type == ITEM_TYPE_ERC20) &&
+                           context->current_item_type == context->token1.type) {
                     PRINTF("OFFER_ITEM_TYPE_MULTIPLE_ERC20S\n");
-                    context->offer_item_type = ITEM_TYPE_MULTIPLE_ERC20S;
+                    context->token1.type = ITEM_TYPE_MULTIPLE_ERC20S;
                 } else {
                     PRINTF("OFFER_ITEM_TYPE_MIXED_TYPES\n");
-                    context->offer_item_type = ITEM_TYPE_MIXED_TYPES;
+                    context->token1.type = ITEM_TYPE_MIXED_TYPES;
                 }
             }
             context->items_index = OFFER_IDENTIFIER;
@@ -226,12 +221,12 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
             PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
             if (context->current_item_type == ITEM_TYPE_NFT &&
-                (context->offer_item_type == ITEM_TYPE_NFT ||
-                 context->offer_item_type == ITEM_TYPE_MULTIPLE_NFTS)) {
+                (context->token1.type == ITEM_TYPE_NFT ||
+                 context->token1.type == ITEM_TYPE_MULTIPLE_NFTS)) {
                 PRINTF("SUM NFT\n");
                 context->number_of_nfts += U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            } else if (context->current_item_type == context->offer_item_type &&
-                       context->offer_item_type != ITEM_TYPE_NONE) {
+            } else if (context->current_item_type == context->token1.type &&
+                       context->token1.type != ITEM_TYPE_NONE) {
                 PRINTF("SUM CURRENCIES\n");
                 if (add_uint256(context->token1.amount, buf_amount)) {
                     PRINTF("uint256 overflow error.\n");
@@ -261,14 +256,13 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             context->current_item_type = ITEM_TYPE_NONE;
             if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
                 context->current_item_type = ITEM_TYPE_NFT;
-                if (context->consideration_item_type == ITEM_TYPE_NONE) {
-                    context->consideration_item_type = ITEM_TYPE_NFT;
+                if (context->token2.type == ITEM_TYPE_NONE) {
+                    context->token2.type = ITEM_TYPE_NFT;
                 }
             } else {
                 context->current_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
-                if (context->consideration_item_type == ITEM_TYPE_NONE) {
-                    context->consideration_item_type =
-                        U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+                if (context->token2.type == ITEM_TYPE_NONE) {
+                    context->token2.type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
                 }
             }
             print_item(context);  // utilitary
@@ -276,7 +270,7 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             break;
         case CONSIDERATION_TOKEN:
             PRINTF("CONSIDERATION_TOKEN\n");
-            if (context->consideration_item_type != ITEM_TYPE_NATIVE &&
+            if (context->token2.type != ITEM_TYPE_NATIVE &&
                 !memcmp(context->token2.address, NULL_ADDRESS, ADDRESS_LENGTH)) {
                 PRINTF("COPY ADDRESS\n");
                 copy_address(context->token2.address, msg->parameter, ADDRESS_LENGTH);
@@ -284,21 +278,19 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             if (context->current_item_type == ITEM_TYPE_NFT) {
                 if (memcmp(context->token2.address, msg->parameter + 12, ADDRESS_LENGTH)) {
                     PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS\n");
-                    context->consideration_item_type = ITEM_TYPE_MULTIPLE_NFTS;
+                    context->token2.type = ITEM_TYPE_MULTIPLE_NFTS;
                 }
-            }
-
-            else if (context->current_item_type == ITEM_TYPE_NATIVE ||
-                     context->current_item_type == ITEM_TYPE_ERC20) {
+            } else if (context->current_item_type == ITEM_TYPE_NATIVE ||
+                       context->current_item_type == ITEM_TYPE_ERC20) {
                 if (context->booleans & IS_ACCEPT) {
                     if (memcmp(context->token1.address, msg->parameter + 12, ADDRESS_LENGTH)) {
                         PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S\n");
-                        context->consideration_item_type = ITEM_TYPE_MULTIPLE_ERC20S;
+                        context->token2.type = ITEM_TYPE_MULTIPLE_ERC20S;
                     }
                 } else {
                     if (memcmp(context->token2.address, msg->parameter + 12, ADDRESS_LENGTH)) {
                         PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS\n");
-                        context->consideration_item_type = ITEM_TYPE_MULTIPLE_NFTS;
+                        context->token2.type = ITEM_TYPE_MULTIPLE_NFTS;
                     }
                 }
             }
@@ -313,29 +305,32 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             uint8_t buf_amount[INT256_LENGTH] = {0};
             copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
             PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
-            if (context->current_item_type == ITEM_TYPE_NFT &&
-                (context->consideration_item_type == ITEM_TYPE_NFT ||
-                 context->consideration_item_type == ITEM_TYPE_MULTIPLE_NFTS)) {
-                PRINTF("SUM NFT\n");
-                //// TB MODIFIED WITH NUM / DENUM
-                //
-                // IF ADVANCED: NUM / DENUM
-                // else += U2BE
-                context->number_of_nfts += U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            } else if (context->current_item_type == context->consideration_item_type &&
-                       context->consideration_item_type != ITEM_TYPE_NONE) {
-                PRINTF("IS CURRENCY\n");
+            if (context->token2.type != ITEM_TYPE_MIXED_TYPES) {
                 if (context->booleans & IS_ACCEPT) {
-                    PRINTF("SUB CURRENCY\n");
-                    if (sub_uint256(context->token1.amount, buf_amount)) {
-                        PRINTF("uint256 overflow error.\n");
-                        msg->result = ETH_PLUGIN_RESULT_ERROR;
-                    }
-                } else {
-                    PRINTF("SUM CURRENCY\n");
-                    if (add_uint256(context->token1.amount, buf_amount)) {
-                        PRINTF("uint256 overflow error.\n");
-                        msg->result = ETH_PLUGIN_RESULT_ERROR;
+                    if (context->current_item_type == ITEM_TYPE_NFT) {
+                        if (!(add_uint256(context->token2.amount, buf_amount))) {
+                            PRINTF("uint256 overflow error.\n");
+                            msg->result = ETH_PLUGIN_RESULT_ERROR;
+                        }
+                    } else if (context->current_item_type <
+                               (item_type) ITEM_TYPE_NFT) {  // if multiple erc20s, will continue
+                                                             // operations pointlessly
+                        PRINTF("IS CURRENCY\n");
+                        if (context->booleans & IS_ACCEPT) {
+                            PRINTF("SUB CURRENCY\n");
+                            if (sub_uint256(context->token2.amount, buf_amount)) {
+                                PRINTF("uint256 overflow error.\n");
+                                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                            }
+                        } else {
+                            PRINTF("SUM CURRENCY\n");
+                            if (add_uint256(context->token2.amount, buf_amount)) {
+                                PRINTF("uint256 overflow error.\n");
+                                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                            }
+                        }
+                    } else if (context->token2.type == 1) {
+                        PRINTF("GPIRIOU \n");
                     }
                 }
             }

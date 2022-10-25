@@ -264,8 +264,6 @@ typedef struct __attribute__((__packed__)) context_t {
     uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
     uint16_t booleans;   // bitwise booleans
     uint8_t tx_type;
-    uint8_t offer_item_type;
-    uint8_t consideration_item_type;
     uint16_t number_of_nfts;
     uint8_t recipient_address[ADDRESS_LENGTH];
     uint32_t numerator;
