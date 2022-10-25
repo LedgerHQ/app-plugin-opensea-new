@@ -53,11 +53,10 @@ static void print_context(context_t *context) {
     PRINTF("number_of_nfts:\t%d\n", context->number_of_nfts);
     // PRINTF("number_of_offers:\t%d\n", context->offers_len);
     //  PRINTF("basic_order_type:\t%d\n", context->basic_order_type);
-    PRINTF("token1_address:\t%.*H\n", ADDRESS_LENGTH, context->token1_address);
-    PRINTF("token1_amount:\t%.*H\n", INT256_LENGTH, context->token1_amount);
-    PRINTF("token2_address:\t%.*H\n", ADDRESS_LENGTH, context->token2_address);
-    PRINTF("token2_amount:\t%.*H\n", INT256_LENGTH, context->token2_amount);
-    // PRINTF("several_collections:%d\n", INT256_LENGTH, context->token2_amount);
+    PRINTF("token1.address:\t%.*H\n", ADDRESS_LENGTH, context->token1.address);
+    PRINTF("token1.amount:\t%.*H\n", INT256_LENGTH, context->token1.amount);
+    PRINTF("token2.address:\t%.*H\n", ADDRESS_LENGTH, context->token2.address);
+    PRINTF("token2.amount:\t%.*H\n", INT256_LENGTH, context->token2.amount);
     PRINTF("offer_item_type:%d\n", context->offer_item_type);
     PRINTF("consideration_item_type:%d\n", context->consideration_item_type);
     print_item2(context);
@@ -86,13 +85,12 @@ void handle_finalize(void *parameters) {
     ethPluginFinalize_t *msg = (ethPluginFinalize_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
 
-    // context->token1_decimals = DEFAULT_DECIMAL;
     context->screen_array |= SEND_UI;
     context->screen_array |= RECEIVE_UI;
 
     // set IS_ETH if one of the addresses is 0x0000...
-    if (!memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH) ||
-        !memcmp(context->token2_address, NULL_ADDRESS, ADDRESS_LENGTH))
+    if (!memcmp(context->token1.address, NULL_ADDRESS, ADDRESS_LENGTH) ||
+        !memcmp(context->token2.address, NULL_ADDRESS, ADDRESS_LENGTH))
         context->booleans |= IS_ETH;
 
     // set booleans for fulfillBasicOrder
@@ -113,11 +111,11 @@ void handle_finalize(void *parameters) {
         }
     }
 
-    PRINTF("Setting tokenLookup1 to: %.*H\n", ADDRESS_LENGTH, context->token1_address);
-    msg->tokenLookup1 = context->token1_address;
+    PRINTF("Setting tokenLookup1 to: %.*H\n", ADDRESS_LENGTH, context->token1.address);
+    msg->tokenLookup1 = context->token1.address;
 
-    PRINTF("Setting tokenLookup2 to: %.*H\n", ADDRESS_LENGTH, context->token2_address);
-    msg->tokenLookup2 = context->token2_address;
+    PRINTF("Setting tokenLookup2 to: %.*H\n", ADDRESS_LENGTH, context->token2.address);
+    msg->tokenLookup2 = context->token2.address;
 
     msg->numScreens = count_screens(context->screen_array);
     print_context(context);  // dbg

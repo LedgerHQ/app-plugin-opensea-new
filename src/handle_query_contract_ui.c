@@ -7,10 +7,10 @@
 
 static void debug_items(ethQueryContractUI_t *msg, context_t *context) {
     PRINTF("__debug_items()__\n");
-    PRINTF("token1_address: %.*H\n", ADDRESS_LENGTH, context->token1_address);
-    PRINTF("token2_address: %.*H\n", ADDRESS_LENGTH, context->token2_address);
-    PRINTF("token1_amount: %.*H\n", INT256_LENGTH, context->token1_amount);
-    PRINTF("token2_amount: %.*H\n", INT256_LENGTH, context->token2_amount);
+    PRINTF("token1.address: %.*H\n", ADDRESS_LENGTH, context->token1.address);
+    PRINTF("token2.address: %.*H\n", ADDRESS_LENGTH, context->token2.address);
+    PRINTF("token1.amount: %.*H\n", INT256_LENGTH, context->token1.amount);
+    PRINTF("token2.amount: %.*H\n", INT256_LENGTH, context->token2.amount);
 
     if (msg->item1 != NULL)
         PRINTF("UI PENZO msg->item1->nft.collectionName: %s\n", msg->item1->nft.collectionName);
@@ -42,10 +42,10 @@ static void output_item1(ethQueryContractUI_t *msg, context_t *context) {
             snprintf(msg->msg,
                      msg->msgLength,
                      "%d %s",
-                     U4BE(context->token1_amount, INT256_LENGTH - 4),
+                     U4BE(context->token1.amount, INT256_LENGTH - 4),
                      msg->item1->nft.collectionName);  // TODO check U4BE() safety
         else                                           // item1 is found erc20
-            amountToString(context->token1_amount,
+            amountToString(context->token1.amount,
                            INT256_LENGTH,
                            msg->item1->token.decimals,
                            msg->item1->token.ticker,
@@ -56,18 +56,18 @@ static void output_item1(ethQueryContractUI_t *msg, context_t *context) {
             snprintf(msg->msg,
                      msg->msgLength,
                      "%d %s",
-                     U4BE(context->token1_amount, INT256_LENGTH - 4),
+                     U4BE(context->token1.amount, INT256_LENGTH - 4),
                      UNKNOWN_NFT);           // TODO check U4BE() safety
         else {                               // if item1 is money
             if (context->booleans & IS_ETH)  // if item1 is ETH
-                amountToString(context->token1_amount,
+                amountToString(context->token1.amount,
                                INT256_LENGTH,
                                DEFAULT_DECIMAL,
                                ETH,
                                msg->msg,
                                msg->msgLength);
             else  // item1 is unknown erc20
-                amountToString(context->token1_amount,
+                amountToString(context->token1.amount,
                                INT256_LENGTH,
                                DEFAULT_DECIMAL,
                                UNKNOWN_ERC20,
@@ -86,11 +86,11 @@ static void output_item2(ethQueryContractUI_t *msg, context_t *context) {
             snprintf(msg->msg,
                      msg->msgLength,
                      "%d %s",
-                     U4BE(context->token2_amount, INT256_LENGTH - 4),
+                     U4BE(context->token2.amount, INT256_LENGTH - 4),
                      msg->item1->nft.collectionName);  // TODO check U4BE() safety
         else {                                         // item2 is erc20
                 // item1 is not a mistake, because if no item1, item2 become item1
-            amountToString(context->token2_amount,
+            amountToString(context->token2.amount,
                            INT256_LENGTH,
                            msg->item1->token.decimals,
                            msg->item1->token.ticker,
@@ -104,10 +104,10 @@ static void output_item2(ethQueryContractUI_t *msg, context_t *context) {
             snprintf(msg->msg,
                      msg->msgLength,
                      "%d %s",
-                     U4BE(context->token2_amount, INT256_LENGTH - 4),
+                     U4BE(context->token2.amount, INT256_LENGTH - 4),
                      msg->item2->nft.collectionName);  // TODO check U4BE() safety
         else
-            amountToString(context->token2_amount,
+            amountToString(context->token2.amount,
                            INT256_LENGTH,
                            msg->item2->token.decimals,
                            msg->item2->token.ticker,
@@ -117,14 +117,14 @@ static void output_item2(ethQueryContractUI_t *msg, context_t *context) {
 
         if (!(context->booleans & ITEM2_IS_NFT)) {  // if item2 is money
             if (context->booleans & IS_ETH)
-                amountToString(context->token2_amount,
+                amountToString(context->token2.amount,
                                INT256_LENGTH,
                                DEFAULT_DECIMAL,
                                ETH,
                                msg->msg,
                                msg->msgLength);
             else  // item2 is erc20
-                amountToString(context->token2_amount,
+                amountToString(context->token2.amount,
                                INT256_LENGTH,
                                DEFAULT_DECIMAL,
                                UNKNOWN_ERC20,
@@ -134,7 +134,7 @@ static void output_item2(ethQueryContractUI_t *msg, context_t *context) {
             snprintf(msg->msg,
                      msg->msgLength,
                      "%d %s",
-                     U4BE(context->token2_amount, INT256_LENGTH - 4),
+                     U4BE(context->token2.amount, INT256_LENGTH - 4),
                      UNKNOWN_NFT);  // TODO check U4BE() safety
         }
     } else
@@ -155,7 +155,7 @@ static void set_receive_ui(ethQueryContractUI_t *msg, context_t *context) {
 static void set_send_ui_err(ethQueryContractUI_t *msg, context_t *context) {
     msg->msg[0] = '0';
     msg->msg[1] = 'x';
-    getEthAddressStringFromBinary((uint8_t *) context->token1_address,
+    getEthAddressStringFromBinary((uint8_t *) context->token1.address,
                                   (char *) msg->msg + 2,
                                   msg->pluginSharedRW->sha3,
                                   0);
@@ -164,7 +164,7 @@ static void set_send_ui_err(ethQueryContractUI_t *msg, context_t *context) {
 static void set_receive_ui_err(ethQueryContractUI_t *msg, context_t *context) {
     msg->msg[0] = '0';
     msg->msg[1] = 'x';
-    getEthAddressStringFromBinary((uint8_t *) context->token2_address,
+    getEthAddressStringFromBinary((uint8_t *) context->token2.address,
                                   (char *) msg->msg + 2,
                                   msg->pluginSharedRW->sha3,
                                   0);

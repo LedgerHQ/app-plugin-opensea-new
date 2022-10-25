@@ -238,6 +238,12 @@ typedef enum {
 #define RIGHT_SCROLL 1
 #define LEFT_SCROLL  0
 
+typedef struct token_t {
+    uint8_t type;
+    uint8_t amount[INT256_LENGTH];
+    uint8_t address[ADDRESS_LENGTH];
+} token_t;
+
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 // 119 / 160
 typedef struct __attribute__((__packed__)) context_t {
@@ -266,11 +272,8 @@ typedef struct __attribute__((__packed__)) context_t {
     uint32_t denominator;
 
     // Token info
-
-    uint8_t token1_address[ADDRESS_LENGTH];
-    uint8_t token1_amount[INT256_LENGTH];
-    uint8_t token2_address[ADDRESS_LENGTH];
-    uint8_t token2_amount[INT256_LENGTH];
+    token_t token1;
+    token_t token2;
 
     // screen utils
     uint8_t screen_array;

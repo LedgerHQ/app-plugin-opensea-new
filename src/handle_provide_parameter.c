@@ -50,7 +50,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
         case FBO__CONSIDERATION_TOKEN:
             PRINTF("FBO__CONSIDERATION_TOKEN\n");
-            copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
+            copy_address(context->token1.address, msg->parameter, ADDRESS_LENGTH);
             context->next_param = FBO__CONSIDERATION_IDENTIFIER;
             break;
         case FBO__CONSIDERATION_IDENTIFIER:
@@ -59,7 +59,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
         case FBO__CONSIDERATION_AMOUNT:
             PRINTF("FBO__CONSIDERATION_AMOUNT\n");
-            copy_parameter(context->token1_amount, msg->parameter, PARAMETER_LENGTH);
+            copy_parameter(context->token1.amount, msg->parameter, PARAMETER_LENGTH);
             context->next_param = FBO__OFFERER;
             break;
         case FBO__OFFERER:
@@ -69,7 +69,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
         case FBO__OFFER_TOKEN:
             PRINTF("FBO__OFFER_TOKEN\n");
-            copy_address(context->token2_address, msg->parameter, PARAMETER_LENGTH);
+            copy_address(context->token2.address, msg->parameter, PARAMETER_LENGTH);
             context->next_param = FBO__OFFER_IDENTIFIER;
             break;
         case FBO__OFFER_IDENTIFIER:
@@ -79,7 +79,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
         case FBO__OFFER_AMOUNT:
             PRINTF("FBO__OFFER_AMOUNT\n");
-            copy_parameter(context->token2_amount, msg->parameter, PARAMETER_LENGTH);
+            copy_parameter(context->token2.amount, msg->parameter, PARAMETER_LENGTH);
             context->next_param = FBO__BASIC_ORDER_TYPE;
             break;
         case FBO__BASIC_ORDER_TYPE:
@@ -99,13 +99,13 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             uint8_t buf_amount[INT256_LENGTH] = {0};
             if (context->order_type == ERC20_NFT || context->order_type == ETH_NFT) {
                 copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-                if (add_uint256(context->token1_amount, buf_amount)) {
+                if (add_uint256(context->token1.amount, buf_amount)) {
                     PRINTF("ERROR: uint256 overflow error.\n");
                     msg->result = ETH_PLUGIN_RESULT_ERROR;
                 }
             } else {  // is NFT_ERC20
                 copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-                if (sub_uint256(context->token2_amount, buf_amount)) {
+                if (sub_uint256(context->token2.amount, buf_amount)) {
                     PRINTF("ERROR: uint256 overflow error.\n");
                     msg->result = ETH_PLUGIN_RESULT_ERROR;
                 }
@@ -195,11 +195,11 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
         case OFFER_TOKEN:
             PRINTF("OFFER_TOKEN\n");
             if (context->offer_item_type != ITEM_TYPE_NATIVE &&
-                !memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH)) {
+                !memcmp(context->token1.address, NULL_ADDRESS, ADDRESS_LENGTH)) {
                 PRINTF("COPY ADDRESS\n");
-                copy_address(context->token1_address, msg->parameter, ADDRESS_LENGTH);
+                copy_address(context->token1.address, msg->parameter, ADDRESS_LENGTH);
             }
-            if (memcmp(context->token1_address, msg->parameter + 12, ADDRESS_LENGTH)) {
+            if (memcmp(context->token1.address, msg->parameter + 12, ADDRESS_LENGTH)) {
                 if (context->offer_item_type == ITEM_TYPE_NFT &&
                     context->current_item_type == context->offer_item_type) {
                     PRINTF("OFFER_ITEM_TYPE_MULTIPLE_NFTS\n");
@@ -233,7 +233,7 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             } else if (context->current_item_type == context->offer_item_type &&
                        context->offer_item_type != ITEM_TYPE_NONE) {
                 PRINTF("SUM CURRENCIES\n");
-                if (add_uint256(context->token1_amount, buf_amount)) {
+                if (add_uint256(context->token1.amount, buf_amount)) {
                     PRINTF("uint256 overflow error.\n");
                     msg->result = ETH_PLUGIN_RESULT_ERROR;
                 }
@@ -277,12 +277,12 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
         case CONSIDERATION_TOKEN:
             PRINTF("CONSIDERATION_TOKEN\n");
             if (context->consideration_item_type != ITEM_TYPE_NATIVE &&
-                !memcmp(context->token2_address, NULL_ADDRESS, ADDRESS_LENGTH)) {
+                !memcmp(context->token2.address, NULL_ADDRESS, ADDRESS_LENGTH)) {
                 PRINTF("COPY ADDRESS\n");
-                copy_address(context->token2_address, msg->parameter, ADDRESS_LENGTH);
+                copy_address(context->token2.address, msg->parameter, ADDRESS_LENGTH);
             }
             if (context->current_item_type == ITEM_TYPE_NFT) {
-                if (memcmp(context->token2_address, msg->parameter + 12, ADDRESS_LENGTH)) {
+                if (memcmp(context->token2.address, msg->parameter + 12, ADDRESS_LENGTH)) {
                     PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS\n");
                     context->consideration_item_type = ITEM_TYPE_MULTIPLE_NFTS;
                 }
@@ -291,12 +291,12 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             else if (context->current_item_type == ITEM_TYPE_NATIVE ||
                      context->current_item_type == ITEM_TYPE_ERC20) {
                 if (context->booleans & IS_ACCEPT) {
-                    if (memcmp(context->token1_address, msg->parameter + 12, ADDRESS_LENGTH)) {
+                    if (memcmp(context->token1.address, msg->parameter + 12, ADDRESS_LENGTH)) {
                         PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_ERC20S\n");
                         context->consideration_item_type = ITEM_TYPE_MULTIPLE_ERC20S;
                     }
                 } else {
-                    if (memcmp(context->token2_address, msg->parameter + 12, ADDRESS_LENGTH)) {
+                    if (memcmp(context->token2.address, msg->parameter + 12, ADDRESS_LENGTH)) {
                         PRINTF("CONSIDERATION_ITEM_TYPE_MULTIPLE_NFTS\n");
                         context->consideration_item_type = ITEM_TYPE_MULTIPLE_NFTS;
                     }
@@ -327,13 +327,13 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
                 PRINTF("IS CURRENCY\n");
                 if (context->booleans & IS_ACCEPT) {
                     PRINTF("SUB CURRENCY\n");
-                    if (sub_uint256(context->token1_amount, buf_amount)) {
+                    if (sub_uint256(context->token1.amount, buf_amount)) {
                         PRINTF("uint256 overflow error.\n");
                         msg->result = ETH_PLUGIN_RESULT_ERROR;
                     }
                 } else {
                     PRINTF("SUM CURRENCY\n");
-                    if (add_uint256(context->token1_amount, buf_amount)) {
+                    if (add_uint256(context->token1.amount, buf_amount)) {
                         PRINTF("uint256 overflow error.\n");
                         msg->result = ETH_PLUGIN_RESULT_ERROR;
                     }
