@@ -213,8 +213,8 @@ typedef enum {
 //} transfer_from_parameter;
 
 // Booleans
-#define BOOL1        (1)
-#define BOOL2        (1 << 1)
+#define ERROR        (1)
+#define IS_BUY4      (1 << 1)
 #define IS_ACCEPT    (1 << 2)
 #define ITEM1_IS_NFT (1 << 3)  // 0: ERC20/ETH, 1: NFT
 #define ITEM2_IS_NFT (1 << 4)
@@ -252,21 +252,21 @@ typedef struct __attribute__((__packed__)) context_t {
     uint8_t orders_index;
     uint8_t param_index;
     uint8_t items_index;
+    uint8_t current_item_type;
 
     // Tx info
     uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
-    uint8_t booleans;    // bitwise booleans
+    uint16_t booleans;   // bitwise booleans
     uint8_t tx_type;
     uint8_t offer_item_type;
     uint8_t consideration_item_type;
-    uint8_t current_item_type;
     uint16_t number_of_nfts;
-
-    // ERC1155 info
-    uint8_t numerator[16];
-    uint8_t denominator[16];
+    uint8_t recipient_address[ADDRESS_LENGTH];
+    uint32_t numerator;
+    uint32_t denominator;
 
     // Token info
+
     uint8_t token1_address[ADDRESS_LENGTH];
     uint8_t token1_amount[INT256_LENGTH];
     uint8_t token2_address[ADDRESS_LENGTH];

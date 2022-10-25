@@ -22,27 +22,28 @@ static void print_item2(context_t *context) {
     if (context->offer_item_type == ITEM_TYPE_MIXED_TYPES)
         PRINTF("OFFER ITEM TYPE FOUND: MIXED TYPES\n", context->offer_item_type);
 
-    if (context->consideration_item_type == ITEM_TYPE_NONE)
-        PRINTF("CONSIDERATION ITEM TYPE FOUND: NONE\n", context->consideration_item_type);
+    // if (context->consideration_item_type == ITEM_TYPE_NONE)
+    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: NONE\n", context->consideration_item_type);
 
-    if (context->consideration_item_type == ITEM_TYPE_NATIVE)
-        PRINTF("CONSIDERATION ITEM TYPE FOUND: NATIVE\n", context->consideration_item_type);
+    // if (context->consideration_item_type == ITEM_TYPE_NATIVE)
+    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: NATIVE\n", context->consideration_item_type);
 
-    if (context->consideration_item_type == ITEM_TYPE_ERC20)
-        PRINTF("CONSIDERATION ITEM TYPE FOUND: ERC20\n", context->consideration_item_type);
+    // if (context->consideration_item_type == ITEM_TYPE_ERC20)
+    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: ERC20\n", context->consideration_item_type);
 
-    if (context->consideration_item_type == ITEM_TYPE_NFT)
-        PRINTF("CONSIDERATION ITEM TYPE FOUND: NFT\n", context->consideration_item_type);
+    // if (context->consideration_item_type == ITEM_TYPE_NFT)
+    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: NFT\n", context->consideration_item_type);
 
-    if (context->consideration_item_type == ITEM_TYPE_NFT)
-        PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE NFTS\n", context->consideration_item_type);
+    // if (context->consideration_item_type == ITEM_TYPE_NFT)
+    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE NFTS\n",
+    //    context->consideration_item_type);
 
-    if (context->consideration_item_type == ITEM_TYPE_MULTIPLE_ERC20S)
-        PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE_ERC20S\n",
-               context->consideration_item_type);
+    // if (context->consideration_item_type == ITEM_TYPE_MULTIPLE_ERC20S)
+    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE_ERC20S\n",
+    //           context->consideration_item_type);
 
-    if (context->consideration_item_type == ITEM_TYPE_MULTIPLE_ERC20S)
-        PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
+    // if (context->consideration_item_type == ITEM_TYPE_MULTIPLE_ERC20S)
+    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
     (context->booleans & IS_ACCEPT) ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
 }
 
