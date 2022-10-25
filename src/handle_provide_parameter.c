@@ -165,7 +165,7 @@ static void print_item(context_t *context) {
 
     if (context->consideration_item_type == ITEM_TYPE_MIXED_TYPES)
         PRINTF("CONSIDERATON_ITEM_TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
-    (context->booleans & IS_ACCEPT) ? PRINTF("BUY_NOW\n") : PRINTF("ACCEPT_OFFER\n");
+    context->booleans &IS_ACCEPT ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
 }
 
 static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
@@ -174,24 +174,26 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
         case OFFER_ITEM_TYPE:
             PRINTF("OFFER_ITEM_TYPE\n");
             PRINTF("OFFER_ITEM_TYPE CURRENT_LENGTH:%d\n", context->current_length);
-            if (context->offer_item_type == ITEM_TYPE_NONE) {
-                if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
-                    PRINTF("OFFER_ITEM_TYPE_NFT\n");
+            if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
+                context->current_item_type = ITEM_TYPE_NFT;
+                if (context->offer_item_type == ITEM_TYPE_NONE) {
+                    PRINTF("OFFER_BUY_NOW\n");
                     context->offer_item_type = ITEM_TYPE_NFT;
-                } else
-                    context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
-            }
-            if (context->offer_item_type <= 2) {
-                PRINTF("OFFER_ACCEPT_OFFER\n");
-                context->screen_array |= IS_ACCEPT;
+                }
             } else {
-                PRINTF("OFFER_BUY_NOW\n");
+                context->current_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+                if (context->offer_item_type == ITEM_TYPE_NONE) {
+                    PRINTF("OFFER_ACCEPT_OFFER\n");
+                    context->booleans |= IS_ACCEPT;
+                    context->offer_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+                }
             }
             print_item(context);  // utilitary
             context->items_index = OFFER_TOKEN;
             break;
         case OFFER_TOKEN:
             PRINTF("OFFER_TOKEN\n");
+            if (context->booleans & IS_ACCEPT) PRINTF("GPIRIOU DEBUG\n");
             if (!memcmp(context->token1_address, NULL_ADDRESS, ADDRESS_LENGTH))  ///// TB FIXED
             {
                 PRINTF("COPY ADDRESS\n");
@@ -250,13 +252,18 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
     switch ((considerations) context->items_index) {
         case CONSIDERATION_ITEM_TYPE:
             PRINTF("CONSIDERATION_ITEM_TYPE\n");
-            if (context->consideration_item_type == ITEM_TYPE_NONE) {
-                PRINTF("SET CONSIDERATION ITEM\n");
-                if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1 > 1) {
+            PRINTF("SET CONSIDERATION ITEM\n");
+            if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
+                context->current_item_type = ITEM_TYPE_NFT;
+                if (context->consideration_item_type == ITEM_TYPE_NONE) {
                     context->consideration_item_type = ITEM_TYPE_NFT;
-                } else
+                }
+            } else {
+                context->current_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+                if (context->consideration_item_type == ITEM_TYPE_NONE) {
                     context->consideration_item_type =
                         U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
+                }
             }
             print_item(context);  // utilitary
             context->items_index = CONSIDERATION_TOKEN;

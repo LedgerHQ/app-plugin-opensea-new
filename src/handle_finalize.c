@@ -43,7 +43,7 @@ static void print_item2(context_t *context) {
 
     if (context->consideration_item_type == ITEM_TYPE_MULTIPLE_ERC20S)
         PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->consideration_item_type);
-    (context->booleans) & IS_ACCEPT ? PRINTF("BUY_NOW\n") : PRINTF("ACCEPT_OFFER\n");
+    (context->booleans & IS_ACCEPT) ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
 }
 
 static void print_context(context_t *context) {
