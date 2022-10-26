@@ -20,6 +20,14 @@
           ],
           "method": "fulfillOrder",
           "plugin": "SeaPort"
+        },
+        "0xed98a574": {
+          "erc20OfInterest": [
+            "orders.0.parameters.consideration.0.token",
+            "orders.0.parameters.offer.0.token"
+          ],
+          "method": "fulfillAvailableOrders",
+          "plugin": "SeaPort"
         }
       }
     }
