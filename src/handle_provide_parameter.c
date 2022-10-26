@@ -169,46 +169,40 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
         case OFFER_ITEM_TYPE:
             PRINTF("OFFER_ITEM_TYPE\n");
             PRINTF("OFFER_ITEM_TYPE CURRENT_LENGTH:%d\n", context->current_length);
-            context->current_item_type = ITEM_TYPE_NONE;
-            if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
-                context->current_item_type = ITEM_TYPE_NFT;
-                if (context->token1.type == ITEM_TYPE_NONE) {
-                    PRINTF("OFFER_BUY_NOW\n");
-                    context->token1.type = ITEM_TYPE_NFT;
-                }
-            } else {
-                context->current_item_type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
-                if (context->token1.type == ITEM_TYPE_NONE) {
-                    PRINTF("OFFER_ACCEPT_OFFER\n");
-                    context->booleans |= IS_ACCEPT;
-                    context->token1.type = U2BE(msg->parameter, PARAMETER_LENGTH - 2) + 1;
-                }
+
+            // only set token1.type on first Offer.
+            if (context->token1.type == UNSET) {
+                context->token1.type = get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
+                if (context->token1.type == ERC20) context->booleans |= IS_ACCEPT;
             }
+            // always set current_item_type
+            context->current_item_type =
+                get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
+
             print_item(context, context->token1);  // utilitary
             context->items_index = OFFER_TOKEN;
             break;
         case OFFER_TOKEN:
             PRINTF("OFFER_TOKEN\n");
-            if (context->token1.type != ITEM_TYPE_NATIVE &&
-                !memcmp(context->token1.address, NULL_ADDRESS, ADDRESS_LENGTH)) {
-                PRINTF("COPY ADDRESS\n");
-                copy_address(context->token1.address, msg->parameter, ADDRESS_LENGTH);
-            }
-            if (memcmp(context->token1.address, msg->parameter + 12, ADDRESS_LENGTH)) {
-                if (context->token1.type == ITEM_TYPE_NFT &&
-                    context->current_item_type == context->token1.type) {
-                    PRINTF("OFFER_ITEM_TYPE_MULTIPLE_NFTS\n");
-                    context->token1.type = ITEM_TYPE_MULTIPLE_NFTS;
-                } else if ((context->token1.type == ITEM_TYPE_NATIVE ||
-                            context->token1.type == ITEM_TYPE_ERC20) &&
-                           context->current_item_type == context->token1.type) {
-                    PRINTF("OFFER_ITEM_TYPE_MULTIPLE_ERC20S\n");
-                    context->token1.type = ITEM_TYPE_MULTIPLE_ERC20S;
-                } else {
-                    PRINTF("OFFER_ITEM_TYPE_MIXED_TYPES\n");
-                    context->token1.type = ITEM_TYPE_MIXED_TYPES;
+
+            if (context->token1.type == NATIVE) {
+                if (context->current_item_type == ERC20) context->token1.type = MULTIPLE_ERC20;
+            } else {  // token1.type != NATIVE
+                // to set token1.address only on consi[0]
+                if (!memcmp(context->token1.address, NULL_ADDRESS, ADDRESS_LENGTH))
+                    copy_address(context->token1.address, msg->parameter, ADDRESS_LENGTH);
+                else {  // on consi[>0]
+                    // is same type and different address as consi[0]
+                    if (context->current_item_type == context->token1.type &&
+                        memcmp(context->token1.address,
+                               msg->parameter + PARAMETER_LENGTH - ADDRESS_LENGTH,
+                               ADDRESS_LENGTH))
+                        // change to multiple if a new address from the same type is found
+                        context->token1.type =
+                            (context->token1.type == ERC20) ? MULTIPLE_ERC20 : MULTIPLE_NFTS;
                 }
             }
+
             context->items_index = OFFER_IDENTIFIER;
             break;
         case OFFER_IDENTIFIER:
@@ -220,19 +214,22 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             uint8_t buf_amount[INT256_LENGTH] = {0};
             copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
             PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
-            if (context->current_item_type == ITEM_TYPE_NFT &&
-                (context->token1.type == ITEM_TYPE_NFT ||
-                 context->token1.type == ITEM_TYPE_MULTIPLE_NFTS)) {
-                PRINTF("SUM NFT\n");
-                context->number_of_nfts += U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            } else if (context->current_item_type == context->token1.type &&
-                       context->token1.type != ITEM_TYPE_NONE) {
-                PRINTF("SUM CURRENCIES\n");
+
+            // add if t1.type is equal to current_item_type && t1.type is not multiple
+            if (context->token1.type == context->current_item_type) {
                 if (add_uint256(context->token1.amount, buf_amount)) {
-                    PRINTF("uint256 overflow error.\n");
+                    PRINTF("ERROR: uint256 overflow error.\n");
                     msg->result = ETH_PLUGIN_RESULT_ERROR;
                 }
             }
+            // else add if MULTIPLE_NFTS
+            else if (context->token1.type == MULTIPLE_NFTS && context->current_item_type == NFT) {
+                if (add_uint256(context->token1.amount, buf_amount)) {
+                    PRINTF("ERROR: uint256 overflow error.\n");
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                }
+            }
+
             context->items_index = OFFER_END_AMOUNT;
             break;
         case OFFER_END_AMOUNT:
@@ -271,7 +268,7 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
                 if (context->current_item_type == ERC20) context->token2.type = MULTIPLE_ERC20;
             } else {  // t2.type != NATIVE
                 // to set t2.address only on consi[0]
-                if (!memcmp(context->token2.address, NULL_ADDRESS, 20))
+                if (!memcmp(context->token2.address, NULL_ADDRESS, ADDRESS_LENGTH))
                     copy_address(context->token2.address, msg->parameter, ADDRESS_LENGTH);
                 else {  // on consi[>0]
                     // is same type and different address as consi[0]
@@ -446,13 +443,10 @@ static void parse_orders(ethPluginProvideParameter_t *msg, context_t *context) {
         case ORDER_SIGNATURE:
             PRINTF("ORDER_SIGNATURE\n");  // If len = 0 what happens ?
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            if (context->current_length % 32) {
-                context->skip++;
-            }
-            while (context->current_length >= 32) {
-                context->current_length -= 32;
-                context->skip++;
-            }
+
+            context->skip = context->current_length / PARAMETER_LENGTH;
+            if (context->current_length % PARAMETER_LENGTH) context->skip++;
+
             context->orders_len--;
             context->orders_index = ORDER_PARAMETER_OFFSET;
             break;
@@ -497,25 +491,19 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
         case ADVANCED_SIGNATURE_LEN:
             PRINTF("ADVANCED_SIGNATURE_LEN\n");
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            if (context->current_length % 32) {
-                context->skip++;
-            }
-            while (context->current_length >= 32) {
-                context->current_length -= 32;
-                context->skip++;
-            }
+
+            context->skip = context->current_length / PARAMETER_LENGTH;
+            if (context->current_length % PARAMETER_LENGTH) context->skip++;
+
             context->orders_index = ADVANCED_EXTRADATA_LEN;
             break;
         case ADVANCED_EXTRADATA_LEN:
             PRINTF("ADVANCED_EXTRADATA_LEN\n");
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            if (context->current_length % 32) {
-                context->skip++;
-            }
-            while (context->current_length >= 32) {
-                context->current_length -= 32;
-                context->skip++;
-            }
+
+            context->skip = context->current_length / PARAMETER_LENGTH;
+            if (context->current_length % PARAMETER_LENGTH) context->skip++;
+
             context->orders_len--;
             context->orders_index = ADVANCED_PARAMETER_OFFSET;
             break;
@@ -636,7 +624,7 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
             break;
         case FAADO_ORDERS_LEN:
             PRINTF("FAADO_ORDERS_LEN\n");
-            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);  // TODO: protect copy
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = FAADO_ORDERS;
