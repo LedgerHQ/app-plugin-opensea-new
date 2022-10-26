@@ -73,15 +73,29 @@ void handle_init_contract(void *parameters) {
             context->next_param = FAADO_OFFSET;
             break;
         case MATCH_ORDERS:
-            PRINTF("IN MATCH_ORDERS_SELECTOR\n");
+            PRINTF("IN MATCH_ORDERS\n");
             context->next_param = MO_OFFSET;
             break;
+        case MATCH_ADVANCED_ORDERS:
+            PRINTF("IN MATCH_ADVANCED_ORDERS\n");
+            context->next_param = MAO_OFFSET;
+            break;
+        case CANCEL:
+            PRINTF("IN CANCEL\n");
+            break;
+        case INCREMENT_COUNTER:
+            PRINTF("IN INCREMENT_COUNTER\n");
+            break;
         case WETH_DEPOSIT:
+            PRINTF("IN WETH_DEPOSIT\n");
         case WETH_WITHDRAW:
+            PRINTF("IN WETH_WITHDRAW\n");
         case POLYGON_BRIDGE_DEPOSIT_ETH:
+            PRINTF("IN POLYGON_BRIDGE_DEPOSIT_ETH\n");
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+            PRINTF("IN ARBITRUM_BRIDGE_DEPOSIT_ETH\n");
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            PRINTF("IN ADD_FUNDS_ETH\n");
+            PRINTF("IN OPTIMISM_BRIDGE_DEPOSIT_ETH\n");
             context->next_param = AMOUNT;
             break;
         default:

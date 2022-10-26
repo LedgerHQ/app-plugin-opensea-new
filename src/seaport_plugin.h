@@ -33,6 +33,10 @@ typedef enum {
     FULFILL_ADVANCED_ORDER,
     FULFILL_AVAILABLE_ADVANCED_ORDERS,
     MATCH_ORDERS,
+    MATCH_ADVANCED_ORDERS,
+    CANCEL,
+    INCREMENT_COUNTER,
+    //
     WETH_DEPOSIT,
     WETH_WITHDRAW,
     POLYGON_BRIDGE_DEPOSIT_ETH,
@@ -42,7 +46,7 @@ typedef enum {
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 11
+#define NUM_SELECTORS 14
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -134,7 +138,7 @@ typedef enum {
 typedef enum {
     AMOUNT,
 } add_funds_eth;  // all methods for adding eth funds (bridge / wrap / unwrap eth) use same amount
-                  // type.
+// type.
 
 typedef enum {
     ADVANCED_PARAMETER_OFFSET,
@@ -327,4 +331,4 @@ uint8_t does_number_fit(const uint8_t *parameter, uint8_t parameter_length, uint
 uint8_t calc_number_of_nfts(uint8_t *amount,
                             uint32_t numerator,
                             uint32_t denominator,
-                            uint32_t *number_of_nfts);
+                            uint16_t *number_of_nfts);

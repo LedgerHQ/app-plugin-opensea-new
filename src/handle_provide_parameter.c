@@ -871,6 +871,12 @@ void handle_provide_parameter(void *parameters) {
         case MATCH_ORDERS:
             handle_match_orders(msg, context);
             break;
+        case MATCH_ADVANCED_ORDERS:
+            handle_match_advanced_orders(msg, context);
+            break;
+        case CANCEL:
+        case INCREMENT_COUNTER:
+            break;
         case WETH_DEPOSIT:
         case WETH_WITHDRAW:
         case POLYGON_BRIDGE_DEPOSIT_ETH:
