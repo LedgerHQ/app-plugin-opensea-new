@@ -256,52 +256,50 @@ typedef enum item_type_e {
 #define RIGHT_SCROLL 1
 #define LEFT_SCROLL  0
 
+// sizeof(token_t): 53
+// aligned on 32
 typedef struct token_t {
-    uint8_t type;
     uint8_t amount[INT256_LENGTH];
     uint8_t address[ADDRESS_LENGTH];
+    uint8_t type;
 } token_t;
-// _Static_assert(sizeof(token_t) != 53, "token_t is 53");
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 // 119 / 160
-typedef struct __attribute__((__packed__)) context_t {
-    // Parsing
-    uint8_t next_param;
-    uint16_t current_length;        // is the length of the current array
-    uint32_t current_tuple_offset;  // is the value from which a given offset is calculated
-    uint8_t skip;                   // number of parameters to skip
-
-    // Struct parsing
+typedef struct context_t {
+    // aligned
+    token_t token1;  // 53
+    uint32_t denominator;
+    uint32_t numerator;
     uint8_t orders_len;
     uint8_t orders_index;
     uint8_t param_index;
+    // +64
+
+    token_t token2;                 // 53
+    uint32_t current_tuple_offset;  // is the value from which a given offset is calculated
+    uint16_t current_length;        // is the length of the current array
+    uint16_t booleans;              // bitwise booleans
+    uint16_t number_of_nfts;
+    uint8_t next_param;
+    // +64
+
+    uint8_t recipient_address[ADDRESS_LENGTH];
+    uint8_t skip;  // number of parameters to skip
     uint8_t items_index;
     uint8_t current_item_type;
-
-    // Tx info
     uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
-    uint16_t booleans;   // bitwise booleans
     uint8_t tx_type;
-    uint16_t number_of_nfts;
-    uint8_t recipient_address[ADDRESS_LENGTH];
-    uint32_t numerator;
-    uint32_t denominator;
-
-    // Token info
-    token_t token1;
-    token_t token2;
-
     // screen utils
     uint8_t screen_array;
     uint8_t previous_screen_index;
     uint8_t plugin_screen_index;
-
     // Method ID
     selector_t selectorIndex;
+    // +20 + 9(uint8) = 29
 } context_t;
 
-// TOTAL =
+// TOTAL = 160
 
 // Piece of code that will check that the above structure is not bigger than 5
 // * 32. Do not remove this check.
