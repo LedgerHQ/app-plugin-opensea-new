@@ -85,8 +85,31 @@ void handle_finalize(void *parameters) {
     ethPluginFinalize_t *msg = (ethPluginFinalize_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
 
-    context->screen_array |= SEND_UI;
-    context->screen_array |= RECEIVE_UI;
+    switch (context->selectorIndex) {
+        case FULFILL_ORDER:
+        case FULFILL_BASIC_ORDER:
+        case FULFILL_AVAILABLE_ORDERS:
+        case FULFILL_ADVANCED_ORDER:
+        case FULFILL_AVAILABLE_ADVANCED_ORDERS:
+        case MATCH_ORDERS:
+        case MATCH_ADVANCED_ORDERS:
+            context->screen_array |= SEND_UI;
+            context->screen_array |= RECEIVE_UI;
+            break;
+        case CANCEL:
+        case INCREMENT_COUNTER:
+            context->screen_array |= CANCEL;
+            break;
+        case WETH_DEPOSIT:
+        case WETH_WITHDRAW:
+        case POLYGON_BRIDGE_DEPOSIT_ETH:
+        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            context->screen_array |= ADD_FUNDS;
+            break;
+        default:
+            break;
+    }
 
     // set IS_ETH if one of the addresses is 0x0000...
     if (!memcmp(context->token1.address, NULL_ADDRESS, ADDRESS_LENGTH) ||

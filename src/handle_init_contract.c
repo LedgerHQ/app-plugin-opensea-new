@@ -88,15 +88,10 @@ void handle_init_contract(void *parameters) {
             PRINTF("IN INCREMENT_COUNTER\n");
             break;
         case WETH_DEPOSIT:
-            PRINTF("IN WETH_DEPOSIT\n");
         case WETH_WITHDRAW:
-            PRINTF("IN WETH_WITHDRAW\n");
         case POLYGON_BRIDGE_DEPOSIT_ETH:
-            PRINTF("IN POLYGON_BRIDGE_DEPOSIT_ETH\n");
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
-            PRINTF("IN ARBITRUM_BRIDGE_DEPOSIT_ETH\n");
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            PRINTF("IN OPTIMISM_BRIDGE_DEPOSIT_ETH\n");
             context->next_param = AMOUNT;
             break;
         default:

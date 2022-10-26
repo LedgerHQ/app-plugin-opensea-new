@@ -21,6 +21,20 @@
           "method": "fulfillOrder",
           "plugin": "SeaPort"
         }
+      },
+      "address": "0x00000000006c3852cbef3e08e8df289169ede581",
+      "contractName": "SeaPort",
+      "selectors": {
+        "0xd0e30db0": {
+          "erc20OfInterest": [],
+          "method": "deposit",
+          "plugin": "SeaPort"
+        },
+        "0x2e1a7d4d": {
+          "erc20OfInterest": [],
+          "method": "withdraw",
+          "plugin": "SeaPort"
+        }
       }
     }
   ],

@@ -234,7 +234,26 @@ void handle_query_contract_ui(void *parameters) {
 
     switch (context->plugin_screen_index) {
         case SEND_UI:
-            strlcpy(msg->title, "Send", msg->titleLength);
+            switch (context->selectorIndex) {
+                case WETH_DEPOSIT:
+                    strlcpy(msg->title, "Wrap", msg->titleLength);
+                    break;
+                case WETH_WITHDRAW:
+                    strlcpy(msg->title, "Unwrap", msg->titleLength);
+                    break;
+                case POLYGON_BRIDGE_DEPOSIT_ETH:
+                    strlcpy(msg->title, "To Polygon", msg->titleLength);
+                    break;
+                case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+                    strlcpy(msg->title, "To Arbitrum", msg->titleLength);
+                    break;
+                case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+                    strlcpy(msg->title, "To Optimism", msg->titleLength);
+                    break;
+                default:
+                    strlcpy(msg->title, "Send", msg->titleLength);
+                    break;
+            }
             set_send_ui(msg, context);
             break;
         case SEND_UI_ERR:
@@ -244,10 +263,6 @@ void handle_query_contract_ui(void *parameters) {
         case RECEIVE_UI:
             strlcpy(msg->title, "Receive", msg->titleLength);
             set_receive_ui(msg, context);
-            break;
-        case RECEIVE_UI_ERR:
-            strlcpy(msg->title, "with address:", msg->titleLength);
-            set_receive_ui_err(msg, context);
             break;
             // case LAST_UI:
     }
