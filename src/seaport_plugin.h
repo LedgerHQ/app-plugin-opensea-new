@@ -203,6 +203,24 @@ typedef enum {
     TX_TYPE_COULD_NOT_PARSE,
 } tx_type;
 
+typedef enum sol_ItemType_e {
+    SOL_NATIVE,
+    SOL_ERC20,
+    SOL_ERC721,
+    SOL_ERC1155,
+    SOL_ERC721_WITH_CRITERIA,
+    SOL_ERC1155_WITH_CRITERIA
+} sol_ItemType_e;
+
+typedef enum item_type_e {
+    UNSET,
+    NATIVE,
+    ERC20,
+    NFT,
+    MULTIPLE_ERC20,
+    MULTIPLE_NFTS,
+} item_type_e;
+
 /* 721 Standard TransferFrom Function */
 
 // typedef enum
