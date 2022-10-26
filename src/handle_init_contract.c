@@ -82,6 +82,7 @@ void handle_init_contract(void *parameters) {
             break;
         case CANCEL:
             PRINTF("IN CANCEL\n");
+            context->next_param = CANCEL_ORDER_OFFSET;
             break;
         case INCREMENT_COUNTER:
             PRINTF("IN INCREMENT_COUNTER\n");

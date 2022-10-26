@@ -263,7 +263,6 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             break;
         case CONSIDERATION_TOKEN:
             PRINTF("CONSIDERATION_TOKEN\n");
-
             if (context->token2.type == NATIVE) {
                 if (context->current_item_type == ERC20) context->token2.type = MULTIPLE_ERC20;
             } else {  // t2.type != NATIVE
@@ -506,6 +505,29 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
 
             context->orders_len--;
             context->orders_index = ADVANCED_PARAMETER_OFFSET;
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->param_index);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch ((match_advanced_orders) context->next_param) {
+        case CANCEL_ORDER_OFFSET:
+            PRINTF("CANCEL_ORDER_OFFSET\n");
+            context->next_param = CANCEL_ORDERS_LEN;
+            break;
+        case CANCEL_ORDERS_LEN:
+            PRINTF("CANCEL_ORDERS_LEN\n");
+            if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
+                context->booleans |= ORDERS;
+            }
+            context->next_param = CANCEL_ORDERS;
+            break;
+        case CANCEL_ORDERS:
+            PRINTF("CANCEL_ORDERS\n");
             break;
         default:
             PRINTF("Param not supported: %d\n", context->param_index);
@@ -875,6 +897,8 @@ void handle_provide_parameter(void *parameters) {
             handle_match_advanced_orders(msg, context);
             break;
         case CANCEL:
+            handle_cancel(msg, context);
+            break;
         case INCREMENT_COUNTER:
             break;
         case WETH_DEPOSIT:

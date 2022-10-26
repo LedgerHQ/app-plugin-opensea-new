@@ -136,6 +136,12 @@ typedef enum {
 } fulfill_available_orders;
 
 typedef enum {
+    CANCEL_ORDER_OFFSET,
+    CANCEL_ORDERS_LEN,
+    CANCEL_ORDERS,
+} cancel;
+
+typedef enum {
     AMOUNT,
 } add_funds_eth;  // all methods for adding eth funds (bridge / wrap / unwrap eth) use same amount
 // type.
@@ -253,6 +259,7 @@ typedef enum item_type_e {
 #define ITEM1_FOUND  (1 << 5)
 #define ITEM2_FOUND  (1 << 6)
 #define IS_ETH       (1 << 7)
+#define ORDERS       (1 << 8)
 
 #define UPPER_P(x) x->elements[0]
 #define LOWER_P(x) x->elements[1]
