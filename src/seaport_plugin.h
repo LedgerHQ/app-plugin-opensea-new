@@ -33,11 +33,16 @@ typedef enum {
     FULFILL_ADVANCED_ORDER,
     FULFILL_AVAILABLE_ADVANCED_ORDERS,
     MATCH_ORDERS,
+    WETH_DEPOSIT,
+    WETH_WITHDRAW,
+    POLYGON_BRIDGE_DEPOSIT_ETH,
+    ARBITRUM_BRIDGE_DEPOSIT_ETH,
+    OPTIMISM_BRIDGE_DEPOSIT_ETH,
 } selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 6
+#define NUM_SELECTORS 11
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -125,6 +130,11 @@ typedef enum {
     FAO_ORDERS,
     FAO_FULFILLMEMTS,
 } fulfill_available_orders;
+
+typedef enum {
+    AMOUNT,
+} add_funds_eth;  // all methods for adding eth funds (bridge / wrap / unwrap eth) use same amount
+                  // type.
 
 typedef enum {
     ADVANCED_PARAMETER_OFFSET,
@@ -311,10 +321,10 @@ void handle_init_contract(void *parameters);
 void handle_finalize(void *parameters);
 void handle_provide_token(void *parameters);
 void handle_query_contract_id(void *parameters);
-
 uint8_t add_uint256(uint8_t *a, uint8_t *b);
 uint8_t sub_uint256(uint8_t *a, uint8_t *b);
+uint8_t does_number_fit(const uint8_t *parameter, uint8_t parameter_length, uint8_t size);
 uint8_t calc_number_of_nfts(uint8_t *amount,
                             uint32_t numerator,
                             uint32_t denominator,
-                            uint16_t *number_of_nfts);
+                            uint32_t *number_of_nfts);

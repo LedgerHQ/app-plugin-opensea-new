@@ -31,6 +31,11 @@ static const uint32_t FULFILL_AVAILABLE_ORDERS_SELECTOR = 0xed98a574;
 static const uint32_t FULFILL_ADVANCED_ORDER_SELECTOR = 0xe7acab24;
 static const uint32_t FULFILL_AVAILABLE_ADVANCED_ORDERS_SELECTOR = 0x87201b41;
 static const uint32_t MATCH_ORDERS_SELECTOR = 0xa8174404;
+static const uint32_t WETH_DEPOSIT_SELECTOR = 0xd0e30db0;
+static const uint32_t WETH_WITHDRAW_SELECTOR = 0x2e1a7d4d;
+static const uint32_t POLYGON_BRIDGE_DEPOSIT_ETH_SELECTOR = 0x4faa8a26;
+static const uint32_t ARBITRUM_BRIDGE_DEPOSIT_ETH_SELECTOR = 0x439370b1;
+static const uint32_t OPTIMISM_BRIDGE_DEPOSIT_ETH_SELECTOR = 0xb1a1a882;
 
 // Array of all the different plugin selectors. Make sure this follows the same
 // order as the enum defined in `seaport_plugin.h`
@@ -41,6 +46,13 @@ const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS] = {
     FULFILL_ADVANCED_ORDER_SELECTOR,
     FULFILL_AVAILABLE_ADVANCED_ORDERS_SELECTOR,
     MATCH_ORDERS_SELECTOR,
+    //
+    WETH_DEPOSIT_SELECTOR,
+    WETH_WITHDRAW_SELECTOR,
+    POLYGON_BRIDGE_DEPOSIT_ETH_SELECTOR,
+    POLYGON_BRIDGE_DEPOSIT_ETH_SELECTOR,
+    ARBITRUM_BRIDGE_DEPOSIT_ETH_SELECTOR,
+    OPTIMISM_BRIDGE_DEPOSIT_ETH_SELECTOR,
 };
 
 // Function to dispatch calls from the ethereum app.

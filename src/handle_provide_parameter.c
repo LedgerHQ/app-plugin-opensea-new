@@ -813,6 +813,24 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg, context_t *c
     }
 }
 
+static void handle_add_funds_eth(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch ((add_funds_eth) context->next_param) {
+        case AMOUNT:
+            PRINTF("AMOUNT\n$");
+            uint8_t buf_amount[INT256_LENGTH] = {0};
+            copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+            PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
+            if (add_uint256(context->token1.amount, buf_amount)) {
+                PRINTF("uint256 overflow error.\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            }
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->next_param);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
 void handle_provide_parameter(void *parameters) {
     ethPluginProvideParameter_t *msg = (ethPluginProvideParameter_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
@@ -852,6 +870,13 @@ void handle_provide_parameter(void *parameters) {
             break;
         case MATCH_ORDERS:
             handle_match_orders(msg, context);
+            break;
+        case WETH_DEPOSIT:
+        case WETH_WITHDRAW:
+        case POLYGON_BRIDGE_DEPOSIT_ETH:
+        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            handle_add_funds_eth(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

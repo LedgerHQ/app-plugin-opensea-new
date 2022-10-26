@@ -76,6 +76,14 @@ void handle_init_contract(void *parameters) {
             PRINTF("IN MATCH_ORDERS_SELECTOR\n");
             context->next_param = MO_OFFSET;
             break;
+        case WETH_DEPOSIT:
+        case WETH_WITHDRAW:
+        case POLYGON_BRIDGE_DEPOSIT_ETH:
+        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            PRINTF("IN ADD_FUNDS_ETH\n");
+            context->next_param = AMOUNT;
+            break;
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);
             msg->result = ETH_PLUGIN_RESULT_ERROR;

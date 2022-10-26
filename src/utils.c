@@ -45,7 +45,7 @@ uint8_t sub_uint256(uint8_t *a, uint8_t *b) {
 */
 
 /* check if number in parameter fit in uint size */
-uint8_t does_number_fit(uint8_t *parameter, uint8_t parameter_length, uint8_t size) {
+uint8_t does_number_fit(const uint8_t *parameter, uint8_t parameter_length, uint8_t size) {
     for (uint8_t i = 0; i < parameter_length - size; i++) {
         if (parameter[i] != 0) return 1;
     }
