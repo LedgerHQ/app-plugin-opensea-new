@@ -9,8 +9,11 @@ static void debug_items(ethQueryContractUI_t *msg, context_t *context) {
     PRINTF("__debug_items()__\n");
     PRINTF("token1.address: %.*H\n", ADDRESS_LENGTH, context->token1.address);
     PRINTF("token2.address: %.*H\n", ADDRESS_LENGTH, context->token2.address);
+    PRINTF("FLAG 10\n");
     PRINTF("token1.amount: %.*H\n", INT256_LENGTH, context->token1.amount);
+    PRINTF("FLAG 11\n");
     PRINTF("token2.amount: %.*H\n", INT256_LENGTH, context->token2.amount);
+    PRINTF("FLAG 12\n");
 
     if (msg->item1 != NULL)
         PRINTF("UI PENZO msg->item1->nft.collectionName: %s\n", msg->item1->nft.collectionName);
@@ -141,15 +144,79 @@ static void output_item2(ethQueryContractUI_t *msg, context_t *context) {
         PRINTF("PENZO ERROR output_item2() did not handle that case.\n");
 }
 
+static void display_item(ethQueryContractUI_t *msg, token_t token, uint8_t is_found) {
+    PRINTF("__display_item__\n");
+    PRINTF("\ttoken.type: %d\n", token.type);
+    switch (token.type) {
+        case NATIVE:
+            PRINTF("FLAG 1\n");
+            amountToString(token.amount,
+                           INT256_LENGTH,
+                           DEFAULT_DECIMAL,
+                           ETH,
+                           msg->msg,
+                           msg->msgLength);
+            break;
+        case ERC20:
+            PRINTF("FLAG 2\n");
+            PRINTF("current token found: %d\n", is_found);
+            if (is_found)
+                amountToString(token.amount,
+                               INT256_LENGTH,
+                               msg->item1->token.decimals,
+                               msg->item1->token.ticker,
+                               msg->msg,
+                               msg->msgLength);
+            // TODO handle ERC20 not found
+            else
+                amountToString(token.amount,
+                               INT256_LENGTH,
+                               DEFAULT_DECIMAL,
+                               UNKNOWN_ERC20,
+                               msg->msg,
+                               msg->msgLength);
+            break;
+        case NFT:
+            PRINTF("FLAG 3\n");
+            // TODO check U4BE() safety
+            PRINTF("case NFT, is_found: %d\n", is_found);
+            if (is_found)
+                snprintf(msg->msg,
+                         msg->msgLength,
+                         "%d %s",
+                         U4BE(token.amount, INT256_LENGTH - 4),
+                         msg->item2->nft.collectionName);  // TODO check U4BE() safety
+            // msg->item1->nft.collectionName);  // TODO check U4BE() safety
+            else
+                snprintf(msg->msg,
+                         msg->msgLength,
+                         "%d %s",
+                         U4BE(token.amount, INT256_LENGTH - 4),
+                         UNKNOWN_NFT);
+            // TODO handle found NFT
+            break;
+        case MULTIPLE_ERC20:
+            PRINTF("FLAG 4\n");
+            break;
+        case MULTIPLE_NFTS:
+            PRINTF("FLAG 5\n");
+            break;
+        default:
+            PRINTF("ERROR UI display_item ERROR!!!!\n");
+    }
+}
+
 /*
 ** Screens
 */
 
 static void set_send_ui(ethQueryContractUI_t *msg, context_t *context) {
-    output_item1(msg, context);
+    // output_item1(msg, context);
+    display_item(msg, context->token1, context->booleans & ITEM1_FOUND);
 }
 static void set_receive_ui(ethQueryContractUI_t *msg, context_t *context) {
-    output_item2(msg, context);
+    // output_item2(msg, context);
+    display_item(msg, context->token2, context->booleans & ITEM2_FOUND);
 }
 
 static void set_send_ui_err(ethQueryContractUI_t *msg, context_t *context) {

@@ -99,12 +99,18 @@ void handle_finalize(void *parameters) {
         switch (context->order_type) {
             case ETH_NFT:
                 context->booleans |= ITEM2_IS_NFT;
+                context->token1.type = NATIVE;
+                context->token2.type = NFT;
                 break;
             case ERC20_NFT:
                 context->booleans |= ITEM2_IS_NFT;
+                context->token1.type = ERC20;
+                context->token2.type = NFT;
                 break;
             case NFT_ERC20:
                 context->booleans |= ITEM1_IS_NFT;
+                context->token1.type = NFT;
+                context->token2.type = ERC20;
                 break;
             default:
                 PRINTF("PENZO FINALIZE selectorIndex switch ERROR\n");

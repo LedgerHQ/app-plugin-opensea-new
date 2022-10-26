@@ -260,11 +260,12 @@ typedef enum item_type_e {
 #define LOWER(x)   x.elements[1]
 
 // screen array correspondance
-#define SEND_UI        1  // Must remain first screen in screen array and always up.
-#define SEND_UI_ERR    (1 << 1)
-#define RECEIVE_UI     (1 << 2)
-#define RECEIVE_UI_ERR (1 << 3)
-#define LAST_UI        (1 << 7)  // Must remain last screen in array.
+#define SEND_UI           1  // Must remain first screen in screen array and always up.
+#define SEND_UI_ERR       (1 << 1)
+#define RECEIVE_UI        (1 << 2)
+#define RECEIVE_UI_ERR    (1 << 3)
+#define ANOTHER_RECIPIENT (1 << 4)
+#define LAST_UI           (1 << 7)  // Must remain last screen in array.
 
 // Screens utility macros
 #define RIGHT_SCROLL 1
