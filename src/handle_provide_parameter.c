@@ -635,6 +635,17 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
             PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
             if (context->orders_len == 0) {
                 PRINTF("END ORDERS\n");
+                if (context->token1.type == NFT || context->token1.type == MULTIPLE_NFTS) {
+                    // calc number of nfts using numerator and denominator
+                    if (calc_number_of_nfts(context->token1.amount,
+                                            context->numerator,
+                                            context->denominator,
+                                            &context->number_of_nfts)) {
+                        msg->result =
+                            ETH_PLUGIN_RESULT_ERROR;  // TODO check how to handle this error
+                        break;
+                    }
+                }
                 context->next_param = FAADO_CRITERIA_AND_FULFILLMENTS;
             }
             break;

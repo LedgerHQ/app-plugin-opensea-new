@@ -261,6 +261,7 @@ typedef struct token_t {
     uint8_t amount[INT256_LENGTH];
     uint8_t address[ADDRESS_LENGTH];
 } token_t;
+// _Static_assert(sizeof(token_t) != 53, "token_t is 53");
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
 // 119 / 160
@@ -312,3 +313,10 @@ void handle_init_contract(void *parameters);
 void handle_finalize(void *parameters);
 void handle_provide_token(void *parameters);
 void handle_query_contract_id(void *parameters);
+
+uint8_t add_uint256(uint8_t *a, uint8_t *b);
+uint8_t sub_uint256(uint8_t *a, uint8_t *b);
+uint8_t calc_number_of_nfts(uint8_t *amount,
+                            uint32_t numerator,
+                            uint32_t denominator,
+                            uint16_t *number_of_nfts);

@@ -60,7 +60,7 @@ uint8_t does_number_fit(uint8_t *parameter, uint8_t parameter_length, uint8_t si
 uint8_t calc_number_of_nfts(uint8_t *amount,
                             uint32_t numerator,
                             uint32_t denominator,
-                            uint32_t *number_of_nfts) {
+                            uint16_t *number_of_nfts) {
     PRINTF("calc_number_of_nfts(): sizeof 4 == %d\n", sizeof(uint32_t));
     uint32_t value = 0;
     PRINTF("calc_number_of_nfts(): sizeof value == %d\n", sizeof(value));
