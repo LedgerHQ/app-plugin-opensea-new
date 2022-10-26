@@ -85,3 +85,38 @@ uint8_t calc_number_of_nfts(uint8_t *amount,
     if ((*number_of_nfts) < newValue) return 1;  // overflow
     return 0;
 }
+
+/*
+** swap token1 and token2 pointer's
+*/
+
+void swap_tokens(context_t *context) {
+    PRINTF("Swaping tokens.\n");
+    token_t save;
+    save = context->token1;
+    context->token1 = context->token2;
+    context->token2 = save;
+
+    // PRINTF("\nbefore swap:\nITEM1_FOUND: %d\nITEM2_FOUND: %d\n",
+    //        (context->booleans & ITEM1_FOUND) ? 1 : 0,
+    //        (context->booleans & ITEM2_FOUND) ? 1 : 0);
+
+    // // swap tokens found booleans
+    // if (context->booleans & ITEM1_FOUND) {
+    //     if (!(context->booleans & ITEM2_FOUND)) {
+    //         // down ITEM1, up ITEM2
+    //         context->booleans ^= ITEM1_FOUND;
+    //         context->booleans |= ITEM2_FOUND;
+    //     }
+    // } else {
+    //     if (context->booleans & ITEM2_FOUND) {
+    //         // up ITEM1, down ITEM2
+    //         context->booleans |= ITEM1_FOUND;
+    //         context->booleans ^= ITEM2_FOUND;
+    //     }
+    // }
+
+    // PRINTF("\nafter swap:\nITEM1_FOUND: %d\nITEM2_FOUND: %d\n",
+    //        (context->booleans & ITEM1_FOUND) ? 1 : 0,
+    //        (context->booleans & ITEM2_FOUND) ? 1 : 0);
+}

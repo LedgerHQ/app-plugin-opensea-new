@@ -333,3 +333,4 @@ uint8_t calc_number_of_nfts(uint8_t *amount,
                             uint32_t numerator,
                             uint32_t denominator,
                             uint16_t *number_of_nfts);
+void swap_tokens(context_t *context);

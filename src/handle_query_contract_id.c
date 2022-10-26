@@ -1,13 +1,6 @@
 #include "seaport_plugin.h"
 #include "text.h"
 
-void swap_tokens(context_t *context) {
-    token_t save;
-    save = context->token1;
-    context->token1 = context->token2;
-    context->token2 = save;
-}
-
 // Sets the first screen to display.
 void handle_query_contract_id(void *parameters) {
     ethQueryContractID_t *msg = (ethQueryContractID_t *) parameters;
