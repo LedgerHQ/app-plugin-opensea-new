@@ -11,18 +11,6 @@ void handle_query_contract_id(void *parameters) {
     // For the first screen, display the plugin name.
     strlcpy(msg->name, PLUGIN_NAME, msg->nameLength);
 
-    // swap tokens when needed:
-    switch (context->selectorIndex) {
-        case FULFILL_AVAILABLE_ORDERS:
-            PRINTF("ID SELL_SIDE is_accept? %d\n", context->booleans & IS_ACCEPT);
-            if (context->token1.type == NFT) swap_tokens(context);
-            break;
-        case FULFILL_BASIC_ORDER:
-            break;
-        default:
-            break;
-    }
-
     // Get selector according screen.
     switch (context->selectorIndex) {
         case FULFILL_BASIC_ORDER:

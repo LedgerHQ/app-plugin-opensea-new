@@ -93,6 +93,18 @@ void handle_finalize(void *parameters) {
         !memcmp(context->token2.address, NULL_ADDRESS, ADDRESS_LENGTH))
         context->booleans |= IS_ETH;
 
+    // swap tokens when needed:
+    switch (context->selectorIndex) {
+        case FULFILL_AVAILABLE_ORDERS:
+            PRINTF("ID SELL_SIDE is_accept? %d\n", context->booleans & IS_ACCEPT);
+            if (context->token1.type == NFT) swap_tokens(context);
+            break;
+        case FULFILL_BASIC_ORDER:
+            break;
+        default:
+            break;
+    }
+
     // set booleans for fulfillBasicOrder
     if (context->selectorIndex == FULFILL_BASIC_ORDER) {
         PRINTF("PENZO FINALIZE IM IN!\n");
