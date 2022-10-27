@@ -78,6 +78,17 @@
           "plugin": "SeaPort"
         }
       }
+    },
+    {
+      "address": "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1",
+      "contractName": "L1StandardBridge",
+      "selectors": {
+        "0xb1a1a882": {
+          "erc20OfInterest": [],
+          "method": "depositETH",
+          "plugin": "SeaPort"
+        }
+      }
     }
   ],
   "name": "SeaPort"

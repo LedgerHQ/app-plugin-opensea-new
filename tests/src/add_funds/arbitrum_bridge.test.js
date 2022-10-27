@@ -1,19 +1,19 @@
 import { nano_models, processTest, populateTransaction } from "../test.fixture";
 
 const contractName = "SeaPort";
-const contractAddr = "0xa0c68c638235ee32657e8f720a23cec1bfc77c77";
+const contractAddr = "0x4dbd4fc535ac27206064b68ffcf827b0a60bab3f";
 const testNetwork = "ethereum";
-const txValue = '0.0025497652874747';
+const txValue = '0.005';
 
-const testLabel = "polygon bridge"; // <= Name of the test
+const testLabel = "arbitrum bridge"; // <= Name of the test
 const testDirSuffix = testLabel.toLowerCase().replace(/\s+/g, '_');
 
-// https://etherscan.io/tx/0x9a1dd3a01ebd3e6e50aa62ccf66ce4933e28d8a8446f35b1acc2c6b69f9d01bf
-const inputData = "0x4faa8a2600000000000000000000000052a6bcebff5b28a79ccf91cecd4d4e598d8ee4bc";
+// https://etherscan.io/tx/0x0a89ca130cf01ee72d77bb28d518be4fa675a3182dafe6833a9adc06099ab061
+const inputData = "0x439370b1";
 const models = [
     {
         name: 'nanos',
-        steps: 5
+        steps: 4
     },
     // {
     // 	name: 'nanox',

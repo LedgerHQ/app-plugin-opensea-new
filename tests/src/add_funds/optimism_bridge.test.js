@@ -1,19 +1,20 @@
 import { nano_models, processTest, populateTransaction } from "../test.fixture";
+import { parseEther } from "ethers/lib/utils"
 
 const contractName = "SeaPort";
-const contractAddr = "0xa0c68c638235ee32657e8f720a23cec1bfc77c77";
+const contractAddr = "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1";
 const testNetwork = "ethereum";
-const txValue = '0.0025497652874747';
+const txValue = '0.071142839733849676';
 
-const testLabel = "polygon bridge"; // <= Name of the test
+const testLabel = "optimism bridge"; // <= Name of the test
 const testDirSuffix = testLabel.toLowerCase().replace(/\s+/g, '_');
 
-// https://etherscan.io/tx/0x9a1dd3a01ebd3e6e50aa62ccf66ce4933e28d8a8446f35b1acc2c6b69f9d01bf
-const inputData = "0x4faa8a2600000000000000000000000052a6bcebff5b28a79ccf91cecd4d4e598d8ee4bc";
+// https://etherscan.io/tx/0x56cfc41d8bf79c04c77a2dcb6dbb7ccbcad9951931bb4a0b45c3f22be1c5198a
+const inputData = "0xb1a1a8820000000000000000000000000000000000000000000000000000000000030d4000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000";
 const models = [
     {
         name: 'nanos',
-        steps: 5
+        steps: 6
     },
     // {
     // 	name: 'nanox',
