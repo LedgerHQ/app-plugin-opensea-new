@@ -16,6 +16,7 @@ void handle_query_contract_id(void *parameters) {
         case FULFILL_BASIC_ORDER:
             PRINTF("PENZO (basic_order_type)context->order_type: %d\n", context->order_type);
         case FULFILL_AVAILABLE_ORDERS:
+        case FULFILL_ADVANCED_ORDER:
             strlcpy(msg->version, "exchange", msg->versionLength);
             break;
         default:

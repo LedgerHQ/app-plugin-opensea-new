@@ -96,8 +96,9 @@ void handle_finalize(void *parameters) {
     // swap tokens when needed:
     switch (context->selectorIndex) {
         case FULFILL_AVAILABLE_ORDERS:
-            PRINTF("ID SELL_SIDE is_accept? %d\n", context->booleans & IS_ACCEPT);
-            if (context->token1.type == NFT) swap_tokens(context);
+        case FULFILL_ADVANCED_ORDER:
+            // if (context->token1.type == NFT) swap_tokens(context);
+            if (!(context->booleans & IS_ACCEPT)) swap_tokens(context);
             break;
         case FULFILL_BASIC_ORDER:
             break;
@@ -107,7 +108,6 @@ void handle_finalize(void *parameters) {
 
     // set booleans for fulfillBasicOrder
     if (context->selectorIndex == FULFILL_BASIC_ORDER) {
-        PRINTF("PENZO FINALIZE IM IN!\n");
         switch (context->order_type) {
             case ETH_NFT:
                 context->booleans |= ITEM2_IS_NFT;
