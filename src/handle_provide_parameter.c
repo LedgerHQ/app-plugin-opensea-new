@@ -461,14 +461,45 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
     switch ((advanced_orders) context->orders_index) {
         case ADVANCED_PARAMETER_OFFSET:
             PRINTF("ADVANCED_PARAMETER_OFFSET\n");
+
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->numerator))) {
+                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
+            } else {
+                context->numerator =
+                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->numerator));
+            }
+
             context->orders_index = ADVANCED_NUMERATOR;
             break;
         case ADVANCED_NUMERATOR:
             PRINTF("ADVANCED_NUMERATOR\n");
+
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->numerator))) {
+                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            } else {
+                context->numerator =
+                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->numerator));
+            }
+
             context->orders_index = ADVANCED_DENOMINATOR;
             break;
         case ADVANCED_DENOMINATOR:
             PRINTF("ADVANCED_DENOMINATOR\n");
+
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->denominator))) {
+                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            } else {
+                context->denominator =
+                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->denominator));
+                if (context->numerator && context->denominator &&
+                    context->numerator != context->denominator)
+                    context->booleans |= CANT_CALC_AMOUNT;
+            }
+
             context->orders_index = ADVANCED_SIGNATURE_OFFSET;
             break;
         case ADVANCED_SIGNATURE_OFFSET:
@@ -683,24 +714,31 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
             break;
         case FADO_NUMERATOR:
             PRINTF("FADO_NUMERATOR\n");
-            PRINTF("SIZEOF: %d\n", sizeof(context->numerator));
+
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->numerator))) {
                 PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
             } else {
                 context->numerator =
                     U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->numerator));
             }
+
             context->next_param = FADO_DENOMINATOR;
             break;
         case FADO_DENOMINATOR:
             PRINTF("FADO_DENOMINATOR\n");
 
-            PRINTF("SIZEOF: %d\n", sizeof(context->denominator));
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->denominator))) {
                 PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
             } else {
                 context->denominator =
                     U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->denominator));
+                if (context->numerator && context->denominator &&
+                    context->numerator != context->denominator)
+                    context->booleans |= CANT_CALC_AMOUNT;
             }
 
             context->next_param = FADO_SIGNATURE_OFFSET;

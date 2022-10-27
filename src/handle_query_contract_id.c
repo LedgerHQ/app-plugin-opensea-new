@@ -8,6 +8,29 @@ void handle_query_contract_id(void *parameters) {
     // msg->name will be the upper sentence displayed on the screen.
     // msg->version will be the lower sentence displayed on the screen.
 
+    // DEBUG BOOLS
+    PRINTF(
+        "\
+%d ERROR\n\
+%d IS_BUY4\n\
+%d IS_ACCEPT\n\
+%d ITEM1_IS_NFT\n\
+%d ITEM2_IS_NFT\n\
+%d ITEM1_FOUND\n\
+%d ITEM2_FOUND\n\
+%d IS_ETH\n\
+%d CANT_CALC_AMOUNT\n\
+",
+        (context->booleans & ERROR) ? 1 : 0,
+        (context->booleans & IS_BUY4) ? 1 : 0,
+        (context->booleans & IS_ACCEPT) ? 1 : 0,
+        (context->booleans & ITEM1_IS_NFT) ? 1 : 0,
+        (context->booleans & ITEM2_IS_NFT) ? 1 : 0,
+        (context->booleans & ITEM1_FOUND) ? 1 : 0,
+        (context->booleans & ITEM2_FOUND) ? 1 : 0,
+        (context->booleans & IS_ETH) ? 1 : 0,
+        (context->booleans & CANT_CALC_AMOUNT) ? 1 : 0);
+
     // For the first screen, display the plugin name.
     strlcpy(msg->name, PLUGIN_NAME, msg->nameLength);
 

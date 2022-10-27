@@ -245,14 +245,15 @@ typedef enum item_type_e {
 //} transfer_from_parameter;
 
 // Booleans
-#define ERROR        (1)
-#define IS_BUY4      (1 << 1)
-#define IS_ACCEPT    (1 << 2)
-#define ITEM1_IS_NFT (1 << 3)  // 0: ERC20/ETH, 1: NFT
-#define ITEM2_IS_NFT (1 << 4)
-#define ITEM1_FOUND  (1 << 5)
-#define ITEM2_FOUND  (1 << 6)
-#define IS_ETH       (1 << 7)
+#define ERROR            (1)
+#define IS_BUY4          (1 << 1)
+#define IS_ACCEPT        (1 << 2)
+#define ITEM1_IS_NFT     (1 << 3)  // 0: ERC20/ETH, 1: NFT
+#define ITEM2_IS_NFT     (1 << 4)
+#define ITEM1_FOUND      (1 << 5)
+#define ITEM2_FOUND      (1 << 6)
+#define IS_ETH           (1 << 7)
+#define CANT_CALC_AMOUNT (1 << 8)
 
 #define UPPER_P(x) x->elements[0]
 #define LOWER_P(x) x->elements[1]
