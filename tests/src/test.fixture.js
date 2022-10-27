@@ -45,7 +45,7 @@ let genericTx = {
   nonce: Number(0),
   gasLimit: Number(21000),
   gasPrice: parseUnits('1', 'gwei'),
-  value: parseEther('1'),
+  value: parseEther('1'), // TODO change to literal '1'
   chainId: 1,
   to: RANDOM_ADDRESS,
   data: null,
