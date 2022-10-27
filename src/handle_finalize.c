@@ -105,7 +105,7 @@ void handle_finalize(void *parameters) {
         case POLYGON_BRIDGE_DEPOSIT_ETH:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            context->screen_array |= ADD_FUNDS;
+            // context->screen_array |= ADD_FUNDS;
             break;
         default:
             break;

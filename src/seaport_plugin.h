@@ -271,6 +271,8 @@ typedef enum item_type_e {
 #define SEND_UI_ERR    (1 << 1)
 #define RECEIVE_UI     (1 << 2)
 #define RECEIVE_UI_ERR (1 << 3)
+#define CANCEL_UI      (1 << 3)
+#define ADD_FUNDS_UI   (1 << 3)
 #define LAST_UI        (1 << 7)  // Must remain last screen in array.
 
 // Screens utility macros

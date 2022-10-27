@@ -92,6 +92,7 @@ void handle_init_contract(void *parameters) {
         case POLYGON_BRIDGE_DEPOSIT_ETH:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            PRINTF("IN ADD_FUNDS\n");
             context->next_param = AMOUNT;
             break;
         default:

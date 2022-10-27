@@ -838,13 +838,24 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg, context_t *c
 static void handle_add_funds_eth(ethPluginProvideParameter_t *msg, context_t *context) {
     switch ((add_funds_eth) context->next_param) {
         case AMOUNT:
-            PRINTF("AMOUNT\n$");
-            uint8_t buf_amount[INT256_LENGTH] = {0};
-            copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-            PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
-            if (add_uint256(context->token1.amount, buf_amount)) {
-                PRINTF("uint256 overflow error.\n");
-                msg->result = ETH_PLUGIN_RESULT_ERROR;
+            PRINTF("ADD_FUNDS_AMOUNT\n$");
+            if (context->selectorIndex == WETH_WITHDRAW) {
+                uint8_t buf_amount[INT256_LENGTH] = {0};
+                copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+                PRINTF("TEST\n");
+                PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
+                if (add_uint256(context->token1.amount, buf_amount)) {
+                    PRINTF("uint256 overflow error.\n");
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                }
+            } else {
+                PRINTF("GPIRIOU DEBUG\n");
+                PRINTF("GPIRIOU.amount:\t%.*H\n",
+                       INT256_LENGTH,
+                       msg->pluginSharedRO->txContent->value.value);
+                copy_parameter(context->token1.amount,
+                               msg->pluginSharedRO->txContent->value.value,
+                               INT256_LENGTH);
             }
             break;
         default:
@@ -866,6 +877,7 @@ void handle_provide_parameter(void *parameters) {
         PARAMETER_LENGTH,
         msg->parameter);
 
+    PRINTF("IN GPIRIOU 1\n");
     msg->result = ETH_PLUGIN_RESULT_OK;
 
     if (context->skip > 0) {
@@ -906,6 +918,7 @@ void handle_provide_parameter(void *parameters) {
         case POLYGON_BRIDGE_DEPOSIT_ETH:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            PRINTF("IN GPIRIOU 2\n");
             handle_add_funds_eth(msg, context);
             break;
         default:
