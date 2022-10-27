@@ -460,13 +460,6 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
         case ADVANCED_PARAMETER_OFFSET:
             PRINTF("ADVANCED_PARAMETER_OFFSET\n");
 
-            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->numerator))) {
-                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
-            } else {
-                context->numerator =
-                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->numerator));
-            }
-
             context->orders_index = ADVANCED_NUMERATOR;
             break;
         case ADVANCED_NUMERATOR:
