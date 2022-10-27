@@ -20,12 +20,12 @@
 
 //  Text utils for add funds
 
-#define WRAP            "Wrap"
-#define POLYGON         "To Polygon"
-#define ARBITRUM        "To Arbitrum"
-#define OPTIMISM        "To Optimism"
-#define ORDERR_SINGULAR "Order"
-#define ORDERR_PLURAL   "Orders"
+#define WRAP           "Wrap"
+#define POLYGON        "To Polygon"
+#define ARBITRUM       "To Arbitrum"
+#define OPTIMISM       "To Optimism"
+#define ORDER_SINGULAR "Order"
+#define ORDER_PLURAL   "Orders"
 
 // Utility addresses checking
 #define NULL_ADDRESS                    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"

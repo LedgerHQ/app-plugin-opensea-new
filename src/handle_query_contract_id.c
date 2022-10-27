@@ -36,13 +36,13 @@ void handle_query_contract_id(void *parameters) {
 
     // Get selector according screen.
     switch (context->selectorIndex) {
-        case CANCEL:
-        case INCREMENT_COUNTER:
         case FULFILL_ORDER:
         case FULFILL_BASIC_ORDER:
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
         case MATCH_ORDERS:
         case MATCH_ADVANCED_ORDERS:
+        case CANCEL:
+        case INCREMENT_COUNTER:
         case WETH_DEPOSIT:
         case WETH_WITHDRAW:
             PRINTF("PENZO (basic_order_type)context->order_type: %d\n", context->order_type);

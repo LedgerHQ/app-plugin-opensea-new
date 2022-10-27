@@ -30,11 +30,13 @@
           "plugin": "SeaPort"
         },
         "0xfd9f1e10": {
-          "erc20OfInterest": [
-            "order.parameters.consideration.0.token",
-            "order.parameters.offer.0.token"
-          ],
+          "erc20OfInterest": [],
           "method": "cancel",
+          "plugin": "SeaPort"
+        },
+        "0x5b34b966": {
+          "erc20OfInterest": [],
+          "method": "incrementCounter",
           "plugin": "SeaPort"
         }
       }
@@ -51,6 +53,17 @@
         "0x2e1a7d4d": {
           "erc20OfInterest": [],
           "method": "withdraw",
+          "plugin": "SeaPort"
+        }
+      }
+    },
+    {
+      "address": "0xa0c68c638235ee32657e8f720a23cec1bfc77c77",
+      "contractName": "RootChainManager",
+      "selectors": {
+        "0x4faa8a26": {
+          "erc20OfInterest": [],
+          "method": "depositEtherFor",
           "plugin": "SeaPort"
         }
       }

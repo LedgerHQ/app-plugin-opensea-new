@@ -1,14 +1,14 @@
 import { nano_models, processTest, populateTransaction } from "../test.fixture";
 
-const contractName = "WETH9";
-const contractAddr = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const contractName = "SeaPort";
+const contractAddr = "0xa0c68c638235ee32657e8f720a23cec1bfc77c77";
 const testNetwork = "ethereum";
 
-const testLabel = "weth withdraw"; // <= Name of the test
+const testLabel = "polygon bridge"; // <= Name of the test
 const testDirSuffix = testLabel.toLowerCase().replace(/\s+/g, '_');
 
-// https://etherscan.io/tx/0xe45b63e95da69ef5a446cbf1585b815e13bdb4a225676d58c64235d913752e89
-const inputData = "0x2e1a7d4d000000000000000000000000000000000000000000000000016345785d8a0000";
+// https://etherscan.io/tx/0x9a1dd3a01ebd3e6e50aa62ccf66ce4933e28d8a8446f35b1acc2c6b69f9d01bf
+const inputData = "0x4faa8a2600000000000000000000000052a6bcebff5b28a79ccf91cecd4d4e598d8ee4bc";
 const models = [
     {
         name: 'nanos',

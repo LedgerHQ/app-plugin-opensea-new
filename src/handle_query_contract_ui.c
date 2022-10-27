@@ -355,7 +355,6 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case CANCEL:
         case INCREMENT_COUNTER:
-            break;
         case FULFILL_ORDER:
         case FULFILL_BASIC_ORDER:
         case FULFILL_AVAILABLE_ORDERS:
@@ -378,5 +377,15 @@ void handle_query_contract_ui(void *parameters) {
                        WETH,
                        msg->msg,
                        msg->msgLength);
+    }
+
+    if (context->selectorIndex == CANCEL || context->selectorIndex == INCREMENT_COUNTER) {
+        if (context->selectorIndex == INCREMENT_COUNTER || context->booleans & ORDERS) {
+            str = ORDER_PLURAL;
+        } else {
+            str = ORDER_SINGULAR;
+        }
+        strlcpy(msg->title, "Cancel", msg->titleLength);
+        strlcpy(msg->msg, str, msg->msgLength);
     }
 }
