@@ -259,7 +259,8 @@ typedef enum item_type_e {
 #define ITEM1_FOUND  (1 << 5)
 #define ITEM2_FOUND  (1 << 6)
 #define IS_ETH       (1 << 7)
-#define ORDERS       (1 << 8)
+#define IS_WETH      (1 << 8)
+#define ORDERS       (1 << 9)
 
 #define UPPER_P(x) x->elements[0]
 #define LOWER_P(x) x->elements[1]

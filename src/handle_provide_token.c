@@ -23,5 +23,22 @@ void handle_provide_token(void *parameters) {
         msg->additionalScreens++;
     }
 
+    PRINTF("1GPIRIOU txvalue:\t%.*H\n", INT256_LENGTH, msg->pluginSharedRO->txContent->value.value);
+    if (context->selectorIndex == WETH_WITHDRAW) {
+        // ticker == WETH;
+    }
+    switch (context->selectorIndex) {
+        case WETH_DEPOSIT:
+        case POLYGON_BRIDGE_DEPOSIT_ETH:
+        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            // TODO: value is big endian = revert and store in token1.amount
+            break;
+        default:
+            break;
+    }
+    PRINTF("2GPIRIOU token1.amount:\t%.*H\n", INT256_LENGTH, context->token1.amount);
+    PRINTF("3GPIRIOU txvalue:\t%.*H\n", INT256_LENGTH, msg->pluginSharedRO->txContent->value.value);
+
     msg->result = ETH_PLUGIN_RESULT_OK;
 }

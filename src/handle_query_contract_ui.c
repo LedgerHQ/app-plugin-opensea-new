@@ -234,7 +234,7 @@ void handle_query_contract_ui(void *parameters) {
 
     switch (context->plugin_screen_index) {
         case SEND_UI:
-            switch (context->selectorIndex) {
+            switch (context->selectorIndex) {  // does not work
                 case WETH_DEPOSIT:
                     strlcpy(msg->title, "Wrap", msg->titleLength);
                     break;

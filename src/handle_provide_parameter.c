@@ -280,7 +280,6 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
                             (context->token2.type == ERC20) ? MULTIPLE_ERC20 : MULTIPLE_NFTS;
                 }
             }
-
             context->items_index = CONSIDERATION_IDENTIFIER;
             break;
         case CONSIDERATION_IDENTIFIER:
@@ -835,27 +834,16 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg, context_t *c
     }
 }
 
-static void handle_add_funds_eth(ethPluginProvideParameter_t *msg, context_t *context) {
+static void handle_weth_withdraw(ethPluginProvideParameter_t *msg, context_t *context) {
     switch ((add_funds_eth) context->next_param) {
         case AMOUNT:
             PRINTF("ADD_FUNDS_AMOUNT\n$");
-            if (context->selectorIndex == WETH_WITHDRAW) {
-                uint8_t buf_amount[INT256_LENGTH] = {0};
-                copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-                PRINTF("TEST\n");
-                PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
-                if (add_uint256(context->token1.amount, buf_amount)) {
-                    PRINTF("uint256 overflow error.\n");
-                    msg->result = ETH_PLUGIN_RESULT_ERROR;
-                }
-            } else {
-                PRINTF("GPIRIOU DEBUG\n");
-                PRINTF("GPIRIOU.amount:\t%.*H\n",
-                       INT256_LENGTH,
-                       msg->pluginSharedRO->txContent->value.value);
-                copy_parameter(context->token1.amount,
-                               msg->pluginSharedRO->txContent->value.value,
-                               INT256_LENGTH);
+            uint8_t buf_amount[INT256_LENGTH] = {0};
+            copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
+            PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
+            if (add_uint256(context->token1.amount, buf_amount)) {
+                PRINTF("uint256 overflow error.\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
             }
             break;
         default:
@@ -914,12 +902,13 @@ void handle_provide_parameter(void *parameters) {
         case INCREMENT_COUNTER:
             break;
         case WETH_DEPOSIT:
+            break;
         case WETH_WITHDRAW:
+            handle_weth_withdraw(msg, context);
+            break;
         case POLYGON_BRIDGE_DEPOSIT_ETH:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            PRINTF("IN GPIRIOU 2\n");
-            handle_add_funds_eth(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

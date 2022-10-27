@@ -85,6 +85,7 @@ void handle_finalize(void *parameters) {
     ethPluginFinalize_t *msg = (ethPluginFinalize_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
 
+    context->screen_array |= SEND_UI;
     switch (context->selectorIndex) {
         case FULFILL_ORDER:
         case FULFILL_BASIC_ORDER:
@@ -93,19 +94,18 @@ void handle_finalize(void *parameters) {
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
         case MATCH_ORDERS:
         case MATCH_ADVANCED_ORDERS:
-            context->screen_array |= SEND_UI;
             context->screen_array |= RECEIVE_UI;
             break;
         case CANCEL:
         case INCREMENT_COUNTER:
-            context->screen_array |= CANCEL;
+            context->screen_array &= SEND_UI;
+            context->screen_array |= CANCEL_UI;
             break;
-        case WETH_DEPOSIT:
         case WETH_WITHDRAW:
+        case WETH_DEPOSIT:
         case POLYGON_BRIDGE_DEPOSIT_ETH:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            // context->screen_array |= ADD_FUNDS;
             break;
         default:
             break;
