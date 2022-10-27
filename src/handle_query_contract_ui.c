@@ -234,26 +234,6 @@ void handle_query_contract_ui(void *parameters) {
 
     switch (context->plugin_screen_index) {
         case SEND_UI:
-            switch (context->selectorIndex) {  // does not work
-                case WETH_DEPOSIT:
-                    strlcpy(msg->title, "Wrap", msg->titleLength);
-                    break;
-                case WETH_WITHDRAW:
-                    strlcpy(msg->title, "Unwrap", msg->titleLength);
-                    break;
-                case POLYGON_BRIDGE_DEPOSIT_ETH:
-                    strlcpy(msg->title, "To Polygon", msg->titleLength);
-                    break;
-                case ARBITRUM_BRIDGE_DEPOSIT_ETH:
-                    strlcpy(msg->title, "To Arbitrum", msg->titleLength);
-                    break;
-                case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-                    strlcpy(msg->title, "To Optimism", msg->titleLength);
-                    break;
-                default:
-                    strlcpy(msg->title, "Send", msg->titleLength);
-                    break;
-            }
             set_send_ui(msg, context);
             break;
         case SEND_UI_ERR:
@@ -264,6 +244,47 @@ void handle_query_contract_ui(void *parameters) {
             strlcpy(msg->title, "Receive", msg->titleLength);
             set_receive_ui(msg, context);
             break;
+        case RECEIVE_UI_ERR:
+            strlcpy(msg->title, "with address:", msg->titleLength);
+            set_receive_ui_err(msg, context);
+            break;
             // case LAST_UI:
+    }
+
+    switch (context->selectorIndex) {
+        case WETH_DEPOSIT:
+            PRINTF("IN ADD FUNDS\n");
+            strlcpy(msg->title, "Wrap", msg->titleLength);
+            amountToString(msg->pluginSharedRO->txContent->value.value,
+                           msg->pluginSharedRO->txContent->value.length,
+                           ETH_DECIMAL,
+                           ETH,
+                           msg->msg,
+                           msg->msgLength);
+            PRINTF("IN ADD FUNDS 2\n");
+            break;
+        case POLYGON_BRIDGE_DEPOSIT_ETH:
+            strlcpy(msg->title, "To Polygon", msg->titleLength);
+            break;
+        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+            strlcpy(msg->title, "To Arbitrum", msg->titleLength);
+            break;
+        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            strlcpy(msg->title, "To Optimism", msg->titleLength);
+            break;
+        default:
+            strlcpy(msg->msg, "ERROR", msg->msg);
+            strlcpy(msg->title, "ERROR", msg->titleLength);
+            break;
+    }
+
+    if (context->selectorIndex == WETH_WITHDRAW) {
+        strlcpy(msg->title, "Unwrap", msg->titleLength);
+        amountToString(context->token1.amount,
+                       INT256_LENGTH,
+                       ETH_DECIMAL,
+                       WETH,
+                       msg->msg,
+                       msg->msgLength);
     }
 }

@@ -20,8 +20,15 @@
           ],
           "method": "fulfillOrder",
           "plugin": "SeaPort"
+        },
+        "0xfd9f1e10": {
+          "erc20OfInterest": [],
+          "method": "cancel",
+          "plugin": "SeaPort"
         }
-      },
+      }
+    },
+    {
       "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
       "contractName": "WETH9",
       "selectors": {

@@ -25,7 +25,7 @@ void handle_query_contract_id(void *parameters) {
         case WETH_DEPOSIT:
         case WETH_WITHDRAW:
             PRINTF("PENZO (basic_order_type)context->order_type: %d\n", context->order_type);
-            strlcpy(msg->version, "Exchange", msg->versionLength);
+            strlcpy(msg->version, "exchange", msg->versionLength);
             break;
         case POLYGON_BRIDGE_DEPOSIT_ETH:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
