@@ -251,29 +251,46 @@ void handle_query_contract_ui(void *parameters) {
             // case LAST_UI:
     }
 
+    char *str = 0;
+    if (context->selectorIndex == WETH_DEPOSIT) {
+        str = WRAP;
+    }
+    if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH) {
+        str = POLYGON;
+    }
+    if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH) {
+        str = ARBITRUM;
+    }
+    if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH) {
+        str = OPTIMISM;
+    }
+
     switch (context->selectorIndex) {
         case WETH_DEPOSIT:
-            PRINTF("IN ADD FUNDS\n");
-            strlcpy(msg->title, "Wrap", msg->titleLength);
+        case POLYGON_BRIDGE_DEPOSIT_ETH:
+        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
+        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            strlcpy(msg->title, str, msg->titleLength);
             amountToString(msg->pluginSharedRO->txContent->value.value,
                            msg->pluginSharedRO->txContent->value.length,
                            ETH_DECIMAL,
                            ETH,
                            msg->msg,
                            msg->msgLength);
-            PRINTF("IN ADD FUNDS 2\n");
             break;
-        case POLYGON_BRIDGE_DEPOSIT_ETH:
-            strlcpy(msg->title, "To Polygon", msg->titleLength);
+        case CANCEL:
+        case INCREMENT_COUNTER:
             break;
-        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
-            strlcpy(msg->title, "To Arbitrum", msg->titleLength);
-            break;
-        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            strlcpy(msg->title, "To Optimism", msg->titleLength);
+        case FULFILL_ORDER:
+        case FULFILL_BASIC_ORDER:
+        case FULFILL_AVAILABLE_ORDERS:
+        case FULFILL_ADVANCED_ORDER:
+        case FULFILL_AVAILABLE_ADVANCED_ORDERS:
+        case MATCH_ORDERS:
+        case MATCH_ADVANCED_ORDERS:
             break;
         default:
-            strlcpy(msg->msg, "ERROR", msg->msg);
+            strlcpy(msg->msg, "ERROR", msg->msgLength);
             strlcpy(msg->title, "ERROR", msg->titleLength);
             break;
     }

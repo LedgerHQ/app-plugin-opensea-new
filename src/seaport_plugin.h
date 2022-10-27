@@ -18,6 +18,15 @@
 #define UNKNOWN_ERC20 "? "
 #define UNKNOWN_NFT   "NFT"
 
+//  Text utils for add funds
+
+#define WRAP            "Wrap"
+#define POLYGON         "To Polygon"
+#define ARBITRUM        "To Arbitrum"
+#define OPTIMISM        "To Optimism"
+#define ORDERR_SINGULAR "Order"
+#define ORDERR_PLURAL   "Orders"
+
 // Utility addresses checking
 #define NULL_ADDRESS                    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 #define ADDRESS_IS_NETWORK_TOKEN(_addr) (!memcmp(_addr, NETWORK_TOKEN_ADDRESS, ADDRESS_LENGTH))

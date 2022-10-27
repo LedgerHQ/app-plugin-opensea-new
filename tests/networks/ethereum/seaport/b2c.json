@@ -22,7 +22,10 @@
           "plugin": "SeaPort"
         },
         "0xfd9f1e10": {
-          "erc20OfInterest": [],
+          "erc20OfInterest": [
+            "order.parameters.consideration.0.token",
+            "order.parameters.offer.0.token"
+          ],
           "method": "cancel",
           "plugin": "SeaPort"
         }
