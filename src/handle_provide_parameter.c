@@ -635,9 +635,9 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
             PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
             if (context->orders_len == 0) {
                 PRINTF("END ORDERS\n");
-                if (context->token1.type == NFT || context->token1.type == MULTIPLE_NFTS) {
+                if (context->token2.type == NFT || context->token2.type == MULTIPLE_NFTS) {
                     // calc number of nfts using numerator and denominator
-                    if (calc_number_of_nfts(context->token1.amount,
+                    if (calc_number_of_nfts(context->token2.amount,
                                             context->numerator,
                                             context->denominator,
                                             &context->number_of_nfts)) {
@@ -683,10 +683,26 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
             break;
         case FADO_NUMERATOR:
             PRINTF("FADO_NUMERATOR\n");
+            PRINTF("SIZEOF: %d\n", sizeof(context->numerator));
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->numerator))) {
+                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
+            } else {
+                context->numerator =
+                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->numerator));
+            }
             context->next_param = FADO_DENOMINATOR;
             break;
         case FADO_DENOMINATOR:
             PRINTF("FADO_DENOMINATOR\n");
+
+            PRINTF("SIZEOF: %d\n", sizeof(context->denominator));
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->denominator))) {
+                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
+            } else {
+                context->denominator =
+                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->denominator));
+            }
+
             context->next_param = FADO_SIGNATURE_OFFSET;
             break;
         case FADO_SIGNATURE_OFFSET:
