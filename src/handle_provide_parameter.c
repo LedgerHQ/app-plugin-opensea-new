@@ -263,7 +263,6 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             break;
         case CONSIDERATION_TOKEN:
             PRINTF("CONSIDERATION_TOKEN\n");
-
             if (context->token2.type == NATIVE) {
                 if (context->current_item_type == ERC20) context->token2.type = MULTIPLE_ERC20;
             } else {  // t2.type != NATIVE
@@ -281,7 +280,6 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
                             (context->token2.type == ERC20) ? MULTIPLE_ERC20 : MULTIPLE_NFTS;
                 }
             }
-
             context->items_index = CONSIDERATION_IDENTIFIER;
             break;
         case CONSIDERATION_IDENTIFIER:
@@ -537,6 +535,29 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
 
             context->orders_len--;
             context->orders_index = ADVANCED_PARAMETER_OFFSET;
+            break;
+        default:
+            PRINTF("Param not supported: %d\n", context->param_index);
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            break;
+    }
+}
+
+static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) {
+    switch ((match_advanced_orders) context->next_param) {
+        case CANCEL_ORDER_OFFSET:
+            PRINTF("CANCEL_ORDER_OFFSET\n");
+            context->next_param = CANCEL_ORDERS_LEN;
+            break;
+        case CANCEL_ORDERS_LEN:
+            PRINTF("CANCEL_ORDERS_LEN\n");
+            if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
+                context->booleans |= ORDERS;
+            }
+            context->next_param = CANCEL_ORDERS;
+            break;
+        case CANCEL_ORDERS:
+            PRINTF("CANCEL_ORDERS\n");
             break;
         default:
             PRINTF("Param not supported: %d\n", context->param_index);
@@ -867,10 +888,10 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg, context_t *c
     }
 }
 
-static void handle_add_funds_eth(ethPluginProvideParameter_t *msg, context_t *context) {
+static void handle_weth_withdraw(ethPluginProvideParameter_t *msg, context_t *context) {
     switch ((add_funds_eth) context->next_param) {
         case AMOUNT:
-            PRINTF("AMOUNT\n$");
+            PRINTF("ADD_FUNDS_AMOUNT\n$");
             uint8_t buf_amount[INT256_LENGTH] = {0};
             copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
             PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
@@ -898,6 +919,7 @@ void handle_provide_parameter(void *parameters) {
         PARAMETER_LENGTH,
         msg->parameter);
 
+    PRINTF("IN GPIRIOU 1\n");
     msg->result = ETH_PLUGIN_RESULT_OK;
 
     if (context->skip > 0) {
@@ -929,14 +951,18 @@ void handle_provide_parameter(void *parameters) {
             handle_match_advanced_orders(msg, context);
             break;
         case CANCEL:
+            handle_cancel(msg, context);
+            break;
         case INCREMENT_COUNTER:
             break;
         case WETH_DEPOSIT:
+            break;
         case WETH_WITHDRAW:
+            handle_weth_withdraw(msg, context);
+            break;
         case POLYGON_BRIDGE_DEPOSIT_ETH:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            handle_add_funds_eth(msg, context);
             break;
         default:
             PRINTF("Selector Index not supported: %d\n", context->selectorIndex);

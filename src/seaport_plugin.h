@@ -18,6 +18,15 @@
 #define UNKNOWN_ERC20 "? "
 #define UNKNOWN_NFT   "NFT"
 
+//  Text utils for add funds
+
+#define WRAP            "Wrap"
+#define POLYGON         "To Polygon"
+#define ARBITRUM        "To Arbitrum"
+#define OPTIMISM        "To Optimism"
+#define ORDERR_SINGULAR "Order"
+#define ORDERR_PLURAL   "Orders"
+
 // Utility addresses checking
 #define NULL_ADDRESS                    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 #define ADDRESS_IS_NETWORK_TOKEN(_addr) (!memcmp(_addr, NETWORK_TOKEN_ADDRESS, ADDRESS_LENGTH))
@@ -134,6 +143,12 @@ typedef enum {
     FAO_ORDERS,
     FAO_FULFILLMEMTS,
 } fulfill_available_orders;
+
+typedef enum {
+    CANCEL_ORDER_OFFSET,
+    CANCEL_ORDERS_LEN,
+    CANCEL_ORDERS,
+} cancel;
 
 typedef enum {
     AMOUNT,
@@ -254,6 +269,7 @@ typedef enum item_type_e {
 #define ITEM2_FOUND      (1 << 6)
 #define IS_ETH           (1 << 7)
 #define CANT_CALC_AMOUNT (1 << 8)
+#define ORDERS           (1 << 9)
 
 #define UPPER_P(x) x->elements[0]
 #define LOWER_P(x) x->elements[1]

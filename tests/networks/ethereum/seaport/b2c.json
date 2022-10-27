@@ -28,6 +28,30 @@
           ],
           "method": "fulfillAvailableOrders",
           "plugin": "SeaPort"
+        },
+        "0xfd9f1e10": {
+          "erc20OfInterest": [
+            "order.parameters.consideration.0.token",
+            "order.parameters.offer.0.token"
+          ],
+          "method": "cancel",
+          "plugin": "SeaPort"
+        }
+      }
+    },
+    {
+      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "contractName": "WETH9",
+      "selectors": {
+        "0xd0e30db0": {
+          "erc20OfInterest": [],
+          "method": "deposit",
+          "plugin": "SeaPort"
+        },
+        "0x2e1a7d4d": {
+          "erc20OfInterest": [],
+          "method": "withdraw",
+          "plugin": "SeaPort"
         }
       }
     }
