@@ -67,6 +67,17 @@
           "plugin": "SeaPort"
         }
       }
+    },
+    {
+      "address": "0x4dbd4fc535ac27206064b68ffcf827b0a60bab3f",
+      "contractName": "Inbox",
+      "selectors": {
+        "0x439370b1": {
+          "erc20OfInterest": [],
+          "method": "depositEth",
+          "plugin": "SeaPort"
+        }
+      }
     }
   ],
   "name": "SeaPort"
