@@ -271,11 +271,6 @@ typedef enum item_type_e {
 #define CANT_CALC_AMOUNT (1 << 8)
 #define ORDERS           (1 << 9)
 
-#define UPPER_P(x) x->elements[0]
-#define LOWER_P(x) x->elements[1]
-#define UPPER(x)   x.elements[0]
-#define LOWER(x)   x.elements[1]
-
 // screen array correspondance
 #define PARSE_ERROR    1
 #define SEND_UI        (1 << 1)
