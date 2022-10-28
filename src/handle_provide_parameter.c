@@ -1,7 +1,26 @@
 #include "seaport_plugin.h"
 
 /*
-** Utils
+**  Debug
+*/
+
+#ifdef DBG_PLUGIN
+static void print_item(context_t *context, token_t token) {
+    PRINTF("token.type: ");
+    if (token.type == UNSET) PRINTF("UNSET\n");
+    if (token.type == NATIVE) PRINTF("NATIVE\n");
+    if (token.type == ERC20) PRINTF("ERC20\n");
+    if (token.type == NFT) PRINTF("NFT\n");
+    if (token.type == MULTIPLE_ERC20) PRINTF("MULTIPLE_ERC20\n");
+    if (token.type == MULTIPLE_NFTS) PRINTF("MULTIPLE_NFTS\n");
+    PRINTF("token.amount: %.*H", INT256_LENGTH, token.amount);
+    PRINTF("token.address: %.*H", ADDRESS_LENGTH, token.address);
+    context->booleans &IS_ACCEPT ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
+}
+#endif
+
+/*
+**  Utils
 */
 
 static uint8_t get_item_type_from_sol(uint8_t parameter_last_byte) {
@@ -21,10 +40,6 @@ static uint8_t get_item_type_from_sol(uint8_t parameter_last_byte) {
             return UNSET;
     }
 }
-
-/*
-** ------------------
-*/
 
 static uint8_t get_basic_order_type(ethPluginProvideParameter_t *msg,
                                     uint8_t basic_order_type_sol) {
@@ -67,6 +82,10 @@ static uint8_t get_basic_order_type(ethPluginProvideParameter_t *msg,
     }
     return type;
 }
+
+/*
+**  Parsing
+*/
 
 static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context_t *context) {
     switch ((fulfill_basic_order_parameter) context->next_param) {
@@ -148,21 +167,6 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
     }
 }
-
-static void print_item(context_t *context, token_t token) {
-    PRINTF("token.type: ");
-    if (token.type == UNSET) PRINTF("UNSET\n");
-    if (token.type == NATIVE) PRINTF("NATIVE\n");
-    if (token.type == ERC20) PRINTF("ERC20\n");
-    if (token.type == NFT) PRINTF("NFT\n");
-    if (token.type == MULTIPLE_ERC20) PRINTF("MULTIPLE_ERC20\n");
-    if (token.type == MULTIPLE_NFTS) PRINTF("MULTIPLE_NFTS\n");
-    PRINTF("token.amount: %.*H", INT256_LENGTH, token.amount);
-    PRINTF("token.address: %.*H", ADDRESS_LENGTH, token.address);
-
-    context->booleans &IS_ACCEPT ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
-}
-
 static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
     PRINTF("PARSE OFFER\n");
     switch ((offers) context->items_index) {
@@ -179,7 +183,9 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             context->current_item_type =
                 get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
 
+#ifdef DBG_PLUGIN
             print_item(context, context->token1);  // utilitary
+#endif
             context->items_index = OFFER_TOKEN;
             break;
         case OFFER_TOKEN:
@@ -258,7 +264,9 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             context->current_item_type =
                 get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
 
+#ifdef DBG_PLUGIN
             print_item(context, context->token2);  // utilitary
+#endif
             context->items_index = CONSIDERATION_TOKEN;
             break;
         case CONSIDERATION_TOKEN:
@@ -912,11 +920,10 @@ void handle_provide_parameter(void *parameters) {
         PARAMETER_LENGTH,
         msg->parameter);
 
-    PRINTF("IN GPIRIOU 1\n");
     msg->result = ETH_PLUGIN_RESULT_OK;
 
     if (context->skip > 0) {
-        PRINTF("SKIPPED\n");
+        PRINTF("SKIPPED parameter\n");
         context->skip--;
         return;
     }

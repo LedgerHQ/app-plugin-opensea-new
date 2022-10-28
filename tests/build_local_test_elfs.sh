@@ -31,6 +31,15 @@ function build_nanos_plugin() {
 	echo $BOLOS_SDK
 }
 
+function build_nanos_plugin_no_debug() {
+	echo "**Building app-plugin for Nano S..."
+	make clean BOLOS_SDK=$NANOS_SDK
+	make -j BOLOS_SDK=$NANOS_SDK
+	cp bin/app.elf "tests/elfs/${PLUGIN_NAME}_nanos.elf"
+	echo $NANOS_SDK
+	echo $BOLOS_SDK
+}
+
 function build_nanos_appeth() {
 	echo "**Building app-ethereum for Nano S..."
 	cd $APP_ETHEREUM
@@ -91,9 +100,14 @@ then
 				build_nanos_appeth
 				build_nanox_plugin
 				build_nanox_appeth
+elif [ "$1" == "nodbg"  ]
+then
+        echo "plugin s without DEBUG flag"
+				build_nanos_plugin_no_debug
 else
 printf "wrong args:
 use no args for [S]plugin,
+use 'nodbg' for [S]plugin with DEBUG flag,
 use 'eth' for [S]app-eth,
 use 's' for [S]plugin + [S]app-eth,
 use 'all' for building all elfs\n"

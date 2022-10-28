@@ -1,5 +1,10 @@
 #include "seaport_plugin.h"
 
+/*
+**  Debug
+*/
+
+#ifdef DBG_PLUGIN
 static void print_item2(context_t *context) {
     if (context->token1.type == ITEM_TYPE_NONE)
         PRINTF("OFFER ITEM TYPE FOUND: NONE\n", context->token1.type);
@@ -62,11 +67,13 @@ static void print_context(context_t *context) {
     print_item2(context);
     PRINTF("End context\n");
 }
+#endif
 
 /*
 ** Screens Utility
 */
 
+// Return the number of bit raised in screen_array
 static uint8_t count_screens(uint8_t screen_array) {
     uint8_t total = 0;
     uint8_t scout = 1;
@@ -84,6 +91,15 @@ static uint8_t count_screens(uint8_t screen_array) {
 void handle_finalize(void *parameters) {
     ethPluginFinalize_t *msg = (ethPluginFinalize_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
+
+    msg->uiType = ETH_UI_TYPE_GENERIC;
+
+    // When we can't display the real amounts in rare cases: display an error message.
+    if (context->booleans & CANT_CALC_AMOUNT) {
+        context->screen_array |= CANT_CALC_AMOUNT_UI;
+        msg->result = ETH_PLUGIN_RESULT_OK;
+        return;
+    }
 
     switch (context->selectorIndex) {
         case FULFILL_ORDER:
@@ -156,8 +172,9 @@ void handle_finalize(void *parameters) {
     msg->tokenLookup2 = context->token2.address;
 
     msg->numScreens = count_screens(context->screen_array);
+#ifdef DBG_PLUGIN
     print_context(context);  // dbg
+#endif
 
-    msg->uiType = ETH_UI_TYPE_GENERIC;
     msg->result = ETH_PLUGIN_RESULT_OK;
 }

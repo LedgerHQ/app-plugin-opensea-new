@@ -5,6 +5,7 @@
 ** Debug TMP
 */
 
+#ifdef DBG_PLUGIN
 static void debug_items(ethQueryContractUI_t *msg, context_t *context) {
     PRINTF("\n__debug_items()__\n");
     PRINTF("\ttoken1.address: %.*H\n", ADDRESS_LENGTH, context->token1.address);
@@ -24,6 +25,29 @@ static void debug_items(ethQueryContractUI_t *msg, context_t *context) {
     else
         PRINTF("UI PENZO NO ITEM2\n");
 }
+static void debug_screens(ethQueryContractUI_t *msg, context_t *context) {
+    PRINTF("SCREEN: screen_array:\t\t%d%d%d%d %d%d%d%d\n",
+           context->screen_array & 1 ? 1 : 0,
+           context->screen_array & (1 << 1) ? 1 : 0,
+           context->screen_array & (1 << 2) ? 1 : 0,
+           context->screen_array & (1 << 3) ? 1 : 0,
+           context->screen_array & (1 << 4) ? 1 : 0,
+           context->screen_array & (1 << 5) ? 1 : 0,
+           context->screen_array & (1 << 6) ? 1 : 0,
+           context->screen_array & (1 << 7) ? 1 : 0);
+    PRINTF("SCREEN: plugin_screen_index:\t%d%d%d%d %d%d%d%d\n",
+           context->plugin_screen_index & 1 ? 1 : 0,
+           context->plugin_screen_index & (1 << 1) ? 1 : 0,
+           context->plugin_screen_index & (1 << 2) ? 1 : 0,
+           context->plugin_screen_index & (1 << 3) ? 1 : 0,
+           context->plugin_screen_index & (1 << 4) ? 1 : 0,
+           context->plugin_screen_index & (1 << 5) ? 1 : 0,
+           context->plugin_screen_index & (1 << 6) ? 1 : 0,
+           context->plugin_screen_index & (1 << 7) ? 1 : 0);
+    PRINTF("SCREEN: previous_screen_uint8: %d\n", context->previous_screen_index);
+    PRINTF("SCREEN: msg->screenIndex:\t%d\n", msg->screenIndex);
+}
+#endif
 
 // static void debug_tmp(__attribute__((unused)) ethQueryContractUI_t *msg, context_t *context) {
 //     PRINTF("ITEM1_FOUND: %d\n", context->booleans & ITEM1_FOUND ? 1 : 0);
@@ -209,15 +233,6 @@ static void display_item(ethQueryContractUI_t *msg,
 ** Screens
 */
 
-// static void set_send_ui(ethQueryContractUI_t *msg, context_t *context) {
-//     // output_item1(msg, context);
-//     display_item(msg, context->token1, context->booleans & ITEM1_FOUND);
-// }
-// static void set_receive_ui(ethQueryContractUI_t *msg, context_t *context) {
-//     // output_item2(msg, context);
-//     display_item(msg, context->token2, context->booleans & ITEM2_FOUND);
-// }
-
 static void set_send_ui_err(ethQueryContractUI_t *msg, context_t *context) {
     msg->msg[0] = '0';
     msg->msg[1] = 'x';
@@ -241,14 +256,20 @@ static void set_receive_ui_err(ethQueryContractUI_t *msg, context_t *context) {
 */
 
 static void skip_right(context_t *context) {
-    while (!(context->screen_array & context->plugin_screen_index << 1))
+    PRINTF("Screen move RIGHT\n");
+    while (!(context->screen_array & context->plugin_screen_index << 1)) {
         context->plugin_screen_index <<= 1;
+        PRINTF("Screen skip RIGHT+\n");
+    }
     context->plugin_screen_index <<= 1;
 }
 
 static void skip_left(context_t *context) {
-    while (!(context->screen_array & context->plugin_screen_index >> 1))
+    PRINTF("Screen move LEFT\n");
+    while (!(context->screen_array & context->plugin_screen_index >> 1)) {
+        PRINTF("Screen skip LEFT+\n");
         context->plugin_screen_index >>= 1;
+    }
     context->plugin_screen_index >>= 1;
 }
 
@@ -261,7 +282,11 @@ static bool get_scroll_direction(uint8_t screen_index, uint8_t previous_screen_i
 
 static void get_screen_array(ethQueryContractUI_t *msg, context_t *context) {
     if (msg->screenIndex == 0) {
-        context->plugin_screen_index = SEND_UI;
+        context->plugin_screen_index = FIRST_UI;
+        while (!(context->screen_array & context->plugin_screen_index)) {
+            PRINTF("First screens skip\n");
+            context->plugin_screen_index <<= 1;
+        }
         context->previous_screen_index = 0;
         return;
     }
@@ -289,23 +314,39 @@ void handle_query_contract_ui(void *parameters) {
     ethQueryContractUI_t *msg = (ethQueryContractUI_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
 
+    msg->result = ETH_PLUGIN_RESULT_OK;
+
     // Clean the display fields.
     memset(msg->title, 0, msg->titleLength);
     memset(msg->msg, 0, msg->msgLength);
 
-    msg->result = ETH_PLUGIN_RESULT_OK;
+#ifdef DBG_PLUGIN
+    debug_screens(msg, context);
+#endif
+
+    // Get current plugin_screen_index
     get_screen_array(msg, context);
 
+#ifdef DBG_PLUGIN
+    PRINTF("after get_screen_array()\n");
+    debug_screens(msg, context);
+#endif
+
+#ifdef DBG_PLUGIN
     debug_items(msg, context);
+#endif
 
     switch (context->plugin_screen_index) {
+        case CANT_CALC_AMOUNT_UI:
+            strlcpy(msg->title, "error:", msg->titleLength);
+            strlcpy(msg->msg, "could not parse transaction", msg->msgLength);
+            break;
         case SEND_UI:
             strlcpy(msg->title, "Send", msg->titleLength);
             display_item(msg,
                          context->token1,
                          context->number_of_nfts,
                          context->booleans & ITEM1_FOUND);
-            // set_send_ui(msg, context);
             break;
         case SEND_UI_ERR:
             strlcpy(msg->title, "with address:", msg->titleLength);
@@ -317,13 +358,21 @@ void handle_query_contract_ui(void *parameters) {
                          context->token2,
                          context->number_of_nfts,
                          context->booleans & ITEM2_FOUND);
-            // set_receive_ui(msg, context);
             break;
         case RECEIVE_UI_ERR:
             strlcpy(msg->title, "with address:", msg->titleLength);
             set_receive_ui_err(msg, context);
             break;
-            // case LAST_UI:
+        case ANOTHER_RECIPIENT_UI:
+            strlcpy(msg->title, "ANOTHER_RECIPIENT_UI", msg->titleLength);
+            break;
+        case LAST_UI:
+            strlcpy(msg->title, "screen6", msg->titleLength);
+            break;
+        default:
+            PRINTF("\n\n\n\n\n SCREEN NOT HANDLED\n\n\n\n\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            return;
     }
 
     char *str = 0;
@@ -340,6 +389,7 @@ void handle_query_contract_ui(void *parameters) {
         str = OPTIMISM;
     }
 
+    // TODO: move this, as it erase previously set title/msg, it works but it's dirty
     switch (context->selectorIndex) {
         case WETH_DEPOSIT:
         case POLYGON_BRIDGE_DEPOSIT_ETH:

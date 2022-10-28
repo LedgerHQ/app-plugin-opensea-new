@@ -1,14 +1,9 @@
 #include "seaport_plugin.h"
 #include "text.h"
 
-// Sets the first screen to display.
-void handle_query_contract_id(void *parameters) {
-    ethQueryContractID_t *msg = (ethQueryContractID_t *) parameters;
-    context_t *context = (context_t *) msg->pluginContext;
-    // msg->name will be the upper sentence displayed on the screen.
-    // msg->version will be the lower sentence displayed on the screen.
-
-    // DEBUG BOOLS
+#ifdef DBG_PLUGIN
+static void print_booleans(context_t *context) {
+    PRINTF("Booleans:\n");
     PRINTF(
         "\
 %d ERROR\n\
@@ -30,6 +25,23 @@ void handle_query_contract_id(void *parameters) {
         (context->booleans & ITEM2_FOUND) ? 1 : 0,
         (context->booleans & IS_ETH) ? 1 : 0,
         (context->booleans & CANT_CALC_AMOUNT) ? 1 : 0);
+}
+#endif
+
+// Sets the first screen to display.
+void handle_query_contract_id(void *parameters) {
+    ethQueryContractID_t *msg = (ethQueryContractID_t *) parameters;
+    context_t *context = (context_t *) msg->pluginContext;
+    // msg->name will be the upper sentence displayed on the screen.
+    // msg->version will be the lower sentence displayed on the screen.
+
+#ifdef DBG_PLUGIN
+    print_booleans(context);
+#endif
+
+    // Reset screens management state if user come back to ID screen.
+    context->previous_screen_index = 0;
+    context->plugin_screen_index = 0;
 
     // For the first screen, display the plugin name.
     strlcpy(msg->name, PLUGIN_NAME, msg->nameLength);

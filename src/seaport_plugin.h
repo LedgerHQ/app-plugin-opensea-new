@@ -263,7 +263,7 @@ typedef enum item_type_e {
 #define ERROR            (1)
 #define IS_BUY4          (1 << 1)
 #define IS_ACCEPT        (1 << 2)
-#define ITEM1_IS_NFT     (1 << 3)  // 0: ERC20/ETH, 1: NFT
+#define ITEM1_IS_NFT     (1 << 3)
 #define ITEM2_IS_NFT     (1 << 4)
 #define ITEM1_FOUND      (1 << 5)
 #define ITEM2_FOUND      (1 << 6)
@@ -277,12 +277,18 @@ typedef enum item_type_e {
 #define LOWER(x)   x.elements[1]
 
 // screen array correspondance
-#define SEND_UI           1  // Must remain first screen in screen array and always up.
-#define SEND_UI_ERR       (1 << 1)
-#define RECEIVE_UI        (1 << 2)
-#define RECEIVE_UI_ERR    (1 << 3)
-#define ANOTHER_RECIPIENT (1 << 4)
-#define LAST_UI           (1 << 7)  // Must remain last screen in array.
+#define CANT_CALC_AMOUNT_UI  1
+#define SEND_UI              (1 << 1)
+#define SEND_UI_ERR          (1 << 2)
+#define RECEIVE_UI           (1 << 3)
+#define RECEIVE_UI_ERR       (1 << 4)
+#define ANOTHER_RECIPIENT_UI (1 << 5)
+#define SCREEN_7             (1 << 6)
+#define SCREEN_8             (1 << 7)
+
+// screen boundaries
+#define FIRST_UI 1
+#define LAST_UI  (1 << 7)
 
 // Screens utility macros
 #define RIGHT_SCROLL 1
@@ -297,7 +303,7 @@ typedef struct token_t {
 } token_t;
 
 // Shared global memory with Ethereum app. Must be at most 5 * 32 bytes.
-// 119 / 160
+// 160 / 160
 typedef struct context_t {
     // aligned
     token_t token1;  // 53
