@@ -325,6 +325,12 @@ void handle_query_contract_ui(void *parameters) {
     memset(msg->title, 0, msg->titleLength);
     memset(msg->msg, 0, msg->msgLength);
 
+    // Return when no screens are set.
+    if (context->screen_array == 0) {
+        msg->result = ETH_PLUGIN_RESULT_ERROR;
+        return;
+    }
+
 #ifdef DBG_PLUGIN
     debug_screens(msg, context);
 #endif
