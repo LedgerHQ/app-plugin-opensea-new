@@ -223,6 +223,11 @@ static void display_item(ethQueryContractUI_t *msg,
         case MULTIPLE_ERC20:
             break;
         case MULTIPLE_NFTS:
+            snprintf(msg->msg,
+                     msg->msgLength,
+                     "%d %s",
+                     (number_of_nfts) ? number_of_nfts : U4BE(token.amount, INT256_LENGTH - 4),
+                     UNKNOWN_NFT);
             break;
         default:
             PRINTF("\n\n\nERROR UI display_item ERROR!!!!\n\n\n");
@@ -330,16 +335,13 @@ void handle_query_contract_ui(void *parameters) {
 #ifdef DBG_PLUGIN
     PRINTF("after get_screen_array()\n");
     debug_screens(msg, context);
-#endif
-
-#ifdef DBG_PLUGIN
     debug_items(msg, context);
 #endif
 
     switch (context->plugin_screen_index) {
-        case CANT_CALC_AMOUNT_UI:
-            strlcpy(msg->title, "error:", msg->titleLength);
-            strlcpy(msg->msg, "could not parse transaction", msg->msgLength);
+        case PARSE_ERROR:
+            strlcpy(msg->title, "Error:", msg->titleLength);
+            strlcpy(msg->msg, "Could not parse transaction", msg->msgLength);
             break;
         case SEND_UI:
             strlcpy(msg->title, "Send", msg->titleLength);
@@ -353,7 +355,10 @@ void handle_query_contract_ui(void *parameters) {
             set_send_ui_err(msg, context);
             break;
         case RECEIVE_UI:
-            strlcpy(msg->title, "Receive", msg->titleLength);
+            if (context->booleans & IS_BUY4)
+                strlcpy(msg->title, "Transfer", msg->titleLength);
+            else
+                strlcpy(msg->title, "Receive", msg->titleLength);
             display_item(msg,
                          context->token2,
                          context->number_of_nfts,
@@ -363,38 +368,43 @@ void handle_query_contract_ui(void *parameters) {
             strlcpy(msg->title, "with address:", msg->titleLength);
             set_receive_ui_err(msg, context);
             break;
-        case ANOTHER_RECIPIENT_UI:
-            strlcpy(msg->title, "ANOTHER_RECIPIENT_UI", msg->titleLength);
+        case BUY_FOR_UI:
+            strlcpy(msg->title, "Will be sent to", msg->titleLength);
+            msg->msg[0] = '0';
+            msg->msg[1] = 'x';
+            getEthAddressStringFromBinary((uint8_t *) context->recipient_address,
+                                          msg->msg + 2,
+                                          msg->pluginSharedRW->sha3,
+                                          0);
             break;
-        case LAST_UI:
-            strlcpy(msg->title, "screen6", msg->titleLength);
+        case CANCEL_UI:
+            strlcpy(msg->title, "Cancel", msg->titleLength);
+            if (context->selectorIndex == INCREMENT_COUNTER || context->booleans & ORDERS)
+                strlcpy(msg->msg, "Orders", msg->titleLength);
+            else
+                strlcpy(msg->msg, "Order", msg->titleLength);
             break;
-        default:
-            PRINTF("\n\n\n\n\n SCREEN NOT HANDLED\n\n\n\n\n");
-            msg->result = ETH_PLUGIN_RESULT_ERROR;
-            return;
-    }
+        case ADD_FUNDS_UI:
 
-    char *str = 0;
-    if (context->selectorIndex == WETH_DEPOSIT) {
-        str = WRAP;
-    }
-    if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH) {
-        str = POLYGON;
-    }
-    if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH) {
-        str = ARBITRUM;
-    }
-    if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH) {
-        str = OPTIMISM;
-    }
-
-    // TODO: move this, as it erase previously set title/msg, it works but it's dirty
-    switch (context->selectorIndex) {
-        case WETH_DEPOSIT:
-        case POLYGON_BRIDGE_DEPOSIT_ETH:
-        case ARBITRUM_BRIDGE_DEPOSIT_ETH:
-        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
+            if (context->selectorIndex == WETH_WITHDRAW) {
+                strlcpy(msg->title, "Unwrap", msg->titleLength);
+                amountToString(context->token1.amount,
+                               INT256_LENGTH,
+                               ETH_DECIMAL,
+                               WETH,
+                               msg->msg,
+                               msg->msgLength);
+                return;
+            }
+            char *str = 0;
+            if (context->selectorIndex == WETH_DEPOSIT)
+                str = WRAP;
+            else if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH)
+                str = POLYGON;
+            else if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH)
+                str = ARBITRUM;
+            else if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH)
+                str = OPTIMISM;
             strlcpy(msg->title, str, msg->titleLength);
             amountToString(msg->pluginSharedRO->txContent->value.value,
                            msg->pluginSharedRO->txContent->value.length,
@@ -403,39 +413,9 @@ void handle_query_contract_ui(void *parameters) {
                            msg->msg,
                            msg->msgLength);
             break;
-        case CANCEL:
-        case INCREMENT_COUNTER:
-        case FULFILL_ORDER:
-        case FULFILL_BASIC_ORDER:
-        case FULFILL_AVAILABLE_ORDERS:
-        case FULFILL_ADVANCED_ORDER:
-        case FULFILL_AVAILABLE_ADVANCED_ORDERS:
-        case MATCH_ORDERS:
-        case MATCH_ADVANCED_ORDERS:
-            break;
         default:
-            strlcpy(msg->msg, "ERROR", msg->msgLength);
-            strlcpy(msg->title, "ERROR", msg->titleLength);
-            break;
-    }
-
-    if (context->selectorIndex == WETH_WITHDRAW) {
-        strlcpy(msg->title, "Unwrap", msg->titleLength);
-        amountToString(context->token1.amount,
-                       INT256_LENGTH,
-                       ETH_DECIMAL,
-                       WETH,
-                       msg->msg,
-                       msg->msgLength);
-    }
-
-    if (context->selectorIndex == CANCEL || context->selectorIndex == INCREMENT_COUNTER) {
-        if (context->selectorIndex == INCREMENT_COUNTER || context->booleans & ORDERS) {
-            str = ORDER_PLURAL;
-        } else {
-            str = ORDER_SINGULAR;
-        }
-        strlcpy(msg->title, "Cancel", msg->titleLength);
-        strlcpy(msg->msg, str, msg->msgLength);
+            PRINTF("\n\n\n\n\n SCREEN NOT HANDLED\n\n\n\n\n");
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
+            return;
     }
 }

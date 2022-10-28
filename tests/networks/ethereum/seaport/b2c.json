@@ -29,6 +29,22 @@
           "method": "fulfillAvailableOrders",
           "plugin": "SeaPort"
         },
+        "0xe7acab24": {
+          "erc20OfInterest": [
+            "advancedOrder.parameters.consideration.0.token",
+            "advancedOrder.parameters.offer.0.token"
+          ],
+          "method": "fulfillAdvancedOrder",
+          "plugin": "SeaPort"
+        },
+        "0x87201b41": {
+          "erc20OfInterest": [
+            "advancedOrders.0.parameters.consideration.0.token",
+            "advancedOrders.0.parameters.offer.0.token"
+          ],
+          "method": "fulfillAvailableAdvancedOrder",
+          "plugin": "SeaPort"
+        },
         "0xfd9f1e10": {
           "erc20OfInterest": [],
           "method": "cancel",

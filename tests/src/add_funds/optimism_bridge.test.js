@@ -1,5 +1,4 @@
 import { nano_models, processTest, populateTransaction } from "../test.fixture";
-import { parseEther } from "ethers/lib/utils"
 
 const contractName = "SeaPort";
 const contractAddr = "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1";

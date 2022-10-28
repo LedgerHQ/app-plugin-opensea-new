@@ -407,6 +407,7 @@ static void parse_param(ethPluginProvideParameter_t *msg, context_t *context) {
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
             if (context->current_length == 0) {
                 PRINTF("NO CONSIDERATIONS\n");
+                context->token2.type = NATIVE;
                 context->param_index = PARAM_END;
             } else
                 context->param_index = PARAM_CONSIDERATIONS;
@@ -664,11 +665,12 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
             context->next_param = FAADO_FULFILLER_CONDUIT_KEY;
             break;
         case FAADO_FULFILLER_CONDUIT_KEY:
-            PRINTF("FAADO_RECIPIENT\n");
+            PRINTF("FAADO_FULFILLER_CONDUIT_KEY\n");
             context->next_param = FAADO_RECIPIENT;
             break;
         case FAADO_RECIPIENT:
             PRINTF("FAADO_RECIPIENT\n");
+            copy_parameter(context->recipient_address, msg->parameter + 12, ADDRESS_LENGTH);
             context->next_param = FAADO_MAXIMUM_FULFILLED;
             break;
         case FAADO_MAXIMUM_FULFILLED:
@@ -728,6 +730,7 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
             break;
         case FADO_RECIPIENT:
             PRINTF("FADO_RECIPIENT\n");
+            copy_parameter(context->recipient_address, msg->parameter + 12, ADDRESS_LENGTH);
             context->next_param = FADO_PARAM_OFFSET;
             break;
         case FADO_PARAM_OFFSET:

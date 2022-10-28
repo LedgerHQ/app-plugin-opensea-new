@@ -34,8 +34,6 @@ static const uint32_t MATCH_ORDERS_SELECTOR = 0xa8174404;
 static const uint32_t MATCH_ADVANCED_ORDERS_SELECTOR = 0xa8174404;
 static const uint32_t CANCEL_SELECTOR = 0xfd9f1e10;
 static const uint32_t INCREMENT_COUNTER_SELECTOR = 0x5b34b966;
-
-//
 static const uint32_t WETH_DEPOSIT_SELECTOR = 0xd0e30db0;
 static const uint32_t WETH_WITHDRAW_SELECTOR = 0x2e1a7d4d;
 static const uint32_t POLYGON_BRIDGE_DEPOSIT_ETH_SELECTOR = 0x4faa8a26;

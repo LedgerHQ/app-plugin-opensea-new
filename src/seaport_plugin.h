@@ -277,14 +277,14 @@ typedef enum item_type_e {
 #define LOWER(x)   x.elements[1]
 
 // screen array correspondance
-#define CANT_CALC_AMOUNT_UI  1
-#define SEND_UI              (1 << 1)
-#define SEND_UI_ERR          (1 << 2)
-#define RECEIVE_UI           (1 << 3)
-#define RECEIVE_UI_ERR       (1 << 4)
-#define ANOTHER_RECIPIENT_UI (1 << 5)
-#define SCREEN_7             (1 << 6)
-#define SCREEN_8             (1 << 7)
+#define PARSE_ERROR    1
+#define SEND_UI        (1 << 1)
+#define SEND_UI_ERR    (1 << 2)
+#define RECEIVE_UI     (1 << 3)
+#define RECEIVE_UI_ERR (1 << 4)
+#define BUY_FOR_UI     (1 << 5)
+#define CANCEL_UI      (1 << 6)
+#define ADD_FUNDS_UI   (1 << 7)
 
 // screen boundaries
 #define FIRST_UI 1
