@@ -35,6 +35,11 @@ void handle_provide_token(void *parameters) {
     } else {
         PRINTF("\n\n\tITEM2 IS ETH!\n\n");
     }
-
+    if (context->token1.type == MULTIPLE_NFTS) {
+        context->screen_array |= SEND_UI_ERR;
+    }
+    if (context->token2.type == MULTIPLE_NFTS) {
+        context->screen_array |= RECEIVE_UI_ERR;
+    }
     msg->result = ETH_PLUGIN_RESULT_OK;
 }

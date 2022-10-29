@@ -90,6 +90,7 @@ static void display_item(ethQueryContractUI_t *msg,
             }
             break;
         case NFT:
+        case MULTIPLE_NFTS:
             PRINTF("case NFT, is_found: %d\n", is_found);
             // TODO check U4BE() safety
             snprintf(msg->msg,
@@ -99,13 +100,6 @@ static void display_item(ethQueryContractUI_t *msg,
                      (is_found) ? msg->item2->nft.collectionName : UNKNOWN_NFT);
             break;
         case MULTIPLE_ERC20:
-            break;
-        case MULTIPLE_NFTS:
-            snprintf(msg->msg,
-                     msg->msgLength,
-                     "%d %s",
-                     (number_of_nfts) ? number_of_nfts : U4BE(token.amount, INT256_LENGTH - 4),
-                     UNKNOWN_NFT);
             break;
         default:
             PRINTF("\n\n\nERROR UI display_item ERROR!!!!\n\n\n");
@@ -223,8 +217,13 @@ void handle_query_contract_ui(void *parameters) {
                          context->booleans & CANT_CALC_AMOUNT);
             break;
         case SEND_UI_ERR:
-            strlcpy(msg->title, "with address:", msg->titleLength);
-            set_send_ui_err(msg, context);
+            if (context->token1.type == MULTIPLE_NFTS) {
+                strlcpy(msg->title, "From", msg->titleLength);
+                strlcpy(msg->msg, "multiple collections.", msg->msgLength);
+            } else {
+                strlcpy(msg->title, "with address:", msg->titleLength);
+                set_send_ui_err(msg, context);
+            }
             break;
         case RECEIVE_UI:
             if (context->booleans & IS_BUY4)
@@ -238,8 +237,13 @@ void handle_query_contract_ui(void *parameters) {
                          context->booleans & CANT_CALC_AMOUNT);
             break;
         case RECEIVE_UI_ERR:
-            strlcpy(msg->title, "with address:", msg->titleLength);
-            set_receive_ui_err(msg, context);
+            if (context->token2.type == MULTIPLE_NFTS) {
+                strlcpy(msg->title, "From", msg->titleLength);
+                strlcpy(msg->msg, "multiple collections.", msg->msgLength);
+            } else {
+                strlcpy(msg->title, "with address:", msg->titleLength);
+                set_receive_ui_err(msg, context);
+            }
             break;
         case BUY_FOR_UI:
             strlcpy(msg->title, "Will be sent to", msg->titleLength);
