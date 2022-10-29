@@ -116,7 +116,7 @@ void handle_finalize(void *parameters) {
             break;
         case WETH_WITHDRAW:
         case WETH_DEPOSIT:
-        case POLYGON_BRIDGE_DEPOSIT_ETH:
+        case POLYGON_BRIDGE_DEPOSIT_ETH_FOR:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
             context->screen_array |= ADD_FUNDS_UI;

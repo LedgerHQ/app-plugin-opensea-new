@@ -94,8 +94,8 @@ void handle_init_contract(void *parameters) {
             PRINTF("IN WETH_WITHDRAW\n");
             context->next_param = AMOUNT;
             break;
-        case POLYGON_BRIDGE_DEPOSIT_ETH:
-            PRINTF("IN POLYGON_BRIDGE_DEPOSIT_ETH\n");
+        case POLYGON_BRIDGE_DEPOSIT_ETH_FOR:
+            PRINTF("IN POLYGON_BRIDGE_DEPOSIT_ETH_FOR\n");
             break;
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
             PRINTF("IN ARBITRUM_BRIDGE_DEPOSIT_ETH\n");

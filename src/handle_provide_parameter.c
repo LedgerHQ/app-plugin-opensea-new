@@ -963,7 +963,7 @@ void handle_provide_parameter(void *parameters) {
         case WETH_WITHDRAW:
             handle_weth_withdraw(msg, context);
             break;
-        case POLYGON_BRIDGE_DEPOSIT_ETH:
+        case POLYGON_BRIDGE_DEPOSIT_ETH_FOR:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
             break;
