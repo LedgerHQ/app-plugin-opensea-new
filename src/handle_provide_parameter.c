@@ -194,11 +194,11 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             if (context->token1.type == NATIVE) {
                 if (context->current_item_type == ERC20) context->token1.type = MULTIPLE_ERC20;
             } else {  // token1.type != NATIVE
-                // to set token1.address only on consi[0]
+                // to set token1.address only on offer[0]
                 if (ADDRESS_IS_NULL_ADDRESS(context->token1.address))
                     copy_address(context->token1.address, msg->parameter, ADDRESS_LENGTH);
-                else {  // on consi[>0]
-                    // is same type and different address as consi[0]
+                else {  // on offer[>0]
+                    // is same type and different address as offer[0]
                     if (context->current_item_type == context->token1.type &&
                         memcmp(context->token1.address,
                                msg->parameter + PARAMETER_LENGTH - ADDRESS_LENGTH,
