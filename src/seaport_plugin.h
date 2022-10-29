@@ -256,7 +256,7 @@ typedef enum item_type_e {
 //} transfer_from_parameter;
 
 // Booleans
-#define ERROR            (1)
+#define PARSE_ERROR      (1)
 #define IS_BUY4          (1 << 1)
 #define IS_ACCEPT        (1 << 2)
 #define ITEM1_IS_NFT     (1 << 3)
@@ -267,7 +267,7 @@ typedef enum item_type_e {
 #define ORDERS           (1 << 8)
 
 // screen array correspondance
-#define PARSE_ERROR    1
+#define PARSE_ERROR_UI 1
 #define SEND_UI        (1 << 1)
 #define SEND_UI_ERR    (1 << 2)
 #define RECEIVE_UI     (1 << 3)

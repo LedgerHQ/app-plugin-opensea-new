@@ -6,7 +6,7 @@ static void print_booleans(context_t *context) {
     PRINTF("Booleans:\n");
     PRINTF(
         "\
-%d ERROR\n\
+%d PARSE_ERROR\n\
 %d IS_BUY4\n\
 %d IS_ACCEPT\n\
 %d ITEM1_IS_NFT\n\
@@ -15,7 +15,7 @@ static void print_booleans(context_t *context) {
 %d ITEM2_FOUND\n\
 %d CANT_CALC_AMOUNT\n\
 ",
-        (context->booleans & ERROR) ? 1 : 0,
+        (context->booleans & PARSE_ERROR) ? 1 : 0,
         (context->booleans & IS_BUY4) ? 1 : 0,
         (context->booleans & IS_ACCEPT) ? 1 : 0,
         (context->booleans & ITEM1_IS_NFT) ? 1 : 0,

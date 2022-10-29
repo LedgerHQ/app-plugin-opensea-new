@@ -17,7 +17,6 @@ static void print_context(context_t *context) {
     PRINTF("token2.amount:\t%.*H\n", INT256_LENGTH, context->token2.amount);
     PRINTF("token1.type:%d\n", context->token1.type);
     PRINTF("token2.type:%d\n", context->token2.type);
-    print_item2(context);
     PRINTF("End context\n");
 }
 #endif
@@ -46,6 +45,8 @@ void handle_finalize(void *parameters) {
     context_t *context = (context_t *) msg->pluginContext;
 
     msg->uiType = ETH_UI_TYPE_GENERIC;
+
+    if (context->booleans & CANT_CALC_AMOUNT) context->screen_array |= PARSE_ERROR_UI;
 
     switch (context->selectorIndex) {
         case FULFILL_ADVANCED_ORDER:

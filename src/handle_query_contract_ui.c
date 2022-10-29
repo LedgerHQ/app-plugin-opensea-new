@@ -204,9 +204,14 @@ void handle_query_contract_ui(void *parameters) {
 #endif
 
     switch (context->screen_probe) {
-        case PARSE_ERROR:
-            strlcpy(msg->title, "Error:", msg->titleLength);
-            strlcpy(msg->msg, "Could not parse transaction", msg->msgLength);
+        case PARSE_ERROR_UI:
+            if (context->booleans & CANT_CALC_AMOUNT) {
+                strlcpy(msg->title, "Warning:", msg->titleLength);
+                strlcpy(msg->msg, "Can't retrieve amount.", msg->msgLength);
+            } else {
+                strlcpy(msg->title, "Error:", msg->titleLength);
+                strlcpy(msg->msg, "Could not parse transaction", msg->msgLength);
+            }
             break;
         case SEND_UI:
             strlcpy(msg->title, "Send", msg->titleLength);

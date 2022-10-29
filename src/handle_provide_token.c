@@ -9,12 +9,6 @@ void handle_provide_token(void *parameters) {
     ethPluginProvideInfo_t *msg = (ethPluginProvideInfo_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
 
-    // Skip on special case.
-    if (context->booleans & CANT_CALC_AMOUNT) {
-        msg->result = ETH_PLUGIN_RESULT_OK;
-        return;
-    }
-
     PRINTF("PROVIDE_TOKEN token1.address: %.*H\n", ADDRESS_LENGTH, context->token1.address);
     PRINTF("PROVIDE_TOKEN token2.address: %.*H\n", ADDRESS_LENGTH, context->token2.address);
 
