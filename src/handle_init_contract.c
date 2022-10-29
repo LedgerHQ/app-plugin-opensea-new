@@ -87,6 +87,12 @@ void handle_init_contract(void *parameters) {
         case INCREMENT_COUNTER:
             PRINTF("IN INCREMENT_COUNTER\n");
             break;
+        case WYVERN_V2_CANCEL_ORDER__:
+            PRINTF("IN WYVERN_V2_CANCEL_ORDER__\n");
+            break;
+        case WYVERN_V2_INCREMENT_NONCE:
+            PRINTF("IN WYVERN_V2_INCREMENT_NONCE\n");
+            break;
         case WETH_DEPOSIT:
             PRINTF("IN WETH_DEPOSIT\n");
             break;

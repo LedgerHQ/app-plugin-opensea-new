@@ -957,7 +957,8 @@ void handle_provide_parameter(void *parameters) {
             handle_cancel(msg, context);
             break;
         case INCREMENT_COUNTER:
-            break;
+        case WYVERN_V2_CANCEL_ORDER__:
+        case WYVERN_V2_INCREMENT_NONCE:
         case WETH_DEPOSIT:
             break;
         case WETH_WITHDRAW:

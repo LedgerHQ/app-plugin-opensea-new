@@ -27,6 +27,7 @@ extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
 // Enumeration of the different selectors possible.
 // Should follow the exact same order as the array declared in main.c
 typedef enum {
+    // Seaport
     FULFILL_ORDER,
     FULFILL_BASIC_ORDER,
     FULFILL_AVAILABLE_ORDERS,
@@ -36,7 +37,10 @@ typedef enum {
     MATCH_ADVANCED_ORDERS,
     CANCEL,
     INCREMENT_COUNTER,
-    //
+    // Wyvern V2
+    WYVERN_V2_CANCEL_ORDER__,
+    WYVERN_V2_INCREMENT_NONCE,
+    // Weth, Uniswap and bridge methods.
     WETH_DEPOSIT,
     WETH_WITHDRAW,
     POLYGON_BRIDGE_DEPOSIT_ETHER_FOR,
@@ -47,7 +51,7 @@ typedef enum {
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 15
+#define NUM_SELECTORS 17
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 

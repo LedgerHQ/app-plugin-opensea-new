@@ -252,7 +252,7 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case CANCEL_UI:
             strlcpy(msg->title, "Cancel", msg->titleLength);
-            if (context->selectorIndex == INCREMENT_COUNTER || context->booleans & ORDERS)
+            if (context->booleans & ORDERS)
                 strlcpy(msg->msg, "Orders", msg->titleLength);
             else
                 strlcpy(msg->msg, "Order", msg->titleLength);

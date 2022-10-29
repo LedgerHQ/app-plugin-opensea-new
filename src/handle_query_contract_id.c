@@ -53,6 +53,8 @@ void handle_query_contract_id(void *parameters) {
         case MATCH_ADVANCED_ORDERS:
         case CANCEL:
         case INCREMENT_COUNTER:
+        case WYVERN_V2_CANCEL_ORDER__:
+        case WYVERN_V2_INCREMENT_NONCE:
         case WETH_DEPOSIT:
         case WETH_WITHDRAW:
         case FULFILL_AVAILABLE_ORDERS:

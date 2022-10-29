@@ -58,6 +58,22 @@
       }
     },
     {
+      "address": "0x7f268357a8c2552623316e2562d90e642bb538e5",
+      "contractName": "WyvernExchangeWithBulkCancellations",
+      "selectors": {
+        "0xa8a41c70": {
+          "erc20OfInterest": [],
+          "method": "cancelOrder_",
+          "plugin": "SeaPort"
+        },
+        "0x627cdcb9": {
+          "erc20OfInterest": [],
+          "method": "incrementNonce",
+          "plugin": "SeaPort"
+        }
+      }
+    },
+    {
       "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
       "contractName": "WETH9",
       "selectors": {

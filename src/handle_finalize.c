@@ -110,8 +110,11 @@ void handle_finalize(void *parameters) {
             context->screen_array |= SEND_UI;
             context->screen_array |= RECEIVE_UI;
             break;
-        case CANCEL:
         case INCREMENT_COUNTER:
+        case WYVERN_V2_INCREMENT_NONCE:
+            context->booleans |= ORDERS;
+        case CANCEL:
+        case WYVERN_V2_CANCEL_ORDER__:
             context->screen_array |= CANCEL_UI;
             break;
         case WETH_WITHDRAW:

@@ -1,6 +1,6 @@
 import { nano_models, processTest, populateTransaction } from "../test.fixture";
 
-const contractName = "SeaPort";
+const contractName = "Inbox";
 const contractAddr = "0x4dbd4fc535ac27206064b68ffcf827b0a60bab3f";
 const testNetwork = "ethereum";
 const txValue = '0.005';
