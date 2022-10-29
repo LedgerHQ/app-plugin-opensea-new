@@ -38,8 +38,8 @@ void handle_query_contract_id(void *parameters) {
 #endif
 
     // Reset screens management state if user come back to ID screen.
-    context->previous_screen_index = 0;
-    context->plugin_screen_index = 0;
+    context->prev_screenIndex = 0;
+    context->screen_probe = 0;
 
     // For the first screen, display the plugin name.
     strlcpy(msg->name, PLUGIN_NAME, msg->nameLength);
@@ -55,7 +55,6 @@ void handle_query_contract_id(void *parameters) {
         case INCREMENT_COUNTER:
         case WETH_DEPOSIT:
         case WETH_WITHDRAW:
-            PRINTF("PENZO (basic_order_type)context->order_type: %d\n", context->order_type);
         case FULFILL_AVAILABLE_ORDERS:
         case FULFILL_ADVANCED_ORDER:
             strlcpy(msg->version, "exchange", msg->versionLength);

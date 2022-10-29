@@ -324,8 +324,8 @@ typedef struct context_t {
     uint8_t tx_type;
     // screen utils
     uint8_t screen_array;
-    uint8_t previous_screen_index;
-    uint8_t plugin_screen_index;
+    uint8_t prev_screenIndex;
+    uint8_t screen_probe;
     // Method ID
     selector_t selectorIndex;
     // +20 + 9(uint8) = 29
@@ -351,3 +351,7 @@ uint8_t calc_number_of_nfts(uint8_t *amount,
                             uint32_t denominator,
                             uint16_t *number_of_nfts);
 void swap_tokens(context_t *context);
+uint8_t get_screen_index(uint8_t screenIndex,
+                         uint8_t *prevIndex,
+                         uint8_t probe,
+                         uint8_t screen_array);

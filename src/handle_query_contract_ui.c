@@ -35,16 +35,16 @@ static void debug_screens(ethQueryContractUI_t *msg, context_t *context) {
            context->screen_array & (1 << 5) ? 1 : 0,
            context->screen_array & (1 << 6) ? 1 : 0,
            context->screen_array & (1 << 7) ? 1 : 0);
-    PRINTF("SCREEN: plugin_screen_index:\t%d%d%d%d %d%d%d%d\n",
-           context->plugin_screen_index & 1 ? 1 : 0,
-           context->plugin_screen_index & (1 << 1) ? 1 : 0,
-           context->plugin_screen_index & (1 << 2) ? 1 : 0,
-           context->plugin_screen_index & (1 << 3) ? 1 : 0,
-           context->plugin_screen_index & (1 << 4) ? 1 : 0,
-           context->plugin_screen_index & (1 << 5) ? 1 : 0,
-           context->plugin_screen_index & (1 << 6) ? 1 : 0,
-           context->plugin_screen_index & (1 << 7) ? 1 : 0);
-    PRINTF("SCREEN: previous_screen_uint8: %d\n", context->previous_screen_index);
+    PRINTF("SCREEN: screen_probe:\t%d%d%d%d %d%d%d%d\n",
+           context->screen_probe & 1 ? 1 : 0,
+           context->screen_probe & (1 << 1) ? 1 : 0,
+           context->screen_probe & (1 << 2) ? 1 : 0,
+           context->screen_probe & (1 << 3) ? 1 : 0,
+           context->screen_probe & (1 << 4) ? 1 : 0,
+           context->screen_probe & (1 << 5) ? 1 : 0,
+           context->screen_probe & (1 << 6) ? 1 : 0,
+           context->screen_probe & (1 << 7) ? 1 : 0);
+    PRINTF("SCREEN: previous_screen_uint8: %d\n", context->prev_screenIndex);
     PRINTF("SCREEN: msg->screenIndex:\t%d\n", msg->screenIndex);
 }
 #endif
@@ -135,87 +135,37 @@ static void set_receive_ui_err(ethQueryContractUI_t *msg, context_t *context) {
 }
 
 static void set_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) {
-    if (context->selectorIndex == WETH_WITHDRAW) {
+    // Set title
+    if (context->selectorIndex == WETH_DEPOSIT)
+        strlcpy(msg->title, WRAP, msg->titleLength);
+    else if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH)
+        strlcpy(msg->title, POLYGON, msg->titleLength);
+    else if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH)
+        strlcpy(msg->title, ARBITRUM, msg->titleLength);
+    else if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH)
+        strlcpy(msg->title, OPTIMISM, msg->titleLength);
+    else if (context->selectorIndex == WETH_WITHDRAW)
         strlcpy(msg->title, "Unwrap", msg->titleLength);
+    else {
+        msg->result = ETH_PLUGIN_RESULT_ERROR;
+        return;
+    }
+    // Set msg
+    if (context->selectorIndex == WETH_WITHDRAW) {
         amountToString(context->token1.amount,
                        INT256_LENGTH,
                        ETH_DECIMAL,
                        WETH,
                        msg->msg,
                        msg->msgLength);
-        return;
+    } else {
+        amountToString(msg->pluginSharedRO->txContent->value.value,
+                       msg->pluginSharedRO->txContent->value.length,
+                       ETH_DECIMAL,
+                       ETH,
+                       msg->msg,
+                       msg->msgLength);
     }
-    char *str = 0;
-    if (context->selectorIndex == WETH_DEPOSIT)
-        str = WRAP;
-    else if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH)
-        str = POLYGON;
-    else if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH)
-        str = ARBITRUM;
-    else if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH)
-        str = OPTIMISM;
-    strlcpy(msg->title, str, msg->titleLength);
-    amountToString(msg->pluginSharedRO->txContent->value.value,
-                   msg->pluginSharedRO->txContent->value.length,
-                   ETH_DECIMAL,
-                   ETH,
-                   msg->msg,
-                   msg->msgLength);
-}
-
-/*
-** Screens Utils
-*/
-
-static void skip_right(context_t *context) {
-    PRINTF("Screen move RIGHT\n");
-    while (!(context->screen_array & context->plugin_screen_index << 1)) {
-        context->plugin_screen_index <<= 1;
-        PRINTF("Screen skip RIGHT+\n");
-    }
-    context->plugin_screen_index <<= 1;
-}
-
-static void skip_left(context_t *context) {
-    PRINTF("Screen move LEFT\n");
-    while (!(context->screen_array & context->plugin_screen_index >> 1)) {
-        PRINTF("Screen skip LEFT+\n");
-        context->plugin_screen_index >>= 1;
-    }
-    context->plugin_screen_index >>= 1;
-}
-
-static bool get_scroll_direction(uint8_t screen_index, uint8_t previous_screen_index) {
-    if (screen_index > previous_screen_index || screen_index == 0)
-        return RIGHT_SCROLL;
-    else
-        return LEFT_SCROLL;
-}
-
-static void get_screen_array(ethQueryContractUI_t *msg, context_t *context) {
-    if (msg->screenIndex == 0) {
-        context->plugin_screen_index = FIRST_UI;
-        while (!(context->screen_array & context->plugin_screen_index)) {
-            PRINTF("First screens skip\n");
-            context->plugin_screen_index <<= 1;
-        }
-        context->previous_screen_index = 0;
-        return;
-    }
-    // This should only happen on last valid Screen
-    if (msg->screenIndex == context->previous_screen_index) {
-        context->plugin_screen_index = LAST_UI;
-        // if LAST_UI is up, stop on it.
-        if (context->screen_array & LAST_UI) return;
-    }
-    bool scroll_direction = get_scroll_direction(msg->screenIndex, context->previous_screen_index);
-    // Save previous_screen_index after all checks are done.
-    context->previous_screen_index = msg->screenIndex;
-    // Scroll to next screen
-    if (scroll_direction == RIGHT_SCROLL)
-        skip_right(context);
-    else
-        skip_left(context);
 }
 
 /*
@@ -242,16 +192,19 @@ void handle_query_contract_ui(void *parameters) {
     debug_screens(msg, context);
 #endif
 
-    // Get current plugin_screen_index
-    get_screen_array(msg, context);
+    // Get current screen_probe
+    context->screen_probe = get_screen_index(msg->screenIndex,
+                                             &context->prev_screenIndex,
+                                             context->screen_probe,
+                                             context->screen_array);
 
 #ifdef DBG_PLUGIN
-    PRINTF("after get_screen_array()\n");
+    PRINTF("after get_screen_index()\n");
     debug_screens(msg, context);
     debug_items(msg, context);
 #endif
 
-    switch (context->plugin_screen_index) {
+    switch (context->screen_probe) {
         case PARSE_ERROR:
             strlcpy(msg->title, "Error:", msg->titleLength);
             strlcpy(msg->msg, "Could not parse transaction", msg->msgLength);
