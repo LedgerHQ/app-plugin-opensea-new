@@ -5,53 +5,6 @@
 */
 
 #ifdef DBG_PLUGIN
-static void print_item2(context_t *context) {
-    if (context->token1.type == ITEM_TYPE_NONE)
-        PRINTF("OFFER ITEM TYPE FOUND: NONE\n", context->token1.type);
-
-    if (context->token1.type == ITEM_TYPE_NATIVE)
-        PRINTF("OFFER ITEM TYPE FOUND: NATIVE\n", context->token1.type);
-
-    if (context->token1.type == ITEM_TYPE_ERC20)
-        PRINTF("OFFER ITEM TYPE FOUND: ERC20\n", context->token1.type);
-
-    if (context->token1.type == ITEM_TYPE_NFT)
-        PRINTF("OFFER ITEM TYPE FOUND: NFT\n", context->token1.type);
-
-    if (context->token1.type == ITEM_TYPE_MULTIPLE_NFTS)
-        PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE NFTS\n", context->token1.type);
-
-    if (context->token1.type == ITEM_TYPE_MULTIPLE_ERC20S)
-        PRINTF("OFFER ITEM TYPE FOUND: MULTIPLE_ERC20S\n", context->token1.type);
-
-    if (context->token1.type == ITEM_TYPE_MIXED_TYPES)
-        PRINTF("OFFER ITEM TYPE FOUND: MIXED TYPES\n", context->token1.type);
-
-    // if (context->token2.type == ITEM_TYPE_NONE)
-    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: NONE\n", context->token2.type);
-
-    // if (context->token2.type == ITEM_TYPE_NATIVE)
-    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: NATIVE\n", context->token2.type);
-
-    // if (context->token2.type == ITEM_TYPE_ERC20)
-    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: ERC20\n", context->token2.type);
-
-    // if (context->token2.type == ITEM_TYPE_NFT)
-    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: NFT\n", context->token2.type);
-
-    // if (context->token2.type == ITEM_TYPE_NFT)
-    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE NFTS\n",
-    //    context->token2.type);
-
-    // if (context->token2.type == ITEM_TYPE_MULTIPLE_ERC20S)
-    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: MULTIPLE_ERC20S\n",
-    //           context->token2.type);
-
-    // if (context->token2.type == ITEM_TYPE_MULTIPLE_ERC20S)
-    //    PRINTF("CONSIDERATION ITEM TYPE FOUND: MIXED TYPES\n", context->token2.type);
-    (context->booleans & IS_ACCEPT) ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
-}
-
 static void print_context(context_t *context) {
     PRINTF("__Print context:\n");
     // PRINTF("number_of_tokens:\t%d\n", context->number_of_tokens);
