@@ -13,7 +13,6 @@ static void print_booleans(context_t *context) {
 %d ITEM2_IS_NFT\n\
 %d ITEM1_FOUND\n\
 %d ITEM2_FOUND\n\
-%d IS_ETH\n\
 %d CANT_CALC_AMOUNT\n\
 ",
         (context->booleans & ERROR) ? 1 : 0,
@@ -23,7 +22,6 @@ static void print_booleans(context_t *context) {
         (context->booleans & ITEM2_IS_NFT) ? 1 : 0,
         (context->booleans & ITEM1_FOUND) ? 1 : 0,
         (context->booleans & ITEM2_FOUND) ? 1 : 0,
-        (context->booleans & IS_ETH) ? 1 : 0,
         (context->booleans & CANT_CALC_AMOUNT) ? 1 : 0);
 }
 #endif

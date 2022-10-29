@@ -267,9 +267,8 @@ typedef enum item_type_e {
 #define ITEM2_IS_NFT     (1 << 4)
 #define ITEM1_FOUND      (1 << 5)
 #define ITEM2_FOUND      (1 << 6)
-#define IS_ETH           (1 << 7)
-#define CANT_CALC_AMOUNT (1 << 8)
-#define ORDERS           (1 << 9)
+#define CANT_CALC_AMOUNT (1 << 7)
+#define ORDERS           (1 << 8)
 
 // screen array correspondance
 #define PARSE_ERROR    1

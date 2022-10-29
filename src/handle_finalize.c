@@ -127,11 +127,6 @@ void handle_finalize(void *parameters) {
             break;
     }
 
-    // set IS_ETH if one of the addresses is 0x0000...
-    if (!memcmp(context->token1.address, NULL_ADDRESS, ADDRESS_LENGTH) ||
-        !memcmp(context->token2.address, NULL_ADDRESS, ADDRESS_LENGTH))
-        context->booleans |= IS_ETH;
-
     // swap tokens when needed:
     switch (context->selectorIndex) {
         case FULFILL_ADVANCED_ORDER:
