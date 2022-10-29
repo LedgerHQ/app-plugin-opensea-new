@@ -18,15 +18,6 @@
 #define UNKNOWN_ERC20 "? "
 #define UNKNOWN_NFT   "NFT"
 
-//  Text utils for add funds
-
-#define WRAP           "Wrap"
-#define POLYGON        "To Polygon"
-#define ARBITRUM       "To Arbitrum"
-#define OPTIMISM       "To Optimism"
-#define ORDER_SINGULAR "Order"
-#define ORDER_PLURAL   "Orders"
-
 // Utility addresses checking
 #define NULL_ADDRESS                    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 #define ADDRESS_IS_NETWORK_TOKEN(_addr) (!memcmp(_addr, NETWORK_TOKEN_ADDRESS, ADDRESS_LENGTH))
@@ -48,14 +39,15 @@ typedef enum {
     //
     WETH_DEPOSIT,
     WETH_WITHDRAW,
-    POLYGON_BRIDGE_DEPOSIT_ETH_FOR,
+    POLYGON_BRIDGE_DEPOSIT_ETHER_FOR,
     ARBITRUM_BRIDGE_DEPOSIT_ETH,
     OPTIMISM_BRIDGE_DEPOSIT_ETH,
+    UNISWAP_MULTICALL,
 } selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 14
+#define NUM_SELECTORS 15
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 

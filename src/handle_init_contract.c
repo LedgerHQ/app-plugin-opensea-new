@@ -94,14 +94,17 @@ void handle_init_contract(void *parameters) {
             PRINTF("IN WETH_WITHDRAW\n");
             context->next_param = AMOUNT;
             break;
-        case POLYGON_BRIDGE_DEPOSIT_ETH_FOR:
-            PRINTF("IN POLYGON_BRIDGE_DEPOSIT_ETH_FOR\n");
+        case POLYGON_BRIDGE_DEPOSIT_ETHER_FOR:
+            PRINTF("IN POLYGON_BRIDGE_DEPOSIT_ETHER_FOR\n");
             break;
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
             PRINTF("IN ARBITRUM_BRIDGE_DEPOSIT_ETH\n");
             break;
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
             PRINTF("IN OPTIMISM_BRIDGE_DEPOSIT_ETH\n");
+            break;
+        case UNISWAP_MULTICALL:
+            PRINTF("IN UNISWAP_MULTICALL\n");
             break;
         default:
             PRINTF("Missing selectorIndex: %d\n", context->selectorIndex);

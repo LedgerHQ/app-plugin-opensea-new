@@ -42,7 +42,7 @@
             "advancedOrders.0.parameters.consideration.0.token",
             "advancedOrders.0.parameters.offer.0.token"
           ],
-          "method": "fulfillAvailableAdvancedOrder",
+          "method": "fulfillAvailableAdvancedOrders",
           "plugin": "SeaPort"
         },
         "0xfd9f1e10": {
@@ -102,6 +102,17 @@
         "0xb1a1a882": {
           "erc20OfInterest": [],
           "method": "depositETH",
+          "plugin": "SeaPort"
+        }
+      }
+    },
+    {
+      "address": "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45",
+      "contractName": "SwapRouter02",
+      "selectors": {
+        "0x5ae401dc": {
+          "erc20OfInterest": [],
+          "method": "multicall",
           "plugin": "SeaPort"
         }
       }

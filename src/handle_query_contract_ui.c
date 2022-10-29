@@ -137,15 +137,17 @@ static void set_receive_ui_err(ethQueryContractUI_t *msg, context_t *context) {
 static void set_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) {
     // Set title
     if (context->selectorIndex == WETH_DEPOSIT)
-        strlcpy(msg->title, WRAP, msg->titleLength);
-    else if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH)
-        strlcpy(msg->title, POLYGON, msg->titleLength);
+        strlcpy(msg->title, "Wrap", msg->titleLength);
+    else if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETHER_FOR)
+        strlcpy(msg->title, "To Polygon", msg->titleLength);
     else if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH)
-        strlcpy(msg->title, ARBITRUM, msg->titleLength);
+        strlcpy(msg->title, "To Arbitrum", msg->titleLength);
     else if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH)
-        strlcpy(msg->title, OPTIMISM, msg->titleLength);
+        strlcpy(msg->title, "To Optimism", msg->titleLength);
     else if (context->selectorIndex == WETH_WITHDRAW)
         strlcpy(msg->title, "Unwrap", msg->titleLength);
+    else if (context->selectorIndex == UNISWAP_MULTICALL)
+        strlcpy(msg->title, "Powered", msg->titleLength);
     else {
         msg->result = ETH_PLUGIN_RESULT_ERROR;
         return;
@@ -158,6 +160,9 @@ static void set_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) {
                        WETH,
                        msg->msg,
                        msg->msgLength);
+    } else if (context->selectorIndex == UNISWAP_MULTICALL) {
+        strlcpy(msg->msg, "by Uniswap Exchange", msg->msgLength);
+
     } else {
         amountToString(msg->pluginSharedRO->txContent->value.value,
                        msg->pluginSharedRO->txContent->value.length,
