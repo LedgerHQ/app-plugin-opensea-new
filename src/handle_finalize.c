@@ -96,7 +96,7 @@ void handle_finalize(void *parameters) {
 
     switch (context->selectorIndex) {
         case FULFILL_ADVANCED_ORDER:
-            if (memcmp(context->recipient_address, NULL_ADDRESS, ADDRESS_LENGTH) &&
+            if (!ADDRESS_IS_NULL_ADDRESS(context->recipient_address) &&
                 memcmp(context->recipient_address, msg->address, ADDRESS_LENGTH)) {
                 context->booleans |= IS_BUY4;
                 context->screen_array |= BUY_FOR_UI;
