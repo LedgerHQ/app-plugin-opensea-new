@@ -94,18 +94,16 @@ void handle_finalize(void *parameters) {
 
     msg->uiType = ETH_UI_TYPE_GENERIC;
 
-    // When we can't display the real amounts in rare cases: display an error message.
-    if (context->booleans & CANT_CALC_AMOUNT) {
-        context->screen_array |= PARSE_ERROR;
-        msg->result = ETH_PLUGIN_RESULT_OK;
-        return;
-    }
-
     switch (context->selectorIndex) {
+        case FULFILL_ADVANCED_ORDER:
+            if (memcmp(context->recipient_address, NULL_ADDRESS, ADDRESS_LENGTH) &&
+                memcmp(context->recipient_address, msg->address, ADDRESS_LENGTH)) {
+                context->booleans |= IS_BUY4;
+                context->screen_array |= BUY_FOR_UI;
+            }
         case FULFILL_ORDER:
         case FULFILL_BASIC_ORDER:
         case FULFILL_AVAILABLE_ORDERS:
-        case FULFILL_ADVANCED_ORDER:
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
         case MATCH_ORDERS:
         case MATCH_ADVANCED_ORDERS:
@@ -130,23 +128,10 @@ void handle_finalize(void *parameters) {
     // swap tokens when needed:
     switch (context->selectorIndex) {
         case FULFILL_ADVANCED_ORDER:
-            PRINTF("GPIRIOU msg address: %.*H\n", ADDRESS_LENGTH, msg->address);
-            PRINTF("GPIRIOU recipient address: %.*H\n", ADDRESS_LENGTH, context->recipient_address);
-            if (memcmp(context->recipient_address, NULL_ADDRESS, ADDRESS_LENGTH) &&
-                memcmp(context->recipient_address, msg->address, ADDRESS_LENGTH)) {
-                PRINTF("IS_BUY4\n");
-                context->booleans |= IS_BUY4;
-                context->screen_array |= BUY_FOR_UI;
-            }
-
         case FULFILL_AVAILABLE_ORDERS:
         case FULFILL_ORDER:
-            // if (context->token1.type == NFT) swap_tokens(context);
-            // if (!(context->booleans & IS_ACCEPT)) swap_tokens(context);
+            PRINTF("Swapping tokens.\n");
             swap_tokens(context);
-            break;
-        case FULFILL_BASIC_ORDER:
-            break;
         default:
             break;
     }
@@ -174,14 +159,15 @@ void handle_finalize(void *parameters) {
         }
     }
 
-    PRINTF("Setting tokenLookup1 to: %.*H\n", ADDRESS_LENGTH, context->token1.address);
     msg->tokenLookup1 = context->token1.address;
+    PRINTF("Setting msg->tokenLookup1 to: %.*H\n", ADDRESS_LENGTH, msg->tokenLookup1);
 
-    PRINTF("Setting tokenLookup2 to: %.*H\n", ADDRESS_LENGTH, context->token2.address);
     msg->tokenLookup2 = context->token2.address;
+    PRINTF("Setting msg->tokenLookup2 to: %.*H\n", ADDRESS_LENGTH, msg->tokenLookup2);
 
     msg->numScreens = count_screens(context->screen_array);
-    PRINTF("DEBUG msg->numScreens \n", msg->numScreens);
+    PRINTF("Setting msg->numScreens to: %d\n", msg->numScreens);
+
 #ifdef DBG_PLUGIN
     print_context(context);  // dbg
 #endif

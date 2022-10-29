@@ -53,58 +53,50 @@ static void debug_screens(ethQueryContractUI_t *msg, context_t *context) {
 **  Items handler
 */
 
-
 static void display_item(ethQueryContractUI_t *msg,
                          token_t token,
                          uint16_t number_of_nfts,
-                         uint8_t is_found) {
+                         uint8_t is_found,
+                         uint8_t no_amount) {
     PRINTF("__display_item__\n");
     PRINTF("\ttoken.type: %d\n", token.type);
     PRINTF("\ttoken.address: %.*H\n", ADDRESS_LENGTH, token.address);
     PRINTF("\ttoken.amount: %.*H\n", PARAMETER_LENGTH, token.amount);
     switch (token.type) {
         case NATIVE:
-            amountToString(token.amount,
-                           INT256_LENGTH,
-                           DEFAULT_DECIMAL,
-                           ETH,
-                           msg->msg,
-                           msg->msgLength);
-            break;
-        case ERC20:
-            PRINTF("current token found: %d\n", is_found);
-            if (is_found)
-                amountToString(token.amount,
-                               INT256_LENGTH,
-                               msg->item1->token.decimals,
-                               msg->item1->token.ticker,
-                               msg->msg,
-                               msg->msgLength);
-            else
+            // TODO CANC_CALC_AMOUNT
+            if (no_amount) {
+                snprintf(msg->msg, msg->msgLength, "? %s", ETH);
+            } else {
                 amountToString(token.amount,
                                INT256_LENGTH,
                                DEFAULT_DECIMAL,
-                               UNKNOWN_ERC20,
+                               ETH,
                                msg->msg,
                                msg->msgLength);
+            }
+            break;
+        case ERC20:
+            PRINTF("current token found: %d\n", is_found);
+            if (no_amount) {
+                snprintf(msg->msg, msg->msgLength, "? %s", msg->item1->token.ticker);
+            } else {
+                amountToString(token.amount,
+                               INT256_LENGTH,
+                               (is_found) ? msg->item1->token.decimals : DEFAULT_DECIMAL,
+                               (is_found) ? msg->item1->token.ticker : UNKNOWN_ERC20,
+                               msg->msg,
+                               msg->msgLength);
+            }
             break;
         case NFT:
-            // TODO check U4BE() safety
             PRINTF("case NFT, is_found: %d\n", is_found);
-            if (is_found)
-                snprintf(msg->msg,
-                         msg->msgLength,
-                         "%d %s",
-                         U4BE(token.amount, INT256_LENGTH - 4),
-                         msg->item2->nft.collectionName);  // TODO check U4BE() safety
-            // msg->item1->nft.collectionName);  // TODO check U4BE() safety
-            else
-                // TODO check U4BE() safety
-                snprintf(msg->msg,
-                         msg->msgLength,
-                         "%d %s",
-                         (number_of_nfts) ? number_of_nfts : U4BE(token.amount, INT256_LENGTH - 4),
-                         UNKNOWN_NFT);
+            // TODO check U4BE() safety
+            snprintf(msg->msg,
+                     msg->msgLength,
+                     "%d %s",
+                     (number_of_nfts) ? number_of_nfts : U4BE(token.amount, INT256_LENGTH - 4),
+                     (is_found) ? msg->item2->nft.collectionName : UNKNOWN_NFT);
             break;
         case MULTIPLE_ERC20:
             break;
@@ -140,6 +132,35 @@ static void set_receive_ui_err(ethQueryContractUI_t *msg, context_t *context) {
                                   (char *) msg->msg + 2,
                                   msg->pluginSharedRW->sha3,
                                   0);
+}
+
+static void set_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) {
+    if (context->selectorIndex == WETH_WITHDRAW) {
+        strlcpy(msg->title, "Unwrap", msg->titleLength);
+        amountToString(context->token1.amount,
+                       INT256_LENGTH,
+                       ETH_DECIMAL,
+                       WETH,
+                       msg->msg,
+                       msg->msgLength);
+        return;
+    }
+    char *str = 0;
+    if (context->selectorIndex == WETH_DEPOSIT)
+        str = WRAP;
+    else if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH)
+        str = POLYGON;
+    else if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH)
+        str = ARBITRUM;
+    else if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH)
+        str = OPTIMISM;
+    strlcpy(msg->title, str, msg->titleLength);
+    amountToString(msg->pluginSharedRO->txContent->value.value,
+                   msg->pluginSharedRO->txContent->value.length,
+                   ETH_DECIMAL,
+                   ETH,
+                   msg->msg,
+                   msg->msgLength);
 }
 
 /*
@@ -240,7 +261,8 @@ void handle_query_contract_ui(void *parameters) {
             display_item(msg,
                          context->token1,
                          context->number_of_nfts,
-                         context->booleans & ITEM1_FOUND);
+                         context->booleans & ITEM1_FOUND,
+                         context->booleans & CANT_CALC_AMOUNT);
             break;
         case SEND_UI_ERR:
             strlcpy(msg->title, "with address:", msg->titleLength);
@@ -254,7 +276,8 @@ void handle_query_contract_ui(void *parameters) {
             display_item(msg,
                          context->token2,
                          context->number_of_nfts,
-                         context->booleans & ITEM2_FOUND);
+                         context->booleans & ITEM2_FOUND,
+                         context->booleans & CANT_CALC_AMOUNT);
             break;
         case RECEIVE_UI_ERR:
             strlcpy(msg->title, "with address:", msg->titleLength);
@@ -277,33 +300,7 @@ void handle_query_contract_ui(void *parameters) {
                 strlcpy(msg->msg, "Order", msg->titleLength);
             break;
         case ADD_FUNDS_UI:
-
-            if (context->selectorIndex == WETH_WITHDRAW) {
-                strlcpy(msg->title, "Unwrap", msg->titleLength);
-                amountToString(context->token1.amount,
-                               INT256_LENGTH,
-                               ETH_DECIMAL,
-                               WETH,
-                               msg->msg,
-                               msg->msgLength);
-                return;
-            }
-            char *str = 0;
-            if (context->selectorIndex == WETH_DEPOSIT)
-                str = WRAP;
-            else if (context->selectorIndex == POLYGON_BRIDGE_DEPOSIT_ETH)
-                str = POLYGON;
-            else if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH)
-                str = ARBITRUM;
-            else if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH)
-                str = OPTIMISM;
-            strlcpy(msg->title, str, msg->titleLength);
-            amountToString(msg->pluginSharedRO->txContent->value.value,
-                           msg->pluginSharedRO->txContent->value.length,
-                           ETH_DECIMAL,
-                           ETH,
-                           msg->msg,
-                           msg->msgLength);
+            set_add_funds_ui(msg, context);
             break;
         default:
             PRINTF("\n\n\n\n\n SCREEN NOT HANDLED\n\n\n\n\n");
