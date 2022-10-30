@@ -59,8 +59,6 @@ void handle_finalize(void *parameters) {
         case FULFILL_BASIC_ORDER:
         case FULFILL_AVAILABLE_ORDERS:
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
-        case MATCH_ORDERS:
-        case MATCH_ADVANCED_ORDERS:
             context->screen_array |= SEND_UI;
             context->screen_array |= RECEIVE_UI;
             break;
@@ -78,6 +76,10 @@ void handle_finalize(void *parameters) {
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
         case UNISWAP_MULTICALL:
             context->screen_array |= ADD_FUNDS_UI;
+            break;
+        case MATCH_ORDERS:
+        case MATCH_ADVANCED_ORDERS:
+            context->screen_array |= PARSE_ERROR_UI;
             break;
         default:
             break;

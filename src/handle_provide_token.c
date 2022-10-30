@@ -14,7 +14,9 @@ void handle_provide_token(void *parameters) {
 
     if (msg->item1) context->booleans |= ITEM1_FOUND;
     // check if not ETH address
-    else if (!ADDRESS_IS_NULL_ADDRESS(context->token1.address)) {
+    else if (!ADDRESS_IS_NULL_ADDRESS(context->token1.address) &&
+             !(context->selectorIndex == MATCH_ORDERS ||
+               context->selectorIndex == MATCH_ADVANCED_ORDERS)) {
         context->screen_array |= SEND_UI_ERR;
         msg->additionalScreens++;
     } else {
