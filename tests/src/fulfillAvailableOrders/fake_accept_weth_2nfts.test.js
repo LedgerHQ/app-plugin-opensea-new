@@ -4,7 +4,7 @@ const contractName = "SeaPort";
 const contractAddr = "0x00000000006c3852cbef3e08e8df289169ede581";
 const testNetwork = "ethereum";
 
-const testLabel = "fulfillAvailableOrders accept weth 2nfts"; // <= Name of the test
+const testLabel = "fulfillAvailableOrders fake accept weth 2nfts"; // <= Name of the test
 const testDirSuffix = testLabel.toLowerCase().replace(/\s+/g, '_');
 
 // hand crafter from https://etherscan.io/tx/0x951fd6d174749496aan8b45020059755f3c204c1353bab88543fcbe6275393b0 
