@@ -45,6 +45,10 @@ void handle_finalize(void *parameters) {
     context_t *context = (context_t *) msg->pluginContext;
 
     msg->uiType = ETH_UI_TYPE_GENERIC;
+    if (context->selectorIndex == MATCH_ORDERS || context->selectorIndex == MATCH_ADVANCED_ORDERS) {
+        context->screen_array |= PARSE_ERROR_UI;
+        return;
+    }
 
     if (context->booleans & CANT_CALC_AMOUNT) context->screen_array |= PARSE_ERROR_UI;
 
@@ -76,10 +80,6 @@ void handle_finalize(void *parameters) {
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
         case UNISWAP_MULTICALL:
             context->screen_array |= ADD_FUNDS_UI;
-            break;
-        case MATCH_ORDERS:
-        case MATCH_ADVANCED_ORDERS:
-            context->screen_array |= PARSE_ERROR_UI;
             break;
         default:
             break;
