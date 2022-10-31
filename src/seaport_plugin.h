@@ -265,6 +265,10 @@ typedef enum item_type_e {
 #define ITEM2_FOUND      (1 << 6)
 #define CANT_CALC_AMOUNT (1 << 7)
 #define ORDERS           (1 << 8)
+#define IS_OFFER_DUTCH   (1 << 9)
+#define IS_CONSI_DUTCH   (1 << 10)
+#define IS_OFFER0_PARSED (1 << 11)
+#define IS_CONSI0_PARSED (1 << 12)
 
 // screen array correspondance
 #define PARSE_ERROR_UI 1

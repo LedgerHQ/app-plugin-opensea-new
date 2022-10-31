@@ -4,7 +4,7 @@ const contractName = "SeaPort";
 const contractAddr = "0x00000000006c3852cbef3e08e8df289169ede581";
 const testNetwork = "ethereum";
 
-const testLabel = "fulfillAdvancedOrder buy eth 1nft bug150"; // <= Name of the test
+const testLabel = "fulfillAdvancedOrder buy eth 1nft numedeno"; // <= Name of the test
 const testDirSuffix = testLabel.toLowerCase().replace(/\s+/g, '_');
 
 // https://etherscan.io/tx/0xad238e1f15a1d82a347e4792bb3d9e88d60713c31445e4578c5a156e71556b5a
@@ -12,7 +12,7 @@ const inputData = "0xe7acab24000000000000000000000000000000000000000000000000000
 const models = [
   {
     name: 'nanos',
-    steps: 10
+    steps: 9
   },
   // {
   // 	name: 'nanox',

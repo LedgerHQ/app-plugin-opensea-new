@@ -26,7 +26,7 @@ static void debug_items(ethQueryContractUI_t *msg, context_t *context) {
         PRINTF("UI PENZO NO ITEM2\n");
 }
 static void debug_screens(ethQueryContractUI_t *msg, context_t *context) {
-    PRINTF("SCREEN: screen_array:\t\t%d%d%d%d %d%d%d%d\n",
+    PRINTF("SCREEN: screen_array:\t%d%d%d%d %d%d%d%d\n",
            context->screen_array & 1 ? 1 : 0,
            context->screen_array & (1 << 1) ? 1 : 0,
            context->screen_array & (1 << 2) ? 1 : 0,
@@ -44,8 +44,8 @@ static void debug_screens(ethQueryContractUI_t *msg, context_t *context) {
            context->screen_probe & (1 << 5) ? 1 : 0,
            context->screen_probe & (1 << 6) ? 1 : 0,
            context->screen_probe & (1 << 7) ? 1 : 0);
-    PRINTF("SCREEN: previous_screen_uint8: %d\n", context->prev_screenIndex);
-    PRINTF("SCREEN: msg->screenIndex:\t%d\n", msg->screenIndex);
+    PRINTF("SCREEN: prev_screenIndex: %d\n", context->prev_screenIndex);
+    PRINTF("SCREEN: msg->screenIndex: %d\n", msg->screenIndex);
 }
 #endif
 
@@ -207,14 +207,17 @@ void handle_query_contract_ui(void *parameters) {
         case PARSE_ERROR_UI:
             if (context->booleans & CANT_CALC_AMOUNT) {
                 strlcpy(msg->title, "Warning:", msg->titleLength);
-                strlcpy(msg->msg, "Can't retrieve amount.", msg->msgLength);
+                strlcpy(msg->msg, "Can't parse price.", msg->msgLength);
             } else {
                 strlcpy(msg->title, "Error:", msg->titleLength);
                 strlcpy(msg->msg, "Could not parse transaction", msg->msgLength);
             }
             break;
         case SEND_UI:
-            strlcpy(msg->title, "Send", msg->titleLength);
+            if (context->booleans & IS_CONSI_DUTCH)  // this is CONSI because we swap tokens
+                strlcpy(msg->title, "Send max", msg->titleLength);
+            else
+                strlcpy(msg->title, "Send", msg->titleLength);
             display_item(msg,
                          context->token1,
                          context->number_of_nfts,
@@ -231,10 +234,17 @@ void handle_query_contract_ui(void *parameters) {
             }
             break;
         case RECEIVE_UI:
-            if (context->booleans & IS_BUY4)
-                strlcpy(msg->title, "Transfer", msg->titleLength);
-            else
-                strlcpy(msg->title, "Receive", msg->titleLength);
+            if (context->booleans & IS_BUY4) {
+                if (context->booleans & IS_OFFER_DUTCH)  // this is OFFER because we swap tokens
+                    strlcpy(msg->title, "Transfer max", msg->titleLength);
+                else
+                    strlcpy(msg->title, "Transfer", msg->titleLength);
+            } else {
+                if (context->booleans & IS_OFFER_DUTCH)  // this is OFFER because we swap tokens
+                    strlcpy(msg->title, "Receive max", msg->titleLength);
+                else
+                    strlcpy(msg->title, "Receive", msg->titleLength);
+            }
             display_item(msg,
                          context->token2,
                          context->number_of_nfts,

@@ -167,6 +167,7 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
     }
 }
+
 static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
     PRINTF("PARSE OFFER\n");
     switch ((offers) context->items_index) {
@@ -177,7 +178,8 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             // only set token1.type on first Offer.
             if (context->token1.type == UNSET) {
                 context->token1.type = get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
-                if (context->token1.type == ERC20) context->booleans |= IS_ACCEPT;
+                if (context->token1.type == ERC20)
+                    context->booleans |= IS_ACCEPT;  // TODO check on NATIVE type too ?
             }
             // always set current_item_type
             context->current_item_type =
@@ -217,6 +219,8 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             break;
         case OFFER_START_AMOUNT:
             PRINTF("OFFER_START_AMOUNT\n");
+
+            // copy parameter in buffer
             uint8_t buf_amount[INT256_LENGTH] = {0};
             copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
             PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
@@ -240,6 +244,15 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             break;
         case OFFER_END_AMOUNT:
             PRINTF("OFFER_END_AMOUNT\n");
+
+            // Only on order[0].offer[0]
+            if (!(context->booleans & IS_OFFER0_PARSED)) {
+                // if start & end are different
+                if (memcmp(context->token1.amount, msg->parameter, PARAMETER_LENGTH))
+                    context->booleans |= IS_OFFER_DUTCH;
+                context->booleans |= IS_OFFER0_PARSED;
+            }
+
             context->current_length--;
             context->items_index = OFFER_ITEM_TYPE;
             break;
@@ -296,6 +309,7 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             break;
         case CONSIDERATION_START_AMOUNT:
             PRINTF("CONSIDERATION_START_AMOUNT\n");
+
             uint8_t buf_amount[INT256_LENGTH] = {0};
             copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
             PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
@@ -319,6 +333,15 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             break;
         case CONSIDERATION_END_AMOUNT:
             PRINTF("CONSIDERATION_END_AMOUNT\n");
+
+            // Only on order[0].consideration[0]
+            if (!(context->booleans & IS_CONSI0_PARSED)) {
+                // if start & end are different
+                if (memcmp(context->token2.amount, msg->parameter, PARAMETER_LENGTH))
+                    context->booleans |= IS_CONSI_DUTCH;
+                context->booleans |= IS_CONSI0_PARSED;
+            }
+
             context->items_index = CONSIDERATION_RECIPIENT;
             break;
         case CONSIDERATION_RECIPIENT:
@@ -787,6 +810,17 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
                 if (context->token1.type == NFT || context->token1.type == MULTIPLE_NFTS) {
                     // calc number of nfts using numerator and denominator
                     if (calc_number_of_nfts(context->token1.amount,
+                                            context->numerator,
+                                            context->denominator,
+                                            &context->number_of_nfts)) {
+                        msg->result =
+                            ETH_PLUGIN_RESULT_ERROR;  // TODO check how to handle this error
+                        break;
+                    }
+                }
+                if (context->token2.type == NFT || context->token2.type == MULTIPLE_NFTS) {
+                    // calc number of nfts using numerator and denominator
+                    if (calc_number_of_nfts(context->token2.amount,
                                             context->numerator,
                                             context->denominator,
                                             &context->number_of_nfts)) {
