@@ -1,0 +1,88 @@
+{
+  "chainId": 43114,
+  "contracts": [
+    {
+      "address": "0x00000000006c3852cbef3e08e8df289169ede581",
+      "contractName": "SeaPort",
+      "selectors": {
+        "0xfb0f3ee1": {
+          "erc20OfInterest": [
+            "parameters.considerationToken",
+            "parameters.offerToken"
+          ],
+          "method": "fulfillBasicOrder",
+          "plugin": "SeaPort"
+        },
+        "0xb3a34c4c": {
+          "erc20OfInterest": [
+            "order.parameters.consideration.0.token",
+            "order.parameters.offer.0.token"
+          ],
+          "method": "fulfillOrder",
+          "plugin": "SeaPort"
+        },
+        "0xed98a574": {
+          "erc20OfInterest": [
+            "orders.0.parameters.consideration.0.token",
+            "orders.0.parameters.offer.0.token"
+          ],
+          "method": "fulfillAvailableOrders",
+          "plugin": "SeaPort"
+        },
+        "0xe7acab24": {
+          "erc20OfInterest": [
+            "advancedOrder.parameters.consideration.0.token",
+            "advancedOrder.parameters.offer.0.token"
+          ],
+          "method": "fulfillAdvancedOrder",
+          "plugin": "SeaPort"
+        },
+        "0x87201b41": {
+          "erc20OfInterest": [
+            "advancedOrders.0.parameters.consideration.0.token",
+            "advancedOrders.0.parameters.offer.0.token"
+          ],
+          "method": "fulfillAvailableAdvancedOrders",
+          "plugin": "SeaPort"
+        },
+        "0xa8174404": {
+          "erc20OfInterest": [],
+          "method": "matchOrders",
+          "plugin": "SeaPort"
+        },
+        "0x55944a42": {
+          "erc20OfInterest": [],
+          "method": "matchAdvancedOrders",
+          "plugin": "SeaPort"
+        },
+        "0xfd9f1e10": {
+          "erc20OfInterest": [],
+          "method": "cancel",
+          "plugin": "SeaPort"
+        },
+        "0x5b34b966": {
+          "erc20OfInterest": [],
+          "method": "incrementCounter",
+          "plugin": "SeaPort"
+        }
+      }
+    },
+    {
+      "address": "0x7f268357a8c2552623316e2562d90e642bb538e5",
+      "contractName": "WyvernExchangeWithBulkCancellations",
+      "selectors": {
+        "0xa8a41c70": {
+          "erc20OfInterest": [],
+          "method": "cancelOrder_",
+          "plugin": "SeaPort"
+        },
+        "0x627cdcb9": {
+          "erc20OfInterest": [],
+          "method": "incrementNonce",
+          "plugin": "SeaPort"
+        }
+      }
+    }
+  ],
+  "name": "SeaPort"
+}
