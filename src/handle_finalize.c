@@ -53,6 +53,7 @@ void handle_finalize(void *parameters) {
     if (context->booleans & CANT_CALC_AMOUNT) context->screen_array |= PARSE_ERROR_UI;
 
     switch (context->selectorIndex) {
+        case FULFILL_AVAILABLE_ADVANCED_ORDERS:
         case FULFILL_ADVANCED_ORDER:
             if (!ADDRESS_IS_NULL_ADDRESS(context->recipient_address) &&
                 memcmp(context->recipient_address, msg->address, ADDRESS_LENGTH)) {
@@ -62,7 +63,6 @@ void handle_finalize(void *parameters) {
         case FULFILL_ORDER:
         case FULFILL_BASIC_ORDER:
         case FULFILL_AVAILABLE_ORDERS:
-        case FULFILL_AVAILABLE_ADVANCED_ORDERS:
             context->screen_array |= SEND_UI;
             context->screen_array |= RECEIVE_UI;
             break;
@@ -87,6 +87,7 @@ void handle_finalize(void *parameters) {
 
     // swap tokens when needed:
     switch (context->selectorIndex) {
+        case FULFILL_AVAILABLE_ADVANCED_ORDERS:
         case FULFILL_ADVANCED_ORDER:
         case FULFILL_AVAILABLE_ORDERS:
         case FULFILL_ORDER:
