@@ -205,13 +205,15 @@ void handle_query_contract_ui(void *parameters) {
 
     switch (context->screen_probe) {
         case PARSE_ERROR_UI:
-            // TODO add PARSE_ERROR boolean, to take priority over CANT_CALC_AMOUNT
-            if (context->booleans & CANT_CALC_AMOUNT) {
+            if (context->booleans & PARSE_ERROR) {
+                strlcpy(msg->title, "Error:", msg->titleLength);
+                strlcpy(msg->msg, "Could not parse transaction", msg->msgLength);
+            } else if (context->booleans & CANT_CALC_AMOUNT) {
                 strlcpy(msg->title, "Warning:", msg->titleLength);
                 strlcpy(msg->msg, "Can't parse price.", msg->msgLength);
             } else {
-                strlcpy(msg->title, "Error:", msg->titleLength);
-                strlcpy(msg->msg, "Could not parse transaction", msg->msgLength);
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
             }
             break;
         case SEND_UI:

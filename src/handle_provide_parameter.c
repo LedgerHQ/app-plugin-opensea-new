@@ -492,6 +492,12 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
         case ADVANCED_PARAMETER_OFFSET:
             PRINTF("ADVANCED_PARAMETER_OFFSET\n");
 
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
+                msg->parameter[PARAMETER_LENGTH - 1] != 160) {
+                context->booleans |= PARSE_ERROR;
+                // TODO actually stop parsing when this happen.
+            }
+
             context->orders_index = ADVANCED_NUMERATOR;
             break;
         case ADVANCED_NUMERATOR:
