@@ -205,6 +205,7 @@ void handle_query_contract_ui(void *parameters) {
 
     switch (context->screen_probe) {
         case PARSE_ERROR_UI:
+            // TODO add PARSE_ERROR boolean, to take priority over CANT_CALC_AMOUNT
             if (context->booleans & CANT_CALC_AMOUNT) {
                 strlcpy(msg->title, "Warning:", msg->titleLength);
                 strlcpy(msg->msg, "Can't parse price.", msg->msgLength);
@@ -214,10 +215,9 @@ void handle_query_contract_ui(void *parameters) {
             }
             break;
         case SEND_UI:
-            if (context->booleans & IS_CONSI_DUTCH)  // this is CONSI because we swap tokens
-                strlcpy(msg->title, "Send max", msg->titleLength);
-            else
-                strlcpy(msg->title, "Send", msg->titleLength);
+            strlcpy(msg->title,
+                    (context->booleans & IS_CONSI_DUTCH) ? "Send max" : "Send",
+                    msg->titleLength);
             display_item(msg,
                          context->token1,
                          context->number_of_nfts,
@@ -235,15 +235,13 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case RECEIVE_UI:
             if (context->booleans & IS_BUY4) {
-                if (context->booleans & IS_OFFER_DUTCH)  // this is OFFER because we swap tokens
-                    strlcpy(msg->title, "Transfer max", msg->titleLength);
-                else
-                    strlcpy(msg->title, "Transfer", msg->titleLength);
+                strlcpy(msg->title,
+                        (context->booleans & IS_OFFER_DUTCH) ? "Transfer max" : "Transfer",
+                        msg->titleLength);
             } else {
-                if (context->booleans & IS_OFFER_DUTCH)  // this is OFFER because we swap tokens
-                    strlcpy(msg->title, "Receive max", msg->titleLength);
-                else
-                    strlcpy(msg->title, "Receive", msg->titleLength);
+                strlcpy(msg->title,
+                        (context->booleans & IS_OFFER_DUTCH) ? "Receive max" : "Receive",
+                        msg->titleLength);
             }
             display_item(msg,
                          context->token2,
@@ -271,10 +269,7 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case CANCEL_UI:
             strlcpy(msg->title, "Cancel", msg->titleLength);
-            if (context->booleans & ORDERS)
-                strlcpy(msg->msg, "Orders", msg->titleLength);
-            else
-                strlcpy(msg->msg, "Order", msg->titleLength);
+            strlcpy(msg->msg, (context->booleans & ORDERS) ? "Orders" : "Order", msg->msgLength);
             break;
         case ADD_FUNDS_UI:
             set_add_funds_ui(msg, context);
