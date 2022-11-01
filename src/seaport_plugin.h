@@ -70,19 +70,13 @@ typedef enum {
 typedef enum {
     FBO__OFFSET_BASIC_ORDER_PARAM,
     FBO__CONSIDERATION_TOKEN,
-    FBO__CONSIDERATION_IDENTIFIER,
     FBO__CONSIDERATION_AMOUNT,
-    FBO__OFFERER,
     FBO__OFFER_TOKEN,
-    FBO__OFFER_IDENTIFIER,
     FBO__OFFER_AMOUNT,
     FBO__BASIC_ORDER_TYPE,
-    // FBO__TOTAL_ORIGINAL_ADDITIONAL_RECIPIENTS,
     FBO__LEN_ADDITIONAL_RECIPIENTS,
     FBO__ADDITIONAL_AMOUNT,
-    // FBO__ADDITIONAL_RECIPIENT,
     FBO__LEN_SIGNATURE,
-    // FBO__TMP
 } fulfill_basic_order_parameter;
 
 typedef enum {
@@ -308,20 +302,19 @@ typedef struct context_t {
     uint8_t param_index;
     // +64
 
-    token_t token2;                 // 53
-    uint32_t current_tuple_offset;  // is the value from which a given offset is calculated
-    uint16_t current_length;        // is the length of the current array
-    uint16_t booleans;              // bitwise booleans
+    token_t token2;  // 53
+    uint8_t items_index;
+    uint8_t current_item_type;
+    uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
+    uint8_t tx_type;
+    uint16_t current_length;  // is the length of the current array
+    uint16_t booleans;        // bitwise booleans
     uint16_t number_of_nfts;
     uint8_t next_param;
     // +64
 
     uint8_t recipient_address[ADDRESS_LENGTH];
     uint8_t skip;  // number of parameters to skip
-    uint8_t items_index;
-    uint8_t current_item_type;
-    uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
-    uint8_t tx_type;
     // screen utils
     uint8_t screen_array;
     uint8_t prev_screenIndex;

@@ -96,30 +96,19 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
         case FBO__CONSIDERATION_TOKEN:
             PRINTF("FBO__CONSIDERATION_TOKEN\n");
             copy_address(context->token1.address, msg->parameter, ADDRESS_LENGTH);
-            context->next_param = FBO__CONSIDERATION_IDENTIFIER;
-            break;
-        case FBO__CONSIDERATION_IDENTIFIER:
-            PRINTF("FBO__CONSIDERATION_IDENTIFIER\n");
+            context->skip = 1;
             context->next_param = FBO__CONSIDERATION_AMOUNT;
             break;
         case FBO__CONSIDERATION_AMOUNT:
             PRINTF("FBO__CONSIDERATION_AMOUNT\n");
             copy_parameter(context->token1.amount, msg->parameter, PARAMETER_LENGTH);
-            context->next_param = FBO__OFFERER;
-            break;
-        case FBO__OFFERER:
-            PRINTF("FBO__OFFERER\n");
-            context->skip = 1;
+            context->skip = 2;
             context->next_param = FBO__OFFER_TOKEN;
             break;
         case FBO__OFFER_TOKEN:
             PRINTF("FBO__OFFER_TOKEN\n");
             copy_address(context->token2.address, msg->parameter, PARAMETER_LENGTH);
-            context->next_param = FBO__OFFER_IDENTIFIER;
-            break;
-        case FBO__OFFER_IDENTIFIER:
-            PRINTF("FBO__OFFER_IDENTIFIER\n");
-            // copy_parameter(context->nft_id, msg->parameter, PARAMETER_LENGTH);
+            context->skip = 1;
             context->next_param = FBO__OFFER_AMOUNT;
             break;
         case FBO__OFFER_AMOUNT:
@@ -953,9 +942,6 @@ static void handle_weth_withdraw(ethPluginProvideParameter_t *msg, context_t *co
 void handle_provide_parameter(void *parameters) {
     ethPluginProvideParameter_t *msg = (ethPluginProvideParameter_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;
-    // We use `%.*H`: it's a utility function to print bytes. You first give
-    // the number of bytes you wish to print (in this case, `PARAMETER_LENGTH`)
-    // and then the address (here `msg->parameter`).
     PRINTF(
         "___\nplugin provide parameter: offset %d\nBytes: \033[0;31m %.*H \n"
         "\033[0m \n",
@@ -996,14 +982,13 @@ void handle_provide_parameter(void *parameters) {
         case CANCEL:
             handle_cancel(msg, context);
             break;
+        case WETH_WITHDRAW:
+            handle_weth_withdraw(msg, context);
+            break;
         case INCREMENT_COUNTER:
         case WYVERN_V2_CANCEL_ORDER__:
         case WYVERN_V2_INCREMENT_NONCE:
         case WETH_DEPOSIT:
-            break;
-        case WETH_WITHDRAW:
-            handle_weth_withdraw(msg, context);
-            break;
         case POLYGON_BRIDGE_DEPOSIT_ETHER_FOR:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
         case OPTIMISM_BRIDGE_DEPOSIT_ETH:
