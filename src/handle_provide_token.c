@@ -24,7 +24,7 @@ void handle_provide_token(void *parameters) {
         context->screen_array |= SEND_UI_ERR;
         msg->additionalScreens++;
     } else {
-        PRINTF("\n\n\tITEM1 IS ETH!\n\n");
+        PRINTF("ITEM1 IS ETH!\n");
     }
 
     if (msg->item2) context->booleans |= ITEM2_FOUND;
@@ -33,13 +33,16 @@ void handle_provide_token(void *parameters) {
         context->screen_array |= RECEIVE_UI_ERR;
         msg->additionalScreens++;
     } else {
-        PRINTF("\n\n\tITEM2 IS ETH!\n\n");
+        PRINTF("ITEM2 IS ETH!\n");
     }
+
     if (context->token1.type == MULTIPLE_NFTS) {
         context->screen_array |= SEND_UI_ERR;
     }
+
     if (context->token2.type == MULTIPLE_NFTS) {
         context->screen_array |= RECEIVE_UI_ERR;
     }
+
     msg->result = ETH_PLUGIN_RESULT_OK;
 }

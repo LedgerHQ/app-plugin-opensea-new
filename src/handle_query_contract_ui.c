@@ -64,7 +64,6 @@ static void display_item(ethQueryContractUI_t *msg,
     PRINTF("\ttoken.amount: %.*H\n", PARAMETER_LENGTH, token.amount);
     switch (token.type) {
         case NATIVE:
-            // TODO CANC_CALC_AMOUNT
             if (no_amount) {
                 snprintf(msg->msg, msg->msgLength, "? %s", ETH);
             } else {
@@ -92,7 +91,10 @@ static void display_item(ethQueryContractUI_t *msg,
         case NFT:
         case MULTIPLE_NFTS:
             PRINTF("case NFT, is_found: %d\n", is_found);
-            // TODO check U4BE() safety
+            if (does_number_fit(token.amount, INT256_LENGTH, 4)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             snprintf(msg->msg,
                      msg->msgLength,
                      "%d %s",

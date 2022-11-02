@@ -228,7 +228,8 @@ typedef enum sol_ItemType_e {
     SOL_ERC721,
     SOL_ERC1155,
     SOL_ERC721_WITH_CRITERIA,
-    SOL_ERC1155_WITH_CRITERIA
+    SOL_ERC1155_WITH_CRITERIA,
+    SOL_ERROR
 } sol_ItemType_e;
 
 typedef enum item_type_e {

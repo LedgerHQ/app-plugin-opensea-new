@@ -34,10 +34,8 @@ static uint8_t get_item_type_from_sol(uint8_t parameter_last_byte) {
         case SOL_ERC721_WITH_CRITERIA:
         case SOL_ERC1155_WITH_CRITERIA:
             return NFT;
-            break;
-            // bad error handling
         default:
-            return UNSET;
+            return SOL_ERROR;
     }
 }
 
@@ -167,12 +165,20 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             // only set token1.type on first Offer.
             if (context->token1.type == UNSET) {
                 context->token1.type = get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
-                if (context->token1.type == ERC20)
-                    context->booleans |= IS_ACCEPT;  // TODO check on NATIVE type too ?
+                if (context->token1.type == SOL_ERROR) {
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                    return;
+                }
+                if (context->token1.type == ERC20 || context->token1.type == NATIVE)
+                    context->booleans |= IS_ACCEPT;
             }
             // always set current_item_type
             context->current_item_type =
                 get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
+            if (context->current_item_type == SOL_ERROR) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
 
 #ifdef DBG_PLUGIN
             print_item(context, context->token1);  // utilitary
@@ -262,9 +268,17 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             // set t2.type only on consi[0]
             if (context->token2.type == UNSET)
                 context->token2.type = get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
+            if (context->token2.type == SOL_ERROR) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             // always set current_item_type
             context->current_item_type =
                 get_item_type_from_sol(msg->parameter[PARAMETER_LENGTH - 1]);
+            if (context->current_item_type == SOL_ERROR) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
 
 #ifdef DBG_PLUGIN
             print_item(context, context->token2);  // utilitary
@@ -353,42 +367,7 @@ static void parse_param(ethPluginProvideParameter_t *msg, context_t *context) {
         case PARAM_OFFERER:
             PRINTF("PARAM_OFFERER\n");
             // copy_address(context->offerer_address, msg->parameter, ADDRESS_LENGTH);
-            context->param_index = PARAM_ZONE;
-            break;
-        case PARAM_ZONE:
-            PRINTF("PARAM_ZONE\n");
-            context->param_index = PARAM_OFFER_OFFSET;
-            break;
-        case PARAM_OFFER_OFFSET:
-            PRINTF("PARAM_OFFER_OFFSET\n");
-            context->param_index = PARAM_CONSIDERATION_OFFSET;
-            break;
-        case PARAM_CONSIDERATION_OFFSET:
-            PRINTF("PARAM_CONSIDERATION_OFFSET\n");
-            context->param_index = PARAM_ORDER_TYPE;
-            break;
-        case PARAM_ORDER_TYPE:
-            PRINTF("PARAM_ORDER_TYPE\n");
-            context->param_index = PARAM_START_TIME;
-            break;
-        case PARAM_START_TIME:
-            PRINTF("PARAM_START_TIME\n");
-            context->param_index = PARAM_END_TIME;
-            break;
-        case PARAM_END_TIME:
-            PRINTF("PARAM_END_TIME\n");
-            context->param_index = PARAM_ZONE_HASH;
-            break;
-        case PARAM_ZONE_HASH:
-            PRINTF("PARAM_ZONE_HASH\n");
-            context->param_index = PARAM_SALT;
-            break;
-        case PARAM_SALT:
-            PRINTF("PARAM_SALT\n");
-            context->param_index = PARAM_CONDUIT_KEY;
-            break;
-        case PARAM_CONDUIT_KEY:
-            PRINTF("PARAM_CONDUIT_KEY\n");
+            context->skip = 9;
             context->param_index = PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS;
             break;
         case PARAM_TOTAL_ORIGINAL_CONSIDERATION_ITEMS:
@@ -483,8 +462,9 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
 
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
                 msg->parameter[PARAMETER_LENGTH - 1] != 160) {
-                context->booleans |= PARSE_ERROR;
-                // TODO actually stop parsing when this happen.
+                // context->booleans |= PARSE_ERROR;
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
             }
 
             context->orders_index = ADVANCED_NUMERATOR;
@@ -668,22 +648,7 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
     switch ((fulfill_available_advanced_orders) context->next_param) {
         case FAADO_OFFSET:
             PRINTF("FAADO_OFFSET\n");
-            context->next_param = FAADO_CRITERIA_RESOLVERS_OFFSET;
-            break;
-        case FAADO_CRITERIA_RESOLVERS_OFFSET:
-            PRINTF("FAADO_CRITERIA_RESOLVERS_OFFSET\n");
-            context->next_param = FAADO_OFFER_FULFILLMENTS;
-            break;
-        case FAADO_OFFER_FULFILLMENTS:
-            PRINTF("FAADO_OFFER_FULFILLMENTS\n");
-            context->next_param = FAADO_CONSIDERATION_FULFILLMENTS;
-            break;
-        case FAADO_CONSIDERATION_FULFILLMENTS:
-            PRINTF("FAADO_CONSIDERATION_FULFILLMENTS\n");
-            context->next_param = FAADO_FULFILLER_CONDUIT_KEY;
-            break;
-        case FAADO_FULFILLER_CONDUIT_KEY:
-            PRINTF("FAADO_FULFILLER_CONDUIT_KEY\n");
+            context->skip = 4;
             context->next_param = FAADO_RECIPIENT;
             break;
         case FAADO_RECIPIENT:
@@ -697,7 +662,11 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
             break;
         case FAADO_ORDERS_LEN:
             PRINTF("FAADO_ORDERS_LEN\n");
-            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);  // TODO: protect copy
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->orders_len))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
+            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = FAADO_ORDERS;
@@ -708,15 +677,15 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
             PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
             if (context->orders_len == 0) {
                 PRINTF("END ORDERS\n");
+                // Calculate number_of_nfts at the end of the order.
                 if (context->token2.type == NFT || context->token2.type == MULTIPLE_NFTS) {
-                    // calc number of nfts using numerator and denominator
+                    // Calculate number of nfts using numerator and denominator.
                     if (calc_number_of_nfts(context->token2.amount,
                                             context->numerator,
                                             context->denominator,
                                             &context->number_of_nfts)) {
-                        msg->result =
-                            ETH_PLUGIN_RESULT_ERROR;  // TODO check how to handle this error
-                        break;
+                        msg->result = ETH_PLUGIN_RESULT_ERROR;
+                        return;
                     }
                 }
                 context->next_param = FAADO_CRITERIA_AND_FULFILLMENTS;
@@ -736,23 +705,13 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
     switch ((fulfill_advanced_order) context->next_param) {
         case FADO_OFFSET:
             PRINTF("FADO_OFFSET\n");
-            context->next_param = FADO_CRITERIA_RESOLVERS_OFFSET;
-            break;
-        case FADO_CRITERIA_RESOLVERS_OFFSET:
-            PRINTF("FADO_CRITERIA_RESOLVERS_OFFSET\n");
-            context->next_param = FADO_FULFILLER_CONDUIT_KEY;
-            break;
-        case FADO_FULFILLER_CONDUIT_KEY:
-            PRINTF("FADO_FULFILLER_CONDUIT_KEY\n");
+            context->skip = 2;
             context->next_param = FADO_RECIPIENT;
             break;
         case FADO_RECIPIENT:
             PRINTF("FADO_RECIPIENT\n");
             copy_parameter(context->recipient_address, msg->parameter + 12, ADDRESS_LENGTH);
-            context->next_param = FADO_PARAM_OFFSET;
-            break;
-        case FADO_PARAM_OFFSET:
-            PRINTF("FADO_PARAM_OFFSET\n");
+            context->skip = 1;
             context->next_param = FADO_NUMERATOR;
             break;
         case FADO_NUMERATOR:
@@ -801,15 +760,13 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
                 PRINTF("PARAM END\n");
                 context->param_index = 0;
                 context->next_param = FADO_SIGNATURE;
-                // TODO check if we should calc_number_of_nfts of token2 sometime
                 if (context->token1.type == NFT || context->token1.type == MULTIPLE_NFTS) {
                     // calc number of nfts using numerator and denominator
                     if (calc_number_of_nfts(context->token1.amount,
                                             context->numerator,
                                             context->denominator,
                                             &context->number_of_nfts)) {
-                        msg->result =
-                            ETH_PLUGIN_RESULT_ERROR;  // TODO check how to handle this error
+                        msg->result = ETH_PLUGIN_RESULT_ERROR;
                         break;
                     }
                 }
@@ -819,8 +776,7 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
                                             context->numerator,
                                             context->denominator,
                                             &context->number_of_nfts)) {
-                        msg->result =
-                            ETH_PLUGIN_RESULT_ERROR;  // TODO check how to handle this error
+                        msg->result = ETH_PLUGIN_RESULT_ERROR;
                         break;
                     }
                 }
@@ -840,22 +796,7 @@ static void handle_fulfill_available_orders(ethPluginProvideParameter_t *msg, co
     switch ((fulfill_available_orders) context->next_param) {
         case FAO_OFFSET:
             PRINTF("FAO_OFFSET\n");
-            context->next_param = FAO_OFFER_FULFILLMENT_OFFSET;
-            break;
-        case FAO_OFFER_FULFILLMENT_OFFSET:
-            PRINTF("FAO_OFFER_FULFILLMENT_OFFSET\n");
-            context->next_param = FAO_CONSIDERATION_FULFILLMENT_OFFSET;
-            break;
-        case FAO_CONSIDERATION_FULFILLMENT_OFFSET:
-            PRINTF("FAO_CONSIDERATION_FULFILLMENT_OFFSET\n");
-            context->next_param = FAO_FULFILLER_CONDUIT_KEY;
-            break;
-        case FAO_FULFILLER_CONDUIT_KEY:
-            PRINTF("FAO_FULFILLER_CONDUIT_KEY\n");
-            context->next_param = FAO_MAXIMUM_FULFILLED;
-            break;
-        case FAO_MAXIMUM_FULFILLED:
-            PRINTF("FAO_MAXIMUM_FULFILLED\n");
+            context->skip = 4;
             context->next_param = FAO_ORDERS_LEN;
             break;
         case FAO_ORDERS_LEN:
@@ -869,10 +810,7 @@ static void handle_fulfill_available_orders(ethPluginProvideParameter_t *msg, co
             PRINTF("FAO_ORDERS\n");
             parse_orders(msg, context);
             PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
-            if (context->orders_len == 0) {
-                PRINTF("END ORDERS\n");
-                context->next_param = FAO_FULFILLMEMTS;
-            }
+            if (context->orders_len == 0) context->next_param = FAO_FULFILLMEMTS;
             break;
         case FAO_FULFILLMEMTS:
             PRINTF("FAO_FULFILLMEMTS\n");
@@ -888,18 +826,7 @@ static void handle_fullfill_order(ethPluginProvideParameter_t *msg, context_t *c
     switch ((fulfill_order) context->next_param) {
         case FO_OFFSET:
             PRINTF("FO_OFFSET\n");
-            context->next_param = FO_FULFILLER_CONDUIT_KEY;
-            break;
-        case FO_FULFILLER_CONDUIT_KEY:
-            PRINTF("FO_FULFILLER_CONDUIT_KEY\n");
-            context->next_param = FO_ORDER_PARAM_OFFSET;
-            break;
-        case FO_ORDER_PARAM_OFFSET:
-            PRINTF("FO_ORDER_PARAM_OFFSET\n");
-            context->next_param = FO_ORDER_SIGNATURE_OFFSET;
-            break;
-        case FO_ORDER_SIGNATURE_OFFSET:
-            PRINTF("FO_ORDER_SIGNATURE_OFFSET\n");
+            context->skip = 3;
             context->next_param = FO_ORDER_PARAM;
             break;
         case FO_ORDER_PARAM:
@@ -925,13 +852,7 @@ static void handle_weth_withdraw(ethPluginProvideParameter_t *msg, context_t *co
     switch ((add_funds_eth) context->next_param) {
         case AMOUNT:
             PRINTF("ADD_FUNDS_AMOUNT\n$");
-            uint8_t buf_amount[INT256_LENGTH] = {0};
-            copy_parameter(buf_amount, msg->parameter, PARAMETER_LENGTH);
-            PRINTF("BUF AMOUNT:\t%.*H\n", INT256_LENGTH, buf_amount);
-            if (add_uint256(context->token1.amount, buf_amount)) {
-                PRINTF("uint256 overflow error.\n");
-                msg->result = ETH_PLUGIN_RESULT_ERROR;
-            }
+            copy_parameter(context->token1.amount, msg->parameter, PARAMETER_LENGTH);
             break;
         default:
             PRINTF("Param not supported: %d\n", context->next_param);
@@ -939,6 +860,7 @@ static void handle_weth_withdraw(ethPluginProvideParameter_t *msg, context_t *co
             break;
     }
 }
+
 void handle_provide_parameter(void *parameters) {
     ethPluginProvideParameter_t *msg = (ethPluginProvideParameter_t *) parameters;
     context_t *context = (context_t *) msg->pluginContext;

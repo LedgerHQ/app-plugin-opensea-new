@@ -65,20 +65,22 @@ uint8_t calc_number_of_nfts(uint8_t *amount,
                             uint32_t numerator,
                             uint32_t denominator,
                             uint16_t *number_of_nfts) {
-    // TODO number_of_nfts should be same size as value, check all sizes
     PRINTF("NB_NFT numerator: %d\n", numerator);
     PRINTF("NB_NFT denominator: %d\n", denominator);
     PRINTF("NB_NFT amount: %.*H\n", INT256_LENGTH, amount);
     PRINTF("NB_NFT number_of_nfts: %d\n", *number_of_nfts);
     PRINTF("NB_NFT --------\n");
 
-    uint32_t value = 0;
+    uint16_t value = 0;
     if (does_number_fit(amount, PARAMETER_LENGTH, sizeof(value))) return 1;
-    value = U4BE(amount, INT256_LENGTH - sizeof(value));
+
+    value = U2BE(amount, INT256_LENGTH - sizeof(value));
+
     PRINTF("NB_NFT value: %d\n", value);
     if (numerator == denominator) {
-        (*number_of_nfts) += value;
-        if ((*number_of_nfts) < value) return 1;  // overflow
+        uint32_t buf = (*number_of_nfts) + value;
+        if (buf > INT16_MAX) return 1;  // overflow
+        (*number_of_nfts) = buf;
         return 0;
     }
     // Multiply the numerator by the value and ensure no overflow occurs.
@@ -90,12 +92,11 @@ uint8_t calc_number_of_nfts(uint8_t *amount,
     // uint32_t exact = ((newValue * denominator) / numerator) == value;
     // if (!exact) revert
     if (!(((newValue * denominator) / numerator) == value)) return 2;
+
     // Add this order's number_of_nfts to global number_of_nfts.
-    PRINTF("NB_NFT newValue: %d\n", newValue);
-    PRINTF("NB_NFT number_of_nfts before: %d\n", *number_of_nfts);
-    (*number_of_nfts) += newValue;
-    PRINTF("NB_NFT number_of_nfts after: %d\n", *number_of_nfts);
-    if ((*number_of_nfts) < newValue) return 1;  // overflow
+    uint32_t buf = (*number_of_nfts) += newValue;
+    if (buf > UINT16_MAX) return 1;  // overflow
+    (*number_of_nfts) = buf;
     return 0;
 }
 
@@ -109,27 +110,4 @@ void swap_tokens(context_t *context) {
     save = context->token1;
     context->token1 = context->token2;
     context->token2 = save;
-
-    // PRINTF("\nbefore swap:\nITEM1_FOUND: %d\nITEM2_FOUND: %d\n",
-    //        (context->booleans & ITEM1_FOUND) ? 1 : 0,
-    //        (context->booleans & ITEM2_FOUND) ? 1 : 0);
-
-    // // swap tokens found booleans
-    // if (context->booleans & ITEM1_FOUND) {
-    //     if (!(context->booleans & ITEM2_FOUND)) {
-    //         // down ITEM1, up ITEM2
-    //         context->booleans ^= ITEM1_FOUND;
-    //         context->booleans |= ITEM2_FOUND;
-    //     }
-    // } else {
-    //     if (context->booleans & ITEM2_FOUND) {
-    //         // up ITEM1, down ITEM2
-    //         context->booleans |= ITEM1_FOUND;
-    //         context->booleans ^= ITEM2_FOUND;
-    //     }
-    // }
-
-    // PRINTF("\nafter swap:\nITEM1_FOUND: %d\nITEM2_FOUND: %d\n",
-    //        (context->booleans & ITEM1_FOUND) ? 1 : 0,
-    //        (context->booleans & ITEM2_FOUND) ? 1 : 0);
 }
