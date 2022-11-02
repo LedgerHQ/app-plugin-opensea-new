@@ -79,7 +79,7 @@ uint8_t calc_number_of_nfts(uint8_t *amount,
     PRINTF("NB_NFT value: %d\n", value);
     if (numerator == denominator) {
         uint32_t buf = (*number_of_nfts) + value;
-        if (buf > INT16_MAX) return 1;  // overflow
+        if (buf > UINT16_MAX) return 1;  // overflow
         (*number_of_nfts) = buf;
         return 0;
     }
