@@ -70,7 +70,7 @@ static void display_item(ethQueryContractUI_t *msg,
                 amountToString(token.amount,
                                INT256_LENGTH,
                                DEFAULT_DECIMAL,
-                               ETH,
+                               msg->network_ticker,
                                msg->msg,
                                msg->msgLength);
             }
@@ -130,7 +130,7 @@ static void set_receive_ui_err(ethQueryContractUI_t *msg, context_t *context) {
                                   0);
 }
 
-static void set_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) {
+static void set_eth_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) {
     // Set title
     if (context->selectorIndex == WETH_DEPOSIT)
         strlcpy(msg->title, "Wrap", msg->titleLength);
@@ -273,7 +273,7 @@ void handle_query_contract_ui(void *parameters) {
             strlcpy(msg->msg, (context->booleans & ORDERS) ? "Orders" : "Order", msg->msgLength);
             break;
         case ADD_FUNDS_UI:
-            set_add_funds_ui(msg, context);
+            set_eth_add_funds_ui(msg, context);
             break;
         default:
             PRINTF("\n\n\n\n\n SCREEN NOT HANDLED\n\n\n\n\n");
