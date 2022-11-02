@@ -251,19 +251,18 @@ typedef enum item_type_e {
 //} transfer_from_parameter;
 
 // Booleans
-#define PARSE_ERROR      (1)
-#define IS_BUY4          (1 << 1)
-#define IS_ACCEPT        (1 << 2)
-#define ITEM1_IS_NFT     (1 << 3)
-#define ITEM2_IS_NFT     (1 << 4)
-#define ITEM1_FOUND      (1 << 5)
-#define ITEM2_FOUND      (1 << 6)
-#define CANT_CALC_AMOUNT (1 << 7)
-#define ORDERS           (1 << 8)
-#define IS_OFFER_DUTCH   (1 << 9)
-#define IS_CONSI_DUTCH   (1 << 10)
-#define IS_OFFER0_PARSED (1 << 11)
-#define IS_CONSI0_PARSED (1 << 12)
+#define IS_BUY4          (1)
+#define IS_ACCEPT        (1 << 1)
+#define ITEM1_IS_NFT     (1 << 2)
+#define ITEM2_IS_NFT     (1 << 3)
+#define ITEM1_FOUND      (1 << 4)
+#define ITEM2_FOUND      (1 << 5)
+#define CANT_CALC_AMOUNT (1 << 6)
+#define ORDERS           (1 << 7)
+#define IS_OFFER_DUTCH   (1 << 8)
+#define IS_CONSI_DUTCH   (1 << 9)
+#define IS_OFFER0_PARSED (1 << 10)
+#define IS_CONSI0_PARSED (1 << 11)
 
 // screen array correspondance
 #define PARSE_ERROR_UI 1

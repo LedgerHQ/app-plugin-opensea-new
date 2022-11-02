@@ -487,7 +487,6 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
 
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
                 msg->parameter[PARAMETER_LENGTH - 1] != 160) {
-                // context->booleans |= PARSE_ERROR;
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }

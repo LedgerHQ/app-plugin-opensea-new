@@ -12,12 +12,6 @@ void handle_provide_token(void *parameters) {
     PRINTF("PROVIDE_TOKEN token1.address: %.*H\n", ADDRESS_LENGTH, context->token1.address);
     PRINTF("PROVIDE_TOKEN token2.address: %.*H\n", ADDRESS_LENGTH, context->token2.address);
 
-    if (context->booleans & PARSE_ERROR || context->selectorIndex == MATCH_ORDERS ||
-        context->selectorIndex == MATCH_ADVANCED_ORDERS) {
-        msg->result = ETH_PLUGIN_RESULT_OK;
-        return;
-    }
-
     if (msg->item1) context->booleans |= ITEM1_FOUND;
     // check if not ETH address
     else if (!ADDRESS_IS_NULL_ADDRESS(context->token1.address)) {
