@@ -116,6 +116,10 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
         case FBO__BASIC_ORDER_TYPE:
             PRINTF("FBO__BASIC_ORDER_TYPE\n");
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->order_type =
                 get_basic_order_type(msg, U2BE(msg->parameter, PARAMETER_LENGTH - 2));
             context->skip = 9;
@@ -123,7 +127,14 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
             break;
         case FBO__LEN_ADDITIONAL_RECIPIENTS:
             PRINTF("FBO__LEN_ADDITIONAL_RECIPIENTS\n");
-            context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            if (does_number_fit(msg->parameter,
+                                PARAMETER_LENGTH,
+                                sizeof(context->current_length))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
+            context->current_length =
+                U2BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->current_length));
             context->next_param = FBO__ADDITIONAL_AMOUNT;
             break;
         case FBO__ADDITIONAL_AMOUNT:
@@ -396,6 +407,12 @@ static void parse_param(ethPluginProvideParameter_t *msg, context_t *context) {
             break;
         case PARAM_CONSIDERATIONS_LEN:
             PRINTF("PARAM_CONSIDERATIONS_LEN\n");
+            if (does_number_fit(msg->parameter,
+                                PARAMETER_LENGTH,
+                                sizeof(context->current_length))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
             if (context->current_length == 0) {
                 PRINTF("NO CONSIDERATIONS\n");
@@ -441,8 +458,15 @@ static void parse_orders(ethPluginProvideParameter_t *msg, context_t *context) {
             break;
         case ORDER_SIGNATURE:
             PRINTF("ORDER_SIGNATURE\n");  // If len = 0 what happens ?
+            if (does_number_fit(msg->parameter,
+                                PARAMETER_LENGTH,
+                                sizeof(context->current_length))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
 
+            // Skip signature, sometime length % 32 != 0
             context->skip = context->current_length / PARAMETER_LENGTH;
             if (context->current_length % PARAMETER_LENGTH) context->skip++;
 
@@ -474,7 +498,6 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
             PRINTF("ADVANCED_NUMERATOR\n");
 
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->numerator))) {
-                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             } else {
@@ -488,7 +511,6 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
             PRINTF("ADVANCED_DENOMINATOR\n");
 
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->denominator))) {
-                PRINTF("\n\n\nERROR, NUMBER DOES NOT FIT\n\n\n");
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             } else {
@@ -520,6 +542,12 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
             break;
         case ADVANCED_SIGNATURE_LEN:
             PRINTF("ADVANCED_SIGNATURE_LEN\n");
+            if (does_number_fit(msg->parameter,
+                                PARAMETER_LENGTH,
+                                sizeof(context->current_length))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
 
             context->skip = context->current_length / PARAMETER_LENGTH;
@@ -529,6 +557,12 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
             break;
         case ADVANCED_EXTRADATA_LEN:
             PRINTF("ADVANCED_EXTRADATA_LEN\n");
+            if (does_number_fit(msg->parameter,
+                                PARAMETER_LENGTH,
+                                sizeof(context->current_length))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
 
             context->skip = context->current_length / PARAMETER_LENGTH;
@@ -552,9 +586,10 @@ static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) 
             break;
         case CANCEL_ORDERS_LEN:
             PRINTF("CANCEL_ORDERS_LEN\n");
-            if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
+            // Check if there is multiple orders
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
+                U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
                 context->booleans |= ORDERS;
-            }
             context->next_param = CANCEL_ORDERS;
             break;
         case CANCEL_ORDERS:
@@ -583,12 +618,12 @@ static void handle_match_advanced_orders(ethPluginProvideParameter_t *msg, conte
             break;
         case MAO_ADVANCED_ORDERS_LEN:
             PRINTF("MAO_ADVANCED_ORDERS_LEN\n");
-            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
-            if (context->orders_len == 0) {
-                PRINTF("ORDER_LEN ERROR\n");
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->orders_len)) ||
+                msg->parameter[PARAMETER_LENGTH - 1] == 0) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
+            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = MAO_ADVANCED_ORDERS;
@@ -625,6 +660,10 @@ static void handle_match_orders(ethPluginProvideParameter_t *msg, context_t *con
             break;
         case MO_ORDERS_LEN:
             PRINTF("MO_ORDERS_LEN\n");
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->orders_len))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
             if (context->orders_len == 0) {
                 PRINTF("ORDER_LEN ERROR\n");
@@ -817,6 +856,10 @@ static void handle_fulfill_available_orders(ethPluginProvideParameter_t *msg, co
             break;
         case FAO_ORDERS_LEN:
             PRINTF("FAO_ORDERS_LEN\n");
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->orders_len))) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
             if (context->orders_len == 0) {
                 PRINTF("ORDERS_LEN ERROR\n");

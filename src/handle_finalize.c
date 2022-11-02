@@ -45,6 +45,7 @@ void handle_finalize(void *parameters) {
     context_t *context = (context_t *) msg->pluginContext;
 
     msg->uiType = ETH_UI_TYPE_GENERIC;
+
     if (context->booleans & PARSE_ERROR || context->selectorIndex == MATCH_ORDERS ||
         context->selectorIndex == MATCH_ADVANCED_ORDERS) {
         context->screen_array |= PARSE_ERROR_UI;
