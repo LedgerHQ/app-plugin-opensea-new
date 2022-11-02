@@ -379,8 +379,9 @@ static void parse_param(ethPluginProvideParameter_t *msg, context_t *context) {
             PRINTF("PARAM_OFFERS_LEN\n");
             context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
             if (context->current_length == 0) {
-                PRINTF("NO OFFERS\n");
-                context->param_index = PARAM_CONSIDERATIONS_LEN;
+                PRINTF("OFFER_LEN ERROR\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
             } else
                 context->param_index = PARAM_OFFERS;
             break;
@@ -582,7 +583,12 @@ static void handle_match_advanced_orders(ethPluginProvideParameter_t *msg, conte
             break;
         case MAO_ADVANCED_ORDERS_LEN:
             PRINTF("MAO_ADVANCED_ORDERS_LEN\n");
-            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
+            if (context->orders_len == 0) {
+                PRINTF("ORDER_LEN ERROR\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = MAO_ADVANCED_ORDERS;
@@ -619,7 +625,12 @@ static void handle_match_orders(ethPluginProvideParameter_t *msg, context_t *con
             break;
         case MO_ORDERS_LEN:
             PRINTF("MO_ORDERS_LEN\n");
-            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
+            if (context->orders_len == 0) {
+                PRINTF("ORDER_LEN ERROR\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = MO_ORDERS;
@@ -666,7 +677,12 @@ static void handle_fulfill_available_advanced_orders(ethPluginProvideParameter_t
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
-            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
+            if (context->orders_len == 0) {
+                PRINTF("ORDER_LEN ERROR\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = FAADO_ORDERS;
@@ -801,7 +817,12 @@ static void handle_fulfill_available_orders(ethPluginProvideParameter_t *msg, co
             break;
         case FAO_ORDERS_LEN:
             PRINTF("FAO_ORDERS_LEN\n");
-            context->orders_len = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
+            if (context->orders_len == 0) {
+                PRINTF("ORDERS_LEN ERROR\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->skip = context->orders_len;
             PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
             context->next_param = FAO_ORDERS;
