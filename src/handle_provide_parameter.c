@@ -588,8 +588,13 @@ static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) 
             PRINTF("CANCEL_ORDERS_LEN\n");
             // Check if there is multiple orders
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
-                U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1)
+                U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
                 context->booleans |= ORDERS;
+            } else if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) == 0) {
+                PRINTF("ORDER_LEN ERROR\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->next_param = CANCEL_ORDERS;
             break;
         case CANCEL_ORDERS:
