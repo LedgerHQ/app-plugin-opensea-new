@@ -48,7 +48,7 @@ void handle_finalize(void *parameters) {
 
     if (context->booleans & PARSE_ERROR || context->selectorIndex == MATCH_ORDERS ||
         context->selectorIndex == MATCH_ADVANCED_ORDERS) {
-        context->screen_array |= PARSE_ERROR_UI;
+        context->screen_array |= PARSE_ERROR;
         msg->numScreens = 1;
         return;
     }
