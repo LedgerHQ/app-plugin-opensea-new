@@ -17,9 +17,9 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Clone SDK
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/ethereum-plugin-sdk
           path: ethereum-plugin-sdk
@@ -36,9 +36,9 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Clone SDK
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/ethereum-plugin-sdk
           path: ethereum-plugin-sdk
@@ -54,9 +54,9 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Clone SDK
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/ethereum-plugin-sdk
           path: ethereum-plugin-sdk
@@ -72,9 +72,9 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Clone SDK
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/ethereum-plugin-sdk
           path: ethereum-plugin-sdk
@@ -88,7 +88,7 @@ jobs:
           mkdir -p ./tests/elfs/
           mv bin/app.elf ./tests/elfs/seaport_nanos.elf
       - name: Upload plugin binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: tests/elfs/seaport_nanos.elf
@@ -101,9 +101,9 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Clone SDK
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/ethereum-plugin-sdk
           path: ethereum-plugin-sdk
@@ -117,7 +117,7 @@ jobs:
           mkdir -p ./tests/elfs/
           mv bin/app.elf ./tests/elfs/seaport_nanosp.elf
       - name: Upload plugin binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: tests/elfs/seaport_nanosp.elf
@@ -129,9 +129,9 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Clone SDK
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/ethereum-plugin-sdk
           path: ethereum-plugin-sdk
@@ -145,7 +145,7 @@ jobs:
           mkdir -p ./tests/elfs/
           mv bin/app.elf ./tests/elfs/seaport_nanox.elf
       - name: Upload plugin binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: tests/elfs/seaport_nanox.elf
@@ -157,7 +157,7 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Checkout app-ethereum
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/app-ethereum
           ref: ${{ github.base_ref || github.ref_name }}
@@ -171,7 +171,7 @@ jobs:
           mkdir -p ./tests/elfs/
           mv bin/app.elf ./tests/elfs/ethereum_nanos.elf
       - name: Upload plugin binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: tests/elfs/ethereum_nanos.elf
@@ -183,7 +183,7 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Checkout app-ethereum
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/app-ethereum
           ref: ${{ github.base_ref || github.ref_name }}
@@ -197,7 +197,7 @@ jobs:
           mkdir -p ./tests/elfs/
           mv bin/app.elf ./tests/elfs/ethereum_nanosp.elf
       - name: Upload plugin binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: tests/elfs/ethereum_nanosp.elf
@@ -209,7 +209,7 @@ jobs:
       image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
     steps:
       - name: Checkout app-ethereum
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: LedgerHQ/app-ethereum
           ref: ${{ github.base_ref || github.ref_name }}
@@ -223,7 +223,7 @@ jobs:
           mkdir -p ./tests/elfs/
           mv bin/app.elf ./tests/elfs/ethereum_nanox.elf
       - name: Upload plugin binary
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binaries
           path: tests/elfs/ethereum_nanox.elf
@@ -239,9 +239,9 @@ jobs:
           echo $HOME
           echo $DISPLAY
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Download built binaries
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: binaries
           path: tests/elfs/
@@ -250,7 +250,7 @@ jobs:
       - name: Install system dependencies
         run: sudo apt-get update -y && sudo apt-get install -y libusb-1.0.0 libudev-dev
       - name: Install node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "14.4.0"
       - name: Install yarn
