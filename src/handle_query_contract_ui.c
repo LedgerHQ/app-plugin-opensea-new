@@ -236,13 +236,9 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case RECEIVE_UI:
             if (context->booleans & IS_BUY4) {
-                strlcpy(msg->title,
-                        (context->booleans & IS_OFFER_DUTCH) ? "Transfer max" : "Transfer",
-                        msg->titleLength);
+                strlcpy(msg->title, "Transfer", msg->titleLength);
             } else {
-                strlcpy(msg->title,
-                        (context->booleans & IS_OFFER_DUTCH) ? "Receive max" : "Receive",
-                        msg->titleLength);
+                strlcpy(msg->title, "Receive", msg->titleLength);
             }
             display_item(msg,
                          context->token2,

@@ -20,9 +20,11 @@ const Resolve = require('path').resolve;
 
 const NANOS_ETH_PATH = Resolve('elfs/ethereum_nanos.elf');
 const NANOX_ETH_PATH = Resolve('elfs/ethereum_nanox.elf');
+const NANOSP_ETH_PATH = Resolve('elfs/ethereum_nanosp.elf');
 
 const NANOS_PLUGIN_PATH = Resolve('elfs/seaport_nanos.elf');
 const NANOX_PLUGIN_PATH = Resolve('elfs/seaport_nanox.elf');
+const NANOSP_PLUGIN_PATH = Resolve('elfs/seaport_nanosp.elf');
 
 const SPECULOS_ADDRESS = '0xFE984369CE3919AA7BB4F431082D027B4F8ED70C';
 const RANDOM_ADDRESS = '0xaaaabbbbccccddddeeeeffffgggghhhhiiiijjjj'
@@ -32,7 +34,8 @@ const PLUGIN_BASE_URL = "https://cdn.live.ledger.com"
 
 const nano_models: DeviceModel[] = [
   { name: 'nanos', letter: 'S', path: NANOS_PLUGIN_PATH, eth_path: NANOS_ETH_PATH },
-  { name: 'nanox', letter: 'X', path: NANOX_PLUGIN_PATH, eth_path: NANOX_ETH_PATH }
+  { name: 'nanox', letter: 'X', path: NANOX_PLUGIN_PATH, eth_path: NANOX_ETH_PATH },
+  { name: 'nanosp', letter: 'SP', path: NANOSP_PLUGIN_PATH, eth_path: NANOSP_ETH_PATH }
 ];
 
 const resolutionConfig = {
@@ -144,11 +147,12 @@ function processTest(device, step, contractName, testLabel, testDirSuffix, unsig
 const supportedNetwork = {
   'polygon': 137,
   'ethereum': 1,
-  'bsc': 56,
+  // 'bsc': 56,
   'avalanche': 43114,
   // 'celo': 42220,
-  // 'arbitrum': 42161,
-  // 'optimism': 10,
+  'arbitrum': 42161,
+  'optimism': 10,
+  'klaytn': 8217,
   // 'fantom': 250,
 }
 
