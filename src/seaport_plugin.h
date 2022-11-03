@@ -307,3 +307,10 @@ uint8_t get_screen_index(uint8_t screenIndex,
                          uint8_t *prevIndex,
                          uint8_t probe,
                          uint8_t screen_array);
+
+void parse_offer(ethPluginProvideParameter_t *msg, context_t *context);
+void parse_considerations(ethPluginProvideParameter_t *msg, context_t *context);
+void parse_param(ethPluginProvideParameter_t *msg, context_t *context);
+void parse_orders(ethPluginProvideParameter_t *msg, context_t *context);
+void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *context);
+uint8_t get_basic_order_type(ethPluginProvideParameter_t *msg, uint8_t basic_order_type_sol);
