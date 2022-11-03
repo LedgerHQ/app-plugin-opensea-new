@@ -14,10 +14,14 @@ const models = [
     name: 'nanos',
     steps: 8
   },
-  // {
-  // 	name: 'nanox',
-  // 	steps: 0
-  // },
+  {
+    name: 'nanox',
+    steps: 6
+  },
+  {
+    name: 'nanosp',
+    steps: 6
+  },
 ]
 
 // populate unsignedTx from genericTx and get network chain id
