@@ -1,7 +1,4 @@
 #include "seaport_plugin.h"
-#include "text.h"
-
-#define PLUGIN_NAME "OpenSea"
 
 #ifdef DBG_PLUGIN
 static void print_booleans(context_t *context) {
@@ -58,7 +55,7 @@ void handle_query_contract_id(void *parameters) {
         case FULFILL_AVAILABLE_ORDERS:
         case FULFILL_ADVANCED_ORDER:
         case UNISWAP_MULTICALL:
-            strlcpy(msg->version, "exchange", msg->versionLength);
+            strlcpy(msg->version, "Exchange", msg->versionLength);
             break;
         case POLYGON_BRIDGE_DEPOSIT_ETHER_FOR:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:

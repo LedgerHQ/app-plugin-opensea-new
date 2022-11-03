@@ -78,6 +78,7 @@ void handle_finalize(void *parameters) {
             context->screen_array |= ADD_FUNDS_UI;
             break;
         default:
+            msg->result = ETH_PLUGIN_RESULT_ERROR;
             break;
     }
 

@@ -10,6 +10,8 @@
 #define DEFAULT_DECIMAL WEI_TO_ETHER
 #define ETH_DECIMAL     WEI_TO_ETHER
 
+#define PLUGIN_NAME "OpenSea"
+
 // Network tickers
 #define MATIC         "MATIC "
 #define WMATIC        "WMATIC "

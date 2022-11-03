@@ -1,5 +1,4 @@
 #include "seaport_plugin.h"
-#include "text.h"
 
 /*
 ** Debug TMP
