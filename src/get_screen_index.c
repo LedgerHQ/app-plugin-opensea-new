@@ -1,4 +1,3 @@
-
 #include "seaport_plugin.h"
 
 /*

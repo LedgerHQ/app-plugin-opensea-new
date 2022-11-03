@@ -46,14 +46,14 @@ void handle_finalize(void *parameters) {
 
     msg->uiType = ETH_UI_TYPE_GENERIC;
 
-    if (context->booleans & CANT_CALC_AMOUNT) context->screen_array |= PARSE_ERROR_UI;
+    if (context->transaction_info & CANT_CALC_AMOUNT) context->screen_array |= PARSE_ERROR_UI;
 
     switch (context->selectorIndex) {
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
         case FULFILL_ADVANCED_ORDER:
             if (!ADDRESS_IS_NULL_ADDRESS(context->recipient_address) &&
                 memcmp(context->recipient_address, msg->address, ADDRESS_LENGTH)) {
-                context->booleans |= IS_BUY4;
+                context->transaction_info |= IS_BUY4;
                 context->screen_array |= BUY_FOR_UI;
             }
         case FULFILL_ORDER:
@@ -64,7 +64,7 @@ void handle_finalize(void *parameters) {
             break;
         case INCREMENT_COUNTER:
         case WYVERN_V2_INCREMENT_NONCE:
-            context->booleans |= ORDERS;
+            context->transaction_info |= ORDERS;
         case CANCEL:
         case WYVERN_V2_CANCEL_ORDER__:
             context->screen_array |= CANCEL_UI;
@@ -94,26 +94,28 @@ void handle_finalize(void *parameters) {
             break;
     }
 
-    // set booleans for fulfillBasicOrder
+    // set transaction_info for fulfillBasicOrder
     if (context->selectorIndex == FULFILL_BASIC_ORDER) {
         switch (context->order_type) {
             case ETH_NFT:
-                context->booleans |= ITEM2_IS_NFT;
+                context->transaction_info |= ITEM2_IS_NFT;
                 context->token1.type = NATIVE;
                 context->token2.type = NFT;
                 break;
             case ERC20_NFT:
-                context->booleans |= ITEM2_IS_NFT;
+                context->transaction_info |= ITEM2_IS_NFT;
                 context->token1.type = ERC20;
                 context->token2.type = NFT;
                 break;
             case NFT_ERC20:
-                context->booleans |= ITEM1_IS_NFT;
+                context->transaction_info |= ITEM1_IS_NFT;
                 context->token1.type = NFT;
                 context->token2.type = ERC20;
                 break;
             default:
                 PRINTF("PENZO FINALIZE selectorIndex switch ERROR\n");
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
         }
     }
 

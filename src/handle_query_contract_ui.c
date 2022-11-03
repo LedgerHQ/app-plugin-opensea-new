@@ -13,7 +13,8 @@ static void debug_items(ethQueryContractUI_t *msg, context_t *context) {
     PRINTF("\ttoken2.amount: %.*H\n", INT256_LENGTH, context->token2.amount);
     PRINTF("\tnumber_of_nfts: %d\n", context->number_of_nfts);
 
-    PRINTF("\tSell side: %s\n", (context->booleans & IS_ACCEPT) ? "Accept offer" : "Buy now");
+    PRINTF("\tSell side: %s\n",
+           (context->transaction_info & IS_ACCEPT) ? "Accept offer" : "Buy now");
 
     if (msg->item1 != NULL)
         PRINTF("UI PENZO msg->item1->nft.collectionName: %s\n", msg->item1->nft.collectionName);
@@ -151,7 +152,7 @@ static void set_eth_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) 
     if (context->selectorIndex == WETH_WITHDRAW) {
         amountToString(context->token1.amount,
                        INT256_LENGTH,
-                       ETH_DECIMAL,
+                       DEFAULT_DECIMAL,
                        WETH,
                        msg->msg,
                        msg->msgLength);
@@ -206,7 +207,7 @@ void handle_query_contract_ui(void *parameters) {
 
     switch (context->screen_probe) {
         case PARSE_ERROR_UI:
-            if (context->booleans & CANT_CALC_AMOUNT) {
+            if (context->transaction_info & CANT_CALC_AMOUNT) {
                 strlcpy(msg->title, "Warning:", msg->titleLength);
                 strlcpy(msg->msg, "Can't parse price.", msg->msgLength);
             } else {
@@ -216,13 +217,13 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case SEND_UI:
             strlcpy(msg->title,
-                    (context->booleans & IS_CONSI_DUTCH) ? "Send max" : "Send",
+                    (context->transaction_info & IS_CONSI_DUTCH) ? "Send max" : "Send",
                     msg->titleLength);
             display_item(msg,
                          context->token1,
                          context->number_of_nfts,
-                         context->booleans & ITEM1_FOUND,
-                         context->booleans & CANT_CALC_AMOUNT);
+                         context->transaction_info & ITEM1_FOUND,
+                         context->transaction_info & CANT_CALC_AMOUNT);
             break;
         case SEND_UI_ERR:
             if (context->token1.type == MULTIPLE_NFTS) {
@@ -234,7 +235,7 @@ void handle_query_contract_ui(void *parameters) {
             }
             break;
         case RECEIVE_UI:
-            if (context->booleans & IS_BUY4) {
+            if (context->transaction_info & IS_BUY4) {
                 strlcpy(msg->title, "Transfer", msg->titleLength);
             } else {
                 strlcpy(msg->title, "Receive", msg->titleLength);
@@ -242,8 +243,8 @@ void handle_query_contract_ui(void *parameters) {
             display_item(msg,
                          context->token2,
                          context->number_of_nfts,
-                         context->booleans & ITEM2_FOUND,
-                         context->booleans & CANT_CALC_AMOUNT);
+                         context->transaction_info & ITEM2_FOUND,
+                         context->transaction_info & CANT_CALC_AMOUNT);
             break;
         case RECEIVE_UI_ERR:
             if (context->token2.type == MULTIPLE_NFTS) {
@@ -265,13 +266,15 @@ void handle_query_contract_ui(void *parameters) {
             break;
         case CANCEL_UI:
             strlcpy(msg->title, "Cancel", msg->titleLength);
-            strlcpy(msg->msg, (context->booleans & ORDERS) ? "Orders" : "Order", msg->msgLength);
+            strlcpy(msg->msg,
+                    (context->transaction_info & ORDERS) ? "Orders" : "Order",
+                    msg->msgLength);
             break;
         case ADD_FUNDS_UI:
             set_eth_add_funds_ui(msg, context);
             break;
         default:
-            PRINTF("\n\n\n\n\n SCREEN NOT HANDLED\n\n\n\n\n");
+            PRINTF("SCREEN NOT HANDLED\n");
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
     }

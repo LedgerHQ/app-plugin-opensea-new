@@ -12,22 +12,22 @@ void handle_provide_token(void *parameters) {
     PRINTF("PROVIDE_TOKEN token1.address: %.*H\n", ADDRESS_LENGTH, context->token1.address);
     PRINTF("PROVIDE_TOKEN token2.address: %.*H\n", ADDRESS_LENGTH, context->token2.address);
 
-    if (msg->item1) context->booleans |= ITEM1_FOUND;
+    if (msg->item1) context->transaction_info |= ITEM1_FOUND;
     // check if not ETH address
     else if (!ADDRESS_IS_NULL_ADDRESS(context->token1.address)) {
         context->screen_array |= SEND_UI_ERR;
         msg->additionalScreens++;
     } else {
-        PRINTF("ITEM1 IS ETH!\n");
+        PRINTF("ITEM1 IS NATIVE!\n");
     }
 
-    if (msg->item2) context->booleans |= ITEM2_FOUND;
+    if (msg->item2) context->transaction_info |= ITEM2_FOUND;
     // check if not ETH address
     else if (!ADDRESS_IS_NULL_ADDRESS(context->token2.address)) {
         context->screen_array |= RECEIVE_UI_ERR;
         msg->additionalScreens++;
     } else {
-        PRINTF("ITEM2 IS ETH!\n");
+        PRINTF("ITEM2 IS NATIVE!\n");
     }
 
     if (context->token1.type == MULTIPLE_NFTS) {

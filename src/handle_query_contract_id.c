@@ -13,13 +13,13 @@ static void print_booleans(context_t *context) {
 %d ITEM2_FOUND\n\
 %d CANT_CALC_AMOUNT\n\
 ",
-        (context->booleans & IS_BUY4) ? 1 : 0,
-        (context->booleans & IS_ACCEPT) ? 1 : 0,
-        (context->booleans & ITEM1_IS_NFT) ? 1 : 0,
-        (context->booleans & ITEM2_IS_NFT) ? 1 : 0,
-        (context->booleans & ITEM1_FOUND) ? 1 : 0,
-        (context->booleans & ITEM2_FOUND) ? 1 : 0,
-        (context->booleans & CANT_CALC_AMOUNT) ? 1 : 0);
+        (context->transaction_info & IS_BUY4) ? 1 : 0,
+        (context->transaction_info & IS_ACCEPT) ? 1 : 0,
+        (context->transaction_info & ITEM1_IS_NFT) ? 1 : 0,
+        (context->transaction_info & ITEM2_IS_NFT) ? 1 : 0,
+        (context->transaction_info & ITEM1_FOUND) ? 1 : 0,
+        (context->transaction_info & ITEM2_FOUND) ? 1 : 0,
+        (context->transaction_info & CANT_CALC_AMOUNT) ? 1 : 0);
 }
 #endif
 

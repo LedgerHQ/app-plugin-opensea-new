@@ -15,7 +15,7 @@ static void print_item(context_t *context, token_t token) {
     if (token.type == MULTIPLE_NFTS) PRINTF("MULTIPLE_NFTS\n");
     PRINTF("token.amount: %.*H\n", INT256_LENGTH, token.amount);
     PRINTF("token.address: %.*H\n", ADDRESS_LENGTH, token.address);
-    context->booleans &IS_ACCEPT ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
+    context->transaction_info &IS_ACCEPT ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
 }
 #endif
 
@@ -181,7 +181,7 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
                     return;
                 }
                 if (context->token1.type == ERC20 || context->token1.type == NATIVE)
-                    context->booleans |= IS_ACCEPT;
+                    context->transaction_info |= IS_ACCEPT;
             }
             // always set current_item_type
             context->current_item_type =
@@ -252,11 +252,11 @@ static void parse_offer(ethPluginProvideParameter_t *msg, context_t *context) {
             PRINTF("OFFER_END_AMOUNT\n");
 
             // Only on order[0].offer[0]
-            if (!(context->booleans & IS_OFFER0_PARSED)) {
+            if (!(context->transaction_info & IS_OFFER0_PARSED)) {
                 // if start & end are different
                 if (memcmp(context->token1.amount, msg->parameter, PARAMETER_LENGTH))
-                    context->booleans |= IS_OFFER_DUTCH;
-                context->booleans |= IS_OFFER0_PARSED;
+                    context->transaction_info |= IS_OFFER_DUTCH;
+                context->transaction_info |= IS_OFFER0_PARSED;
             }
 
             context->current_length--;
@@ -349,11 +349,11 @@ static void parse_considerations(ethPluginProvideParameter_t *msg, context_t *co
             PRINTF("CONSIDERATION_END_AMOUNT\n");
 
             // Only on order[0].consideration[0]
-            if (!(context->booleans & IS_CONSI0_PARSED)) {
+            if (!(context->transaction_info & IS_CONSI0_PARSED)) {
                 // if start & end are different
                 if (memcmp(context->token2.amount, msg->parameter, PARAMETER_LENGTH))
-                    context->booleans |= IS_CONSI_DUTCH;
-                context->booleans |= IS_CONSI0_PARSED;
+                    context->transaction_info |= IS_CONSI_DUTCH;
+                context->transaction_info |= IS_CONSI0_PARSED;
             }
 
             context->items_index = CONSIDERATION_RECIPIENT;
@@ -524,7 +524,7 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
                     U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->denominator));
                 if (context->numerator && context->denominator &&
                     context->numerator != context->denominator)
-                    context->booleans |= CANT_CALC_AMOUNT;
+                    context->transaction_info |= CANT_CALC_AMOUNT;
             }
 
             context->orders_index = ADVANCED_SIGNATURE_OFFSET;
@@ -595,7 +595,7 @@ static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) 
             // Check if there is multiple orders
             if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
                 U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
-                context->booleans |= ORDERS;
+                context->transaction_info |= ORDERS;
             } else if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) == 0) {
                 PRINTF("ORDER_LEN ERROR\n");
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
@@ -715,7 +715,7 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
                     U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->denominator));
                 if (context->numerator && context->denominator &&
                     context->numerator != context->denominator)
-                    context->booleans |= CANT_CALC_AMOUNT;
+                    context->transaction_info |= CANT_CALC_AMOUNT;
             }
 
             context->next_param = FADO_SIGNATURE_OFFSET;

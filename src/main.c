@@ -62,7 +62,6 @@ const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS] = {
     ARBITRUM_BRIDGE_DEPOSIT_ETH_SELECTOR,
     OPTIMISM_BRIDGE_DEPOSIT_ETH_SELECTOR,
     UNISWAP_MULTICALL_SELECTOR,
-    // Previous Opensea contracts remainging active methods.
 };
 
 // Function to dispatch calls from the ethereum app.

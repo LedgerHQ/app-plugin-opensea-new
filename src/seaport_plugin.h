@@ -13,17 +13,14 @@
 #define PLUGIN_NAME "OpenSea"
 
 // Network tickers
-#define MATIC         "MATIC "
-#define WMATIC        "WMATIC "
 #define ETH           "ETH "
 #define WETH          "WETH "
 #define UNKNOWN_ERC20 "? "
 #define UNKNOWN_NFT   "NFT"
 
 // Utility addresses checking
-#define NULL_ADDRESS                    "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-#define ADDRESS_IS_NETWORK_TOKEN(_addr) (!memcmp(_addr, NETWORK_TOKEN_ADDRESS, ADDRESS_LENGTH))
-#define ADDRESS_IS_NULL_ADDRESS(_addr)  (!memcmp(_addr, NULL_ADDRESS, ADDRESS_LENGTH))
+#define NULL_ADDRESS                   "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+#define ADDRESS_IS_NULL_ADDRESS(_addr) (!memcmp(_addr, NULL_ADDRESS, ADDRESS_LENGTH))
 extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
 
 // Enumeration of the different selectors possible.
@@ -193,18 +190,6 @@ typedef enum {
     CONSIDERATION_RECIPIENT,
 } considerations;  // pointed to by context->items_index
 
-typedef enum {
-    TX_TYPE_NONE,
-    TX_TYPE_ETH_NFT,
-    TX_TYPE_ERC20_NFT,
-    TX_TYPE_NFT_ERC20,
-    TX_TYPE_NFT_NFT,
-    TX_TYPE_MIX_NFT,
-    TX_TYPE_NFT_MIX,
-    TX_TYPE_TRANSFER_FROM,
-    TX_TYPE_COULD_NOT_PARSE,
-} tx_type;
-
 typedef enum sol_ItemType_e {
     SOL_NATIVE,
     SOL_ERC20,
@@ -223,15 +208,6 @@ typedef enum item_type_e {
     MULTIPLE_ERC20,
     MULTIPLE_NFTS,
 } item_type_e;
-
-/* 721 Standard TransferFrom Function */
-
-// typedef enum
-//{
-//  TRANSFER_FROM__FROM,
-//  TRANSFER_FROM__TO,
-//  TRANSFER_FROM__TOKEN_ID,
-//} transfer_from_parameter;
 
 // Booleans
 #define IS_BUY4          (1)
@@ -290,8 +266,8 @@ typedef struct context_t {
     uint8_t current_item_type;
     uint8_t order_type;  // the nature of the tx (ETH_NFT, NFT_ERC20...)
     uint8_t tx_type;
-    uint16_t current_length;  // is the length of the current array
-    uint16_t booleans;        // bitwise booleans
+    uint16_t current_length;    // is the length of the current array
+    uint16_t transaction_info;  // bitwise booleans
     uint16_t number_of_nfts;
     uint8_t next_param;
     // +64
