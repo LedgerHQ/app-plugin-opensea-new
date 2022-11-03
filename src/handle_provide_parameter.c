@@ -441,6 +441,13 @@ static void parse_orders(ethPluginProvideParameter_t *msg, context_t *context) {
     switch ((orders) context->orders_index) {
         case ORDER_PARAMETER_OFFSET:
             PRINTF("ORDER_PARAMETER_OFFSET\n");
+
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
+                msg->parameter[PARAMETER_LENGTH - 1] != 64) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
+
             context->orders_index = ORDER_SIGNATURE_OFFSET;
             break;
         case ORDER_SIGNATURE_OFFSET:
