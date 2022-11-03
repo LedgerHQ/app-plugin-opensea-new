@@ -70,14 +70,6 @@ void handle_init_contract(void *parameters) {
             PRINTF("IN FULFILL_AVAILABLE_ADVANCED_ORDERS\n");
             context->next_param = FAADO_OFFSET;
             break;
-        case MATCH_ORDERS:
-            PRINTF("IN MATCH_ORDERS\n");
-            context->next_param = MO_OFFSET;
-            break;
-        case MATCH_ADVANCED_ORDERS:
-            PRINTF("IN MATCH_ADVANCED_ORDERS\n");
-            context->next_param = MAO_OFFSET;
-            break;
         case CANCEL:
             PRINTF("IN CANCEL\n");
             context->next_param = CANCEL_ORDER_OFFSET;

@@ -33,8 +33,6 @@ typedef enum {
     FULFILL_AVAILABLE_ORDERS,
     FULFILL_ADVANCED_ORDER,
     FULFILL_AVAILABLE_ADVANCED_ORDERS,
-    MATCH_ORDERS,
-    MATCH_ADVANCED_ORDERS,
     CANCEL,
     INCREMENT_COUNTER,
     // Wyvern V2
@@ -51,7 +49,7 @@ typedef enum {
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 17
+#define NUM_SELECTORS 15
 
 extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
 
@@ -78,23 +76,6 @@ typedef enum {
     FBO__ADDITIONAL_AMOUNT,
     FBO__LEN_SIGNATURE,
 } fulfill_basic_order_parameter;
-
-typedef enum {
-    MAO_OFFSET,
-    MAO_CRITERIA_RESOLVERS_OFFSET,
-    MAO_FULFILLMENTS_OFFSET,
-    MAO_ADVANCED_ORDERS_LEN,
-    MAO_ADVANCED_ORDERS,
-    MAO_CRITERIA_AND_FULFILLMENTS,
-} match_advanced_orders;
-
-typedef enum {
-    MO_OFFSET,
-    MO_FULFILLMENT_OFFSET,
-    MO_ORDERS_LEN,
-    MO_ORDERS,
-    MO_FULFILLMENT,
-} match_orders;
 
 typedef enum {
     FADO_OFFSET,

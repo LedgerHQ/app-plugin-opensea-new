@@ -45,16 +45,6 @@
           "method": "fulfillAvailableAdvancedOrders",
           "plugin": "SeaPort"
         },
-        "0xa8174404": {
-          "erc20OfInterest": [],
-          "method": "matchOrders",
-          "plugin": "SeaPort"
-        },
-        "0x55944a42": {
-          "erc20OfInterest": [],
-          "method": "matchAdvancedOrders",
-          "plugin": "SeaPort"
-        },
         "0xfd9f1e10": {
           "erc20OfInterest": [],
           "method": "cancel",

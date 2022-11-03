@@ -1,6 +1,8 @@
 #include "seaport_plugin.h"
 #include "text.h"
 
+#define PLUGIN_NAME "OpenSea"
+
 #ifdef DBG_PLUGIN
 static void print_booleans(context_t *context) {
     PRINTF("Booleans:\n");
@@ -47,8 +49,6 @@ void handle_query_contract_id(void *parameters) {
         case FULFILL_ORDER:
         case FULFILL_BASIC_ORDER:
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
-        case MATCH_ORDERS:
-        case MATCH_ADVANCED_ORDERS:
         case CANCEL:
         case INCREMENT_COUNTER:
         case WYVERN_V2_CANCEL_ORDER__:

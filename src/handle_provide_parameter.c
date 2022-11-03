@@ -13,8 +13,8 @@ static void print_item(context_t *context, token_t token) {
     if (token.type == NFT) PRINTF("NFT\n");
     if (token.type == MULTIPLE_ERC20) PRINTF("MULTIPLE_ERC20\n");
     if (token.type == MULTIPLE_NFTS) PRINTF("MULTIPLE_NFTS\n");
-    PRINTF("token.amount: %.*H", INT256_LENGTH, token.amount);
-    PRINTF("token.address: %.*H", ADDRESS_LENGTH, token.address);
+    PRINTF("token.amount: %.*H\n", INT256_LENGTH, token.amount);
+    PRINTF("token.address: %.*H\n", ADDRESS_LENGTH, token.address);
     context->booleans &IS_ACCEPT ? PRINTF("ACCEPT_OFFER\n") : PRINTF("BUY_NOW\n");
 }
 #endif
@@ -585,7 +585,7 @@ static void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *c
 }
 
 static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) {
-    switch ((match_advanced_orders) context->next_param) {
+    switch ((cancel) context->next_param) {
         case CANCEL_ORDER_OFFSET:
             PRINTF("CANCEL_ORDER_OFFSET\n");
             context->next_param = CANCEL_ORDERS_LEN;
@@ -605,97 +605,6 @@ static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) 
             break;
         case CANCEL_ORDERS:
             PRINTF("CANCEL_ORDERS\n");
-            break;
-        default:
-            PRINTF("Param not supported: %d\n", context->param_index);
-            msg->result = ETH_PLUGIN_RESULT_ERROR;
-            break;
-    }
-}
-
-static void handle_match_advanced_orders(ethPluginProvideParameter_t *msg, context_t *context) {
-    switch ((match_advanced_orders) context->next_param) {
-        case MAO_OFFSET:
-            PRINTF("MAO_OFFSET\n");
-            context->next_param = MAO_CRITERIA_RESOLVERS_OFFSET;
-            break;
-        case MAO_CRITERIA_RESOLVERS_OFFSET:
-            PRINTF("MAO_CRITERIA_RESOLVERS_OFFSET\n");
-            context->next_param = MAO_FULFILLMENTS_OFFSET;
-            break;
-        case MAO_FULFILLMENTS_OFFSET:
-            PRINTF("MAO_FULFILLMENTS_OFFSET\n");
-            context->next_param = MAO_ADVANCED_ORDERS_LEN;
-            break;
-        case MAO_ADVANCED_ORDERS_LEN:
-            PRINTF("MAO_ADVANCED_ORDERS_LEN\n");
-            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->orders_len)) ||
-                msg->parameter[PARAMETER_LENGTH - 1] == 0) {
-                msg->result = ETH_PLUGIN_RESULT_ERROR;
-                return;
-            }
-            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
-            context->skip = context->orders_len;
-            PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
-            context->next_param = MAO_ADVANCED_ORDERS;
-            break;
-        case MAO_ADVANCED_ORDERS:
-            PRINTF("MAO_ADVANCED_ORDERS\n");
-            parse_advanced_orders(msg, context);
-            PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
-            if (context->orders_len == 0) {
-                PRINTF("END ORDERS\n");
-                context->next_param = MAO_CRITERIA_AND_FULFILLMENTS;
-                break;
-            }
-            break;
-        case MAO_CRITERIA_AND_FULFILLMENTS:
-            PRINTF("MAO_CRITERIA_AND_FULFILLMENTS\n");
-            break;
-        default:
-            PRINTF("Param not supported: %d\n", context->param_index);
-            msg->result = ETH_PLUGIN_RESULT_ERROR;
-            break;
-    }
-}
-
-static void handle_match_orders(ethPluginProvideParameter_t *msg, context_t *context) {
-    switch ((match_orders) context->next_param) {
-        case MO_OFFSET:
-            PRINTF("MO_OFFSET\n");
-            context->next_param = MO_FULFILLMENT_OFFSET;
-            break;
-        case MO_FULFILLMENT_OFFSET:
-            PRINTF("MO_FULFILLMENT_OFFSET\n");
-            context->next_param = MO_ORDERS_LEN;
-            break;
-        case MO_ORDERS_LEN:
-            PRINTF("MO_ORDERS_LEN\n");
-            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, sizeof(context->orders_len))) {
-                msg->result = ETH_PLUGIN_RESULT_ERROR;
-                return;
-            }
-            context->orders_len = msg->parameter[PARAMETER_LENGTH - 1];
-            if (context->orders_len == 0) {
-                PRINTF("ORDER_LEN ERROR\n");
-                msg->result = ETH_PLUGIN_RESULT_ERROR;
-                return;
-            }
-            context->skip = context->orders_len;
-            PRINTF("ORDER_LEN FOUND:%d\n", context->orders_len);
-            context->next_param = MO_ORDERS;
-            break;
-        case MO_ORDERS:
-            PRINTF("MO_ORDERS\n");
-            parse_orders(msg, context);
-            PRINTF("PARSE ORDERS LEN:%d\n", context->orders_len);
-            if (context->orders_len == 0) {
-                PRINTF("END ORDERS\n");
-                context->next_param = MO_FULFILLMENT;
-                break;
-            }
-        case MO_FULFILLMENT:
-            PRINTF("MO_FULFILLMENT\n");
             break;
         default:
             PRINTF("Param not supported: %d\n", context->param_index);
@@ -969,12 +878,6 @@ void handle_provide_parameter(void *parameters) {
             break;
         case FULFILL_AVAILABLE_ADVANCED_ORDERS:
             handle_fulfill_available_advanced_orders(msg, context);
-            break;
-        case MATCH_ORDERS:
-            handle_match_orders(msg, context);
-            break;
-        case MATCH_ADVANCED_ORDERS:
-            handle_match_advanced_orders(msg, context);
             break;
         case CANCEL:
             handle_cancel(msg, context);
