@@ -16,3 +16,4 @@ tests/src/apdu/dummy.apdu
 tests/src/apdu
 
 tests/src/fulfillOrder/dummy.test.js
+tests/src/fulfillOrder/dummy.js
