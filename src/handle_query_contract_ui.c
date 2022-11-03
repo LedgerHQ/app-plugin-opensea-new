@@ -65,7 +65,7 @@ static void display_item(ethQueryContractUI_t *msg,
     switch (token.type) {
         case NATIVE:
             if (no_amount) {
-                snprintf(msg->msg, msg->msgLength, "? %s", ETH);
+                snprintf(msg->msg, msg->msgLength, "? %s", msg->network_ticker);
             } else {
                 amountToString(token.amount,
                                INT256_LENGTH,
