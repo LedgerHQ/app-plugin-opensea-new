@@ -116,12 +116,12 @@ jobs:
       - name: Move binary to test directory
         run: |
           mkdir -p ./tests/elfs/
-          mv bin/app.elf ./tests/elfs/plugin_nanosp.elf
+          mv bin/app.elf ./tests/elfs/seaport_nanosp.elf
       - name: Upload plugin binary
         uses: actions/upload-artifact@v2
         with:
           name: binaries
-          path: tests/elfs/plugin_nanosp.elf
+          path: tests/elfs/seaport_nanosp.elf
 
   job_build_plugin_debug_nano_x:
     name: Build plugin for Nano X testing
