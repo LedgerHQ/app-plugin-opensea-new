@@ -1,4 +1,4 @@
-# SeaPort Ledger plugin
+# OpenSea Ledger plugin
 
 ## Advanced modifications:
 

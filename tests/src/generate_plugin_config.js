@@ -2,7 +2,7 @@
 // You will also need to create a `b2c.json` file that will hold the methodIDs and location of
 // the erc20 tokens that should get displayed.
 
-const pluginFolder = "opensea";
+const pluginFolder = "seaport";
 
 function serialize_data(pluginName, contractAddress, selector) {
   const len = Buffer.from([pluginName.length]);
@@ -38,7 +38,6 @@ function generate_plugin_config(network = "ethereum") {
     contracts_to_abis[contractAddress] = abi;
   }
 
-  console.log(`PENZO network: |${network}|, pluginFolder: |${pluginFolder}|`)
   // Load the b2c.json file
   const b2c = require('../networks/ethereum/seaport/b2c.json');
   // const b2c = require(`../networks/${network}/${pluginFolder}/b2c.json`);

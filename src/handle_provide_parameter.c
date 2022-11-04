@@ -307,7 +307,7 @@ static void handle_fulfill_available_orders(ethPluginProvideParameter_t *msg, co
     }
 }
 
-static void handle_fullfill_order(ethPluginProvideParameter_t *msg, context_t *context) {
+static void handle_fulfill_order(ethPluginProvideParameter_t *msg, context_t *context) {
     switch ((fulfill_order) context->next_param) {
         case FO_OFFSET:
             PRINTF("FO_OFFSET\n");
@@ -370,7 +370,7 @@ void handle_provide_parameter(void *parameters) {
 
     switch (context->selectorIndex) {
         case FULFILL_ORDER:
-            handle_fullfill_order(msg, context);
+            handle_fulfill_order(msg, context);
             break;
         case FULFILL_BASIC_ORDER:
             handle_fulfill_basic_order(msg, context);
