@@ -1,8 +1,8 @@
 #pragma once
 
 #include "debug.h"
-#include "eth_internals.h"
 #include "eth_plugin_interface.h"
+#include "eth_internals.h"
 #include <stdint.h>
 #include <string.h>
 
@@ -10,7 +10,7 @@
 #define DEFAULT_DECIMAL WEI_TO_ETHER
 #define ETH_DECIMAL     WEI_TO_ETHER
 
-#define PLUGIN_NAME "OpenSea"
+#define PLUGIN_NAME "Opensea"
 
 // Network tickers
 #define ETH           "ETH "
