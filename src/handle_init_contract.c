@@ -1,4 +1,4 @@
-#include "seaport_plugin.h"
+#include "opensea_plugin.h"
 
 static int find_selector(uint32_t selector, const uint32_t *selectors, size_t n, selector_t *out) {
     for (selector_t i = 0; i < n; i++) {
@@ -42,7 +42,7 @@ void handle_init_contract(void *parameters) {
 
     // Find tx selector
     uint32_t selector = U4BE(msg->selector, 0);
-    if (find_selector(selector, SEAPORT_SELECTORS, NUM_SELECTORS, &context->selectorIndex)) {
+    if (find_selector(selector, OPENSEA_SELECTORS, NUM_SELECTORS, &context->selectorIndex)) {
         PRINTF("can't find selector\n");
         msg->result = ETH_PLUGIN_RESULT_UNAVAILABLE;
         return;

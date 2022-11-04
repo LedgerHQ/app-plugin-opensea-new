@@ -22,7 +22,7 @@
 #include "cx.h"
 #include "os.h"
 
-#include "seaport_plugin.h"
+#include "opensea_plugin.h"
 
 // List of selectors supported by this plugin.
 static const uint32_t FULFILL_ORDER_SELECTOR = 0xb3a34c4c;
@@ -42,8 +42,8 @@ static const uint32_t OPTIMISM_BRIDGE_DEPOSIT_ETH_SELECTOR = 0xb1a1a882;
 static const uint32_t UNISWAP_MULTICALL_SELECTOR = 0x5ae401dc;
 
 // Array of all the different plugin selectors. Make sure this follows the same
-// order as the enum defined in `seaport_plugin.h`
-const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS] = {
+// order as the enum defined in `opensea_plugin.h`
+const uint32_t OPENSEA_SELECTORS[NUM_SELECTORS] = {
     // Seaport Methods
     FULFILL_ORDER_SELECTOR,
     FULFILL_BASIC_ORDER_SELECTOR,

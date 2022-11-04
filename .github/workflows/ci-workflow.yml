@@ -87,12 +87,12 @@ jobs:
       - name: Move binary to test directory
         run: |
           mkdir -p ./tests/elfs/
-          mv bin/app.elf ./tests/elfs/seaport_nanos.elf
+          mv bin/app.elf ./tests/elfs/opensea_nanos.elf
       - name: Upload plugin binary
         uses: actions/upload-artifact@v3
         with:
           name: binaries
-          path: tests/elfs/seaport_nanos.elf
+          path: tests/elfs/opensea_nanos.elf
   
 
   job_build_plugin_debug_nano_sp:
@@ -116,12 +116,12 @@ jobs:
       - name: Move binary to test directory
         run: |
           mkdir -p ./tests/elfs/
-          mv bin/app.elf ./tests/elfs/seaport_nanosp.elf
+          mv bin/app.elf ./tests/elfs/opensea_nanosp.elf
       - name: Upload plugin binary
         uses: actions/upload-artifact@v3
         with:
           name: binaries
-          path: tests/elfs/seaport_nanosp.elf
+          path: tests/elfs/opensea_nanosp.elf
 
   job_build_plugin_debug_nano_x:
     name: Build plugin for Nano X testing
@@ -144,12 +144,12 @@ jobs:
       - name: Move binary to test directory
         run: |
           mkdir -p ./tests/elfs/
-          mv bin/app.elf ./tests/elfs/seaport_nanox.elf
+          mv bin/app.elf ./tests/elfs/opensea_nanox.elf
       - name: Upload plugin binary
         uses: actions/upload-artifact@v3
         with:
           name: binaries
-          path: tests/elfs/seaport_nanox.elf
+          path: tests/elfs/opensea_nanox.elf
 
   job_build_ethereum_nano_s:
     name: Build Ethereum application for Nano S testing

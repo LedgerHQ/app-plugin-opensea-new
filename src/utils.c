@@ -1,5 +1,5 @@
 #include "eth_internals.h"
-#include "seaport_plugin.h"
+#include "opensea_plugin.h"
 #include <stdint.h>
 
 /*

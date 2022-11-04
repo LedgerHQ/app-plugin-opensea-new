@@ -1,4 +1,4 @@
-#include "seaport_plugin.h"
+#include "opensea_plugin.h"
 
 #ifdef DBG_PLUGIN
 static void print_booleans(context_t *context) {

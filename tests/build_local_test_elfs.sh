@@ -16,7 +16,7 @@ NANOX_SDK=$NANOX_SDK
 NANOSP_SDK=$NANOSP_SDK
 # APP_ETHEREUM=$APP_ETHEREUM
 APP_ETHEREUM="/plugin_dev/app-ethereum"
-PLUGIN_NAME='seaport'
+PLUGIN_NAME='opensea'
 
 ###	Functions
 

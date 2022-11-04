@@ -22,9 +22,9 @@ const NANOS_ETH_PATH = Resolve('elfs/ethereum_nanos.elf');
 const NANOX_ETH_PATH = Resolve('elfs/ethereum_nanox.elf');
 const NANOSP_ETH_PATH = Resolve('elfs/ethereum_nanosp.elf');
 
-const NANOS_PLUGIN_PATH = Resolve('elfs/seaport_nanos.elf');
-const NANOX_PLUGIN_PATH = Resolve('elfs/seaport_nanox.elf');
-const NANOSP_PLUGIN_PATH = Resolve('elfs/seaport_nanosp.elf');
+const NANOS_PLUGIN_PATH = Resolve('elfs/opensea_nanos.elf');
+const NANOX_PLUGIN_PATH = Resolve('elfs/opensea_nanox.elf');
+const NANOSP_PLUGIN_PATH = Resolve('elfs/opensea_nanosp.elf');
 
 const SPECULOS_ADDRESS = '0xFE984369CE3919AA7BB4F431082D027B4F8ED70C';
 const RANDOM_ADDRESS = '0xaaaabbbbccccddddeeeeffffgggghhhhiiiijjjj'
@@ -62,7 +62,7 @@ function zemu(device, testNetwork, func) {
     let elf_path;
     let lib_elf;
     elf_path = device.eth_path;
-    lib_elf = { 'SeaPort': device.path };
+    lib_elf = { 'opensea': device.path };
 
     const sim = new Zemu(elf_path, lib_elf);
 

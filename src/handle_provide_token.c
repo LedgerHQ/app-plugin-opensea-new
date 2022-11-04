@@ -1,4 +1,4 @@
-#include "seaport_plugin.h"
+#include "opensea_plugin.h"
 
 // EDIT THIS: Adapt this function to your needs! Remember, the information for
 // tokens are held in `msg->item1` and `msg->item2`. If those pointers are

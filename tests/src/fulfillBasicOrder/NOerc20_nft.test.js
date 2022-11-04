@@ -1,10 +1,10 @@
 import { nano_models, populateTransaction, processTest } from "../test.fixture";
 
-const contractName = "SeaPort";
+const contractName = "Seaport";
 const contractAddr = "0x00000000006c3852cbef3e08e8df289169ede581";
 const testNetwork = "ethereum";
 
-const testLabel = "fullfilBasicOrder NOerc20_nft"; // <= Name of the test
+const testLabel = "fulfillBasicOrder NOerc20_nft"; // <= Name of the test
 const testDirSuffix = testLabel.toLowerCase().replace(/\s+/g, "_");
 
 // https://etherscan.io/tx/0xaa571e269fe6212f6d55866a80636252d175948611d9e569969e50d7682df68f

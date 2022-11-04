@@ -50,7 +50,7 @@ typedef enum {
 // `selector_t`.
 #define NUM_SELECTORS 15
 
-extern const uint32_t SEAPORT_SELECTORS[NUM_SELECTORS];
+extern const uint32_t OPENSEA_SELECTORS[NUM_SELECTORS];
 
 // Solidity basic_order_type abstraction.
 typedef enum { ETH_NFT, ERC20_NFT, NFT_ERC20 } basic_order_type;
