@@ -10,7 +10,7 @@
 #define DEFAULT_DECIMAL WEI_TO_ETHER
 #define ETH_DECIMAL     WEI_TO_ETHER
 
-#define PLUGIN_NAME "Opensea"
+#define PLUGIN_NAME "OpenSea"
 
 // Network tickers
 #define ETH           "ETH "
