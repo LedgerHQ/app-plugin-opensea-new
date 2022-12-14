@@ -96,9 +96,6 @@ void handle_init_contract(void *parameters) {
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
             PRINTF("IN ARBITRUM_BRIDGE_DEPOSIT_ETH\n");
             break;
-        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
-            PRINTF("IN OPTIMISM_BRIDGE_DEPOSIT_ETH\n");
-            break;
         case UNISWAP_MULTICALL:
             PRINTF("IN UNISWAP_MULTICALL\n");
             break;

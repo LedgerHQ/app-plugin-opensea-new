@@ -11,6 +11,9 @@ void handle_provide_token(void *parameters) {
 
     PRINTF("PROVIDE_TOKEN token1.address: %.*H\n", ADDRESS_LENGTH, context->token1.address);
     PRINTF("PROVIDE_TOKEN token2.address: %.*H\n", ADDRESS_LENGTH, context->token2.address);
+    if (!memcmp(context->token2.address, STOREFRONT_LAZYMINTER, ADDRESS_LENGTH)) {
+        context->transaction_info |= IS_STOREFRONT;
+    }
 
     if (msg->item1) context->transaction_info |= ITEM1_FOUND;
     // check if not ETH address
@@ -20,9 +23,13 @@ void handle_provide_token(void *parameters) {
     } else {
         PRINTF("ITEM1 IS NATIVE!\n");
     }
-
-    if (msg->item2) context->transaction_info |= ITEM2_FOUND;
+    // Check if address is LAZYMINTER_PROXY address for OpenSea Shared Storefront custom
+    // collections.
+    if (msg->item2 || (!msg->item2 && context->transaction_info & IS_STOREFRONT)) {
+        context->transaction_info |= ITEM2_FOUND;
+    }
     // check if not ETH address
+
     else if (!ADDRESS_IS_NULL_ADDRESS(context->token2.address)) {
         context->screen_array |= RECEIVE_UI_ERR;
         msg->additionalScreens++;

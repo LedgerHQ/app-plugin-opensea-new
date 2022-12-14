@@ -17,13 +17,10 @@ static void debug_items(ethQueryContractUI_t *msg, context_t *context) {
            (context->transaction_info & IS_ACCEPT) ? "Accept offer" : "Buy now");
 
     if (msg->item1 != NULL)
-        PRINTF("UI PENZO msg->item1->nft.collectionName: %s\n", msg->item1->nft.collectionName);
+        PRINTF("UI msg->item1->nft.collectionName: %s\n", msg->item1->nft.collectionName);
     else
-        PRINTF("UI PENZO NO ITEM1\n");
-    if (msg->item2 != NULL)
-        PRINTF("UI PENZO msg->item2->nft.collectionName: %s\n", msg->item2->nft.collectionName);
-    else
-        PRINTF("UI PENZO NO ITEM2\n");
+        PRINTF("UI NO ITEM1\n");
+    if (msg->item2 != NULL) PRINTF("UI NO ITEM2\n");
 }
 static void debug_screens(ethQueryContractUI_t *msg, context_t *context) {
     PRINTF("SCREEN: screen_array:\t%d%d%d%d %d%d%d%d\n",
@@ -57,7 +54,8 @@ static void display_item(ethQueryContractUI_t *msg,
                          token_t token,
                          uint16_t number_of_nfts,
                          uint8_t is_found,
-                         uint8_t no_amount) {
+                         uint8_t no_amount,
+                         uint8_t is_opensea_collection) {
     PRINTF("__display_item__\n");
     PRINTF("\ttoken.type: %d\n", token.type);
     PRINTF("\ttoken.address: %.*H\n", ADDRESS_LENGTH, token.address);
@@ -99,7 +97,9 @@ static void display_item(ethQueryContractUI_t *msg,
                      msg->msgLength,
                      "%d %s",
                      (number_of_nfts) ? number_of_nfts : U4BE(token.amount, INT256_LENGTH - 4),
-                     (is_found) ? msg->item2->nft.collectionName : UNKNOWN_NFT);
+                     (is_found) ? ((is_opensea_collection) ? OPENSEA_SHARED_STOREFRONT
+                                                           : msg->item2->nft.collectionName)
+                                : UNKNOWN_NFT);
             break;
         case MULTIPLE_ERC20:
             break;
@@ -138,8 +138,6 @@ static void set_eth_add_funds_ui(ethQueryContractUI_t *msg, context_t *context) 
         strlcpy(msg->title, "To Polygon", msg->titleLength);
     else if (context->selectorIndex == ARBITRUM_BRIDGE_DEPOSIT_ETH)
         strlcpy(msg->title, "To Arbitrum", msg->titleLength);
-    else if (context->selectorIndex == OPTIMISM_BRIDGE_DEPOSIT_ETH)
-        strlcpy(msg->title, "To Optimism", msg->titleLength);
     else if (context->selectorIndex == WETH_WITHDRAW)
         strlcpy(msg->title, "Unwrap", msg->titleLength);
     else if (context->selectorIndex == UNISWAP_MULTICALL)
@@ -223,7 +221,8 @@ void handle_query_contract_ui(void *parameters) {
                          context->token1,
                          context->number_of_nfts,
                          context->transaction_info & ITEM1_FOUND,
-                         context->transaction_info & CANT_CALC_AMOUNT);
+                         context->transaction_info & CANT_CALC_AMOUNT,
+                         0);
             break;
         case SEND_UI_ERR:
             if (context->token1.type == MULTIPLE_NFTS) {
@@ -244,7 +243,8 @@ void handle_query_contract_ui(void *parameters) {
                          context->token2,
                          context->number_of_nfts,
                          context->transaction_info & ITEM2_FOUND,
-                         context->transaction_info & CANT_CALC_AMOUNT);
+                         context->transaction_info & CANT_CALC_AMOUNT,
+                         (context->transaction_info & IS_STOREFRONT ? 1 : 0));
             break;
         case RECEIVE_UI_ERR:
             if (context->token2.type == MULTIPLE_NFTS) {
@@ -277,5 +277,5 @@ void handle_query_contract_ui(void *parameters) {
             PRINTF("SCREEN NOT HANDLED\n");
             msg->result = ETH_PLUGIN_RESULT_ERROR;
             return;
-    }
+    };
 }

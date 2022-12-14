@@ -59,7 +59,6 @@ void handle_query_contract_id(void *parameters) {
             break;
         case POLYGON_BRIDGE_DEPOSIT_ETHER_FOR:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
-        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
             strlcpy(msg->version, "Bridge", msg->versionLength);
             break;
         default:

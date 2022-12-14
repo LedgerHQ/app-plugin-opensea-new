@@ -38,7 +38,6 @@ static const uint32_t WETH_DEPOSIT_SELECTOR = 0xd0e30db0;
 static const uint32_t WETH_WITHDRAW_SELECTOR = 0x2e1a7d4d;
 static const uint32_t POLYGON_BRIDGE_DEPOSIT_ETHER_FOR_SELECTOR = 0x4faa8a26;
 static const uint32_t ARBITRUM_BRIDGE_DEPOSIT_ETH_SELECTOR = 0x439370b1;
-static const uint32_t OPTIMISM_BRIDGE_DEPOSIT_ETH_SELECTOR = 0xb1a1a882;
 static const uint32_t UNISWAP_MULTICALL_SELECTOR = 0x5ae401dc;
 
 // Array of all the different plugin selectors. Make sure this follows the same
@@ -60,9 +59,12 @@ const uint32_t OPENSEA_SELECTORS[NUM_SELECTORS] = {
     WETH_WITHDRAW_SELECTOR,
     POLYGON_BRIDGE_DEPOSIT_ETHER_FOR_SELECTOR,
     ARBITRUM_BRIDGE_DEPOSIT_ETH_SELECTOR,
-    OPTIMISM_BRIDGE_DEPOSIT_ETH_SELECTOR,
     UNISWAP_MULTICALL_SELECTOR,
 };
+
+const uint8_t STOREFRONT_LAZYMINTER[ADDRESS_LENGTH] = {0xa6, 0x04, 0x06, 0x08, 0x90, 0x92, 0x3f,
+                                                       0xf4, 0x00, 0xe8, 0xc6, 0xf5, 0x29, 0x04,
+                                                       0x61, 0xa8, 0x3a, 0xed, 0xac, 0xec};
 
 // Function to dispatch calls from the ethereum app.
 void dispatch_plugin_calls(int message, void *parameters) {

@@ -73,7 +73,6 @@ void handle_finalize(void *parameters) {
         case WETH_DEPOSIT:
         case POLYGON_BRIDGE_DEPOSIT_ETHER_FOR:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
-        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
         case UNISWAP_MULTICALL:
             context->screen_array |= ADD_FUNDS_UI;
             break;
@@ -113,7 +112,7 @@ void handle_finalize(void *parameters) {
                 context->token2.type = ERC20;
                 break;
             default:
-                PRINTF("PENZO FINALIZE selectorIndex switch ERROR\n");
+                PRINTF("FINALIZE selectorIndex switch ERROR\n");
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
         }

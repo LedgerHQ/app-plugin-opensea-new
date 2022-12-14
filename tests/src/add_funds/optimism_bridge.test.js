@@ -3,13 +3,13 @@ import { nano_models, processTest, populateTransaction } from "../test.fixture";
 const contractName = "L1StandardBridge"
 const contractAddr = "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1";
 const testNetwork = "ethereum";
-const txValue = '0.071142839733849676';
+const txValue = '0.001';
 
 const testLabel = "optimism bridge"; // <= Name of the test
 const testDirSuffix = testLabel.toLowerCase().replace(/\s+/g, '_');
 
-// https://etherscan.io/tx/0x56cfc41d8bf79c04c77a2dcb6dbb7ccbcad9951931bb4a0b45c3f22be1c5198a
-const inputData = "0xb1a1a8820000000000000000000000000000000000000000000000000000000000030d4000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000";
+// https://etherscan.io/tx/0xcd65a6d97e92b651c28979de32ff2c2ec39d7bb752982877f14916b04fa846c8
+const inputData = "0x"
 const models = [
     {
         name: 'nanos',

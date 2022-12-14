@@ -396,7 +396,6 @@ void handle_provide_parameter(void *parameters) {
         case WETH_DEPOSIT:
         case POLYGON_BRIDGE_DEPOSIT_ETHER_FOR:
         case ARBITRUM_BRIDGE_DEPOSIT_ETH:
-        case OPTIMISM_BRIDGE_DEPOSIT_ETH:
         case UNISWAP_MULTICALL:
             break;
         default:

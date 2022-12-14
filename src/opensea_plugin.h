@@ -21,7 +21,9 @@
 // Utility addresses checking
 #define NULL_ADDRESS                   "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 #define ADDRESS_IS_NULL_ADDRESS(_addr) (!memcmp(_addr, NULL_ADDRESS, ADDRESS_LENGTH))
-extern const uint8_t NETWORK_TOKEN_ADDRESS[ADDRESS_LENGTH];
+
+#define OPENSEA_SHARED_STOREFRONT "OpenSea Shared Storefront"
+extern const uint8_t STOREFRONT_LAZYMINTER[ADDRESS_LENGTH];
 
 // Enumeration of the different selectors possible.
 // Should follow the exact same order as the array declared in main.c
@@ -42,13 +44,12 @@ typedef enum {
     WETH_WITHDRAW,
     POLYGON_BRIDGE_DEPOSIT_ETHER_FOR,
     ARBITRUM_BRIDGE_DEPOSIT_ETH,
-    OPTIMISM_BRIDGE_DEPOSIT_ETH,
     UNISWAP_MULTICALL,
 } selector_t;
 
 // Number of selectors defined in this plugin. Should match the enum
 // `selector_t`.
-#define NUM_SELECTORS 15
+#define NUM_SELECTORS 14
 
 extern const uint32_t OPENSEA_SELECTORS[NUM_SELECTORS];
 
@@ -209,7 +210,7 @@ typedef enum item_type_e {
     MULTIPLE_NFTS,
 } item_type_e;
 
-// Booleans
+// Booleans for transaction_info
 #define IS_BUY4          (1)
 #define IS_ACCEPT        (1 << 1)
 #define ITEM1_IS_NFT     (1 << 2)
@@ -222,6 +223,7 @@ typedef enum item_type_e {
 #define IS_CONSI_DUTCH   (1 << 9)
 #define IS_OFFER0_PARSED (1 << 10)
 #define IS_CONSI0_PARSED (1 << 11)
+#define IS_STOREFRONT    (1 << 12)
 
 // screen array correspondance
 #define PARSE_ERROR_UI 1
