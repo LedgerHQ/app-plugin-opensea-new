@@ -21,8 +21,7 @@ endif
 
 include $(BOLOS_SDK)/Makefile.defines
 
-# EDIT THIS: Put your plugin name
-APPNAME = "opensea"
+APPNAME = "OpenSea"
 
 ifeq ($(ETHEREUM_PLUGIN_SDK),)
 ETHEREUM_PLUGIN_SDK=ethereum-plugin-sdk
@@ -32,7 +31,7 @@ APP_LOAD_PARAMS += --appFlags 0x800 --path "44'/60'" --curve secp256k1
 
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
-APPVERSION_M     = 1
+APPVERSION_M     = 2
 APPVERSION_N     = 0
 APPVERSION_P     = 0
 APPVERSION       = "$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)"
@@ -87,7 +86,7 @@ ifneq ($(DEBUG),0)
         SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f
         DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_USB_MAX_ENDPOINTS=4 IO_HID_EP_LENGTH=64 HAVE_USB_APDU
 				DEFINES += DBG_PLUGIN
- 
+
         ifeq ($(DEBUG),10)
                 $(warning Using semihosted PRINTF. Only run with speculos!)
                 CFLAGS    += -include src/dbg/debug.h
@@ -98,7 +97,7 @@ ifneq ($(DEBUG),0)
                 else
                         DEFINES   += HAVE_PRINTF PRINTF=mcu_usb_printf
                 endif
- 
+
         endif
 else
         DEFINES += PRINTF\(...\)=
