@@ -39,8 +39,12 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
-            context->order_type =
-                get_basic_order_type(msg, U2BE(msg->parameter, PARAMETER_LENGTH - 2));
+            uint16_t order_type_sol;
+            if (!U2BE_from_parameter(msg->parameter, &order_type_sol)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
+            context->order_type = get_basic_order_type(msg, order_type_sol);
             context->skip = 9;
             context->next_param = FBO__LEN_ADDITIONAL_RECIPIENTS;
             break;
@@ -52,8 +56,10 @@ static void handle_fulfill_basic_order(ethPluginProvideParameter_t *msg, context
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
-            context->current_length =
-                U2BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->current_length));
+            if (!U2BE_from_parameter(msg->parameter, &context->current_length)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             context->next_param = FBO__ADDITIONAL_AMOUNT;
             break;
         case FBO__ADDITIONAL_AMOUNT:
@@ -93,11 +99,15 @@ static void handle_cancel(ethPluginProvideParameter_t *msg, context_t *context) 
             break;
         case CANCEL_ORDERS_LEN:
             PRINTF("CANCEL_ORDERS_LEN\n");
+            uint16_t orders;
+            if (!U2BE_from_parameter(msg->parameter, &orders)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             // Check if there is multiple orders
-            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) ||
-                U2BE(msg->parameter, PARAMETER_LENGTH - 2) > 1) {
+            if (does_number_fit(msg->parameter, PARAMETER_LENGTH, 1) || (orders > 1)) {
                 context->transaction_info |= ORDERS;
-            } else if (U2BE(msg->parameter, PARAMETER_LENGTH - 2) == 0) {
+            } else if (orders == 0) {
                 PRINTF("ORDER_LEN ERROR\n");
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
@@ -198,8 +208,10 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             } else {
-                context->numerator =
-                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->numerator));
+                if (!U4BE_from_parameter(msg->parameter, &context->numerator)) {
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                    return;
+                }
             }
 
             context->next_param = FADO_DENOMINATOR;
@@ -212,8 +224,10 @@ static void handle_fulfill_advanced_order(ethPluginProvideParameter_t *msg, cont
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             } else {
-                context->denominator =
-                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->denominator));
+                if (!U4BE_from_parameter(msg->parameter, &context->denominator)) {
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                    return;
+                }
                 if (context->numerator && context->denominator &&
                     context->numerator != context->denominator)
                     context->transaction_info |= CANT_CALC_AMOUNT;
