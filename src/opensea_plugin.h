@@ -13,9 +13,9 @@
 #define PLUGIN_NAME "OpenSea"
 
 // Network tickers
-#define ETH           "ETH "
-#define WETH          "WETH "
-#define UNKNOWN_ERC20 "? "
+#define ETH           "ETH"
+#define WETH          "WETH"
+#define UNKNOWN_ERC20 "?"
 #define UNKNOWN_NFT   "NFT"
 
 // Utility addresses checking

@@ -304,8 +304,8 @@ void parse_param(ethPluginProvideParameter_t *msg, context_t *context) {
             break;
         case PARAM_OFFERS_LEN:
             PRINTF("PARAM_OFFERS_LEN\n");
-            context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
-            if (context->current_length == 0) {
+            if (!U2BE_from_parameter(msg->parameter, &context->current_length) ||
+                context->current_length == 0) {
                 PRINTF("OFFER_LEN ERROR\n");
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
@@ -329,7 +329,10 @@ void parse_param(ethPluginProvideParameter_t *msg, context_t *context) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
-            context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            if (!U2BE_from_parameter(msg->parameter, &context->current_length)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
             if (context->current_length == 0) {
                 PRINTF("NO CONSIDERATIONS\n");
                 context->token2.type = NATIVE;
@@ -387,7 +390,10 @@ void parse_orders(ethPluginProvideParameter_t *msg, context_t *context) {
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
-            context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            if (!U2BE_from_parameter(msg->parameter, &context->current_length)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
 
             // Skip signature, sometime length % 32 != 0
             context->skip = context->current_length / PARAMETER_LENGTH;
@@ -423,8 +429,10 @@ void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *context)
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             } else {
-                context->numerator =
-                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->numerator));
+                if (!U4BE_from_parameter(msg->parameter, &context->numerator)) {
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                    return;
+                }
             }
 
             context->orders_index = ADVANCED_DENOMINATOR;
@@ -436,8 +444,10 @@ void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *context)
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             } else {
-                context->denominator =
-                    U4BE(msg->parameter, PARAMETER_LENGTH - sizeof(context->denominator));
+                if (!U4BE_from_parameter(msg->parameter, &context->denominator)) {
+                    msg->result = ETH_PLUGIN_RESULT_ERROR;
+                    return;
+                }
                 if (context->numerator && context->denominator &&
                     context->numerator != context->denominator)
                     context->transaction_info |= CANT_CALC_AMOUNT;
@@ -470,7 +480,10 @@ void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *context)
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
-            context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            if (!U2BE_from_parameter(msg->parameter, &context->current_length)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
 
             context->skip = context->current_length / PARAMETER_LENGTH;
             if (context->current_length % PARAMETER_LENGTH) context->skip++;
@@ -485,7 +498,10 @@ void parse_advanced_orders(ethPluginProvideParameter_t *msg, context_t *context)
                 msg->result = ETH_PLUGIN_RESULT_ERROR;
                 return;
             }
-            context->current_length = U2BE(msg->parameter, PARAMETER_LENGTH - 2);
+            if (!U2BE_from_parameter(msg->parameter, &context->current_length)) {
+                msg->result = ETH_PLUGIN_RESULT_ERROR;
+                return;
+            }
 
             context->skip = context->current_length / PARAMETER_LENGTH;
             if (context->current_length % PARAMETER_LENGTH) context->skip++;
