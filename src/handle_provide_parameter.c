@@ -364,8 +364,7 @@ static void handle_weth_withdraw(ethPluginProvideParameter_t *msg, context_t *co
 **  handle_provide_parameter
 */
 
-void handle_provide_parameter(void *parameters) {
-    ethPluginProvideParameter_t *msg = (ethPluginProvideParameter_t *) parameters;
+void handle_provide_parameter(ethPluginProvideParameter_t *msg) {
     context_t *context = (context_t *) msg->pluginContext;
     PRINTF(
         "___\nplugin provide parameter: offset %d\nBytes: \033[0;31m %.*H \n"
